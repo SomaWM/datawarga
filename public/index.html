@@ -631,13 +631,81 @@
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* Hamburger Button */
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 8px;
+    transition: background 0.2s;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+  }
+  .hamburger:hover { background: var(--border); }
+  .hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--teks);
+    border-radius: 2px;
+    transition: transform 0.3s, opacity 0.3s;
+  }
+
+  /* Sidebar overlay (mobile) */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 99;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .sidebar-overlay.aktif {
+    display: block;
+    opacity: 1;
+  }
+
+  /* Tombol tutup sidebar (mobile) */
+  .sidebar-close {
+    display: none;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    font-size: 18px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .sidebar-close:hover { background: rgba(255,255,255,0.3); }
+
   /* Responsive */
   @media (max-width: 900px) {
     .stat-grid { grid-template-columns: repeat(2, 1fr); }
-    .sidebar { transform: translateX(-100%); }
+    .sidebar {
+      transform: translateX(-100%);
+      position: fixed;
+      z-index: 100;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+    }
     .sidebar.buka { transform: translateX(0); }
+    .sidebar-close { display: flex; }
     .main { margin-left: 0; }
     .form-grid { grid-template-columns: 1fr; }
+    .hamburger { display: flex; }
+    .topbar { padding: 14px 16px; }
+    .dashboard-grid-bawah { grid-template-columns: 1fr !important; }
   }
 
   /* Cetak Surat */
@@ -697,8 +765,12 @@
 <div id="app">
   <div class="layout">
     
+    <!-- OVERLAY SIDEBAR (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="tutupSidebar()"></div>
+
     <!-- SIDEBAR -->
     <nav class="sidebar" id="sidebar">
+      <button class="sidebar-close" onclick="tutupSidebar()" aria-label="Tutup menu">✕</button>
       <div class="sidebar-header">
         <div class="sidebar-logo">
           <div class="icon">🏛️</div>
@@ -750,7 +822,12 @@
     <!-- MAIN CONTENT -->
     <div class="main">
       <div class="topbar">
-        <h2 id="judul-halaman">Dashboard</h2>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <button class="hamburger" id="btn-hamburger" onclick="toggleSidebar()" aria-label="Buka menu">
+            <span></span><span></span><span></span>
+          </button>
+          <h2 id="judul-halaman">Dashboard</h2>
+        </div>
         <div class="topbar-right">
           <div class="user-badge">
             <div class="avatar" id="avatar-user">D</div>
@@ -785,7 +862,7 @@
             </div>
           </div>
 
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+          <div class="dashboard-grid-bawah" style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
             <div class="kartu">
               <div class="kartu-header">
                 <h3>📄 Surat Terbaru</h3>
@@ -1323,6 +1400,7 @@ async function login() {
 }
 
 function logout() {
+  if (window.innerWidth <= 900) tutupSidebar();
   token = '';
   localStorage.removeItem('token_majegan');
   location.reload();
@@ -1340,6 +1418,29 @@ if (token) {
 }
 
 // ====== NAVIGASI ======
+// ===== SIDEBAR MOBILE =====
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const isOpen = sidebar.classList.contains('buka');
+  if (isOpen) {
+    tutupSidebar();
+  } else {
+    sidebar.classList.add('buka');
+    overlay.classList.add('aktif');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function tutupSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  sidebar.classList.remove('buka');
+  overlay.classList.remove('aktif');
+  document.body.style.overflow = '';
+}
+
+// Tutup sidebar otomatis saat pindah halaman di mobile
 function buka(hal) {
   document.querySelectorAll('.halaman').forEach(h => h.classList.remove('aktif'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('aktif'));
@@ -1365,6 +1466,9 @@ function buka(hal) {
   else if (hal === 'surat') muatSurat();
   else if (hal === 'pengumuman') muatPengumuman();
   else if (hal === 'kegiatan') muatKegiatan();
+
+  // Tutup sidebar otomatis di mobile setelah memilih menu
+  if (window.innerWidth <= 900) tutupSidebar();
 }
 
 // ====== API HELPER ======
