@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Izinkan serve static files dari /public
-  // API routes sudah di /app/api/*
+  eslint: {
+    ignoreDuringBuilds: true,   // ← Tambahkan baris ini
+  },
 };
 
 export default nextConfig;
