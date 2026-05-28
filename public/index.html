@@ -629,7 +629,117 @@
     margin: 0 auto 12px;
   }
 
-  @keyframes spin { to { transform: rotate(360deg); } }
+  /* ===== KK ACCORDION ===== */
+  .kk-kartu {
+    background: var(--putih);
+    border-radius: 12px;
+    box-shadow: var(--bayangan);
+    margin-bottom: 12px;
+    overflow: hidden;
+    border: 1.5px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .kk-kartu.buka { border-color: var(--hijau-terang, #4aba7a); }
+
+  .kk-header {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    cursor: pointer;
+    gap: 12px;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .kk-header:hover { background: var(--abu-muda); }
+
+  .kk-chevron {
+    font-size: 11px;
+    color: var(--abu);
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  .kk-kartu.buka .kk-chevron { transform: rotate(90deg); }
+
+  .kk-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #e8f5ee, #d0eedd);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .kk-meta { flex: 1; min-width: 0; }
+  .kk-meta-nama { font-weight: 700; font-size: 14px; color: var(--teks); }
+  .kk-meta-sub { font-size: 12px; color: var(--abu); margin-top: 2px; }
+  .kk-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  .kk-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 0 18px 14px;
+    animation: fadeDown 0.2s ease;
+  }
+  .kk-kartu.buka .kk-body { display: block; }
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .btn-toggle-kk {
+    font-size: 12px; font-weight: 600; padding: 5px 14px;
+    border-radius: 20px; border: 1.5px solid var(--border);
+    background: var(--putih); color: var(--abu);
+    cursor: pointer; font-family: inherit; transition: all 0.2s;
+  }
+  .btn-toggle-kk.aktif { background: var(--hijau); color: white; border-color: var(--hijau); }
+
+  .kk-info-bar {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    padding: 12px 0 14px;
+    font-size: 12px; color: var(--abu);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .kk-info-bar span { display: flex; align-items: center; gap: 4px; }
+
+  .anggota-tabel { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .anggota-tabel th {
+    background: var(--abu-muda); color: var(--teks-muda);
+    font-weight: 600; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.4px; padding: 8px 10px; text-align: left;
+  }
+  .anggota-tabel td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .anggota-tabel tr:last-child td { border-bottom: none; }
+  .anggota-tabel tr:hover td { background: var(--abu-muda); }
+
+  .hubungan-badge {
+    display: inline-block;
+    font-size: 11px; font-weight: 600;
+    padding: 2px 9px; border-radius: 20px;
+    background: #ede9fe; color: #5b21b6;
+  }
+  .hubungan-badge.kk-utama { background: #fef3c7; color: #92400e; }
+
+  .kk-tambah-warga {
+    margin-top: 12px;
+    padding: 8px 0 2px;
+    border-top: 1px dashed var(--border);
+  }
+  .btn-sm {
+    font-size: 12px; padding: 5px 12px;
+    border-radius: 6px; border: none;
+    cursor: pointer; font-family: inherit; font-weight: 600;
+    transition: opacity 0.2s;
+  }
+  .btn-sm:hover { opacity: 0.82; }
+  .btn-sm-hijau { background: var(--hijau); color: white; }
+  .btn-sm-abu { background: var(--abu-muda); color: var(--teks); border: 1px solid var(--border); }
+
+  .kk-kosong { text-align:center; padding: 20px; color: var(--abu); font-size: 13px; }
+
+  @media (max-width: 600px) {
+    .kk-actions .aksi-btn span { display: none; }
+    .anggota-tabel th:nth-child(4),
+    .anggota-tabel td:nth-child(4),
+    .anggota-tabel th:nth-child(5),
+    .anggota-tabel td:nth-child(5) { display: none; }
+  }
 
   /* Hamburger Button */
   .hamburger {
@@ -790,9 +900,6 @@
 
       <div class="nav-section">
         <div class="nav-label">Data Warga</div>
-        <div class="nav-item" onclick="buka('kk')">
-          <span class="ikon">🏠</span> Kartu Keluarga
-        </div>
         <div class="nav-item" onclick="buka('warga')">
           <span class="ikon">👥</span> Data Warga
         </div>
@@ -813,6 +920,9 @@
 
       <div class="nav-section" style="margin-top:auto">
         <div class="nav-label">Akun</div>
+        <div class="nav-item" onclick="window.open('/pengajuan.html','_blank')">
+          <span class="ikon">📋</span> Form Pengajuan Warga
+        </div>
         <div class="nav-item" onclick="logout()">
           <span class="ikon">🚪</span> Keluar
         </div>
@@ -881,59 +991,44 @@
         </div>
 
         <!-- ===== KARTU KELUARGA ===== -->
-        <div id="hal-kk" class="halaman">
-          <div class="kartu">
-            <div class="kartu-header">
-              <h3>🏠 Data Kartu Keluarga</h3>
-              <button class="btn btn-hijau" onclick="modalKK()">+ Tambah KK</button>
-            </div>
-            <div class="filter-bar">
-              <input type="text" id="cari-kk" placeholder="🔍 Cari nama KK atau No.KK..." oninput="muatKK()">
-            </div>
-            <div class="tabel-container">
-              <table>
-                <thead><tr>
-                  <th>No. KK</th><th>Nama Kepala</th><th>Alamat</th><th>RT/RW</th>
-                  <th>Anggota</th><th>Telepon</th><th>Aksi</th>
-                </tr></thead>
-                <tbody id="tbody-kk">
-                  <tr><td colspan="7" class="loading"><div class="spinner"></div>Memuat data...</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        <!-- ===== DATA WARGA (merged with KK) ===== -->
+        <div id="hal-kk" class="halaman" style="display:none"></div>
 
-        <!-- ===== WARGA ===== -->
         <div id="hal-warga" class="halaman">
-          <div class="kartu">
-            <div class="kartu-header">
+          <!-- HEADER BAR -->
+          <div class="kartu" style="margin-bottom:16px">
+            <div class="kartu-header" style="flex-wrap:wrap;gap:10px">
               <h3>👥 Data Warga</h3>
-              <button class="btn btn-hijau" onclick="modalWarga()">+ Tambah Warga</button>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <input type="text" id="cari-warga" placeholder="🔍 Cari nama, NIK, atau no. KK..." oninput="muatWarga()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;min-width:220px;outline:none">
+                <select id="filter-status-warga" onchange="muatWarga()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+                  <option value="">Semua Status</option>
+                  <option value="tetap">Tetap</option>
+                  <option value="sementara">Sementara</option>
+                  <option value="pindah">Pindah</option>
+                  <option value="meninggal">Meninggal</option>
+                </select>
+                <select id="filter-hubungan-warga" onchange="muatWarga()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+                  <option value="">Semua Hubungan</option>
+                  <option>Kepala Keluarga</option>
+                  <option>Istri</option><option>Anak</option>
+                  <option>Menantu</option><option>Cucu</option>
+                  <option>Orang Tua</option><option>Mertua</option>
+                  <option>Famili Lain</option>
+                </select>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-abu" onclick="modalKK()" title="Tambah Kartu Keluarga">🏠 + KK</button>
+                  <button class="btn btn-hijau" onclick="modalWarga()">👤 + Warga</button>
+                </div>
+              </div>
             </div>
-            <div class="filter-bar">
-              <input type="text" id="cari-warga" placeholder="🔍 Cari nama atau NIK..." oninput="muatWarga()">
-              <select id="filter-status-warga" onchange="muatWarga()">
-                <option value="">Semua Status</option>
-                <option value="tetap">Tetap</option>
-                <option value="sementara">Sementara</option>
-                <option value="pindah">Pindah</option>
-                <option value="meninggal">Meninggal</option>
-              </select>
-            </div>
-            <div class="tabel-container">
-              <table>
-                <thead><tr>
-                  <th>NIK</th><th>Nama Lengkap</th><th>L/P</th><th>Tgl Lahir</th>
-                  <th>Pekerjaan</th><th>Hubungan</th><th>Status</th><th>Aksi</th>
-                </tr></thead>
-                <tbody id="tbody-warga">
-                  <tr><td colspan="8" class="loading"><div class="spinner"></div>Memuat data...</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="pagination" id="pag-warga"></div>
           </div>
+
+          <!-- DAFTAR KK ACCORDION -->
+          <div id="list-kk-warga">
+            <div style="text-align:center;padding:40px;color:var(--abu)"><div class="spinner" style="margin:0 auto 12px"></div>Memuat data...</div>
+          </div>
+          <div class="pagination" id="pag-warga"></div>
         </div>
 
         <!-- ===== SURAT ===== -->
@@ -1021,68 +1116,93 @@
 <!-- ============ MODALS ============ -->
 
 <!-- Modal KK -->
-<div class="modal-overlay" id="modal-kk">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 id="modal-kk-judul">Tambah Kartu Keluarga</h3>
-      <button class="btn-tutup" onclick="tutupModal('modal-kk')">✕</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="kk-id">
-      <div class="form-grid">
-        <div class="form-group form-full">
-          <label>No. Kartu Keluarga *</label>
-          <input type="text" id="kk-no_kk" placeholder="16 digit No. KK" maxlength="16">
-        </div>
-        <div class="form-group form-full">
-          <label>Nama Kepala Keluarga *</label>
-          <input type="text" id="kk-nama_kepala" placeholder="Nama lengkap kepala keluarga">
-        </div>
-        <div class="form-group form-full">
-          <label>Alamat *</label>
-          <input type="text" id="kk-alamat" placeholder="Jl/Gang/Nomor rumah">
-        </div>
-        <div class="form-group">
-          <label>RT</label>
-          <input type="text" id="kk-rt" placeholder="001">
-        </div>
-        <div class="form-group">
-          <label>RW</label>
-          <input type="text" id="kk-rw" placeholder="001">
-        </div>
-        <div class="form-group form-full">
-          <label>Telepon</label>
-          <input type="text" id="kk-telepon" placeholder="08xxxx">
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-abu" onclick="tutupModal('modal-kk')">Batal</button>
-      <button class="btn btn-hijau" onclick="simpanKK()">💾 Simpan</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Warga -->
 <div class="modal-overlay" id="modal-warga">
-  <div class="modal" style="max-width:700px">
+  <div class="modal" style="max-width:760px">
     <div class="modal-header">
       <h3 id="modal-warga-judul">Tambah Data Warga</h3>
       <button class="btn-tutup" onclick="tutupModal('modal-warga')">✕</button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="warga-id">
+      <input type="hidden" id="kk-id">
+
+      <!-- ── SEKSI DATA KK ── -->
+      <div id="seksi-kk">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:700;color:var(--teks);display:flex;align-items:center;gap:6px">
+            🏠 Data Kartu Keluarga
+          </div>
+          <div id="toggle-kk-bar" style="display:flex;gap:6px">
+            <button type="button" id="btn-kk-pilih" class="btn-toggle-kk aktif" onclick="modeKK('pilih')">Pilih KK</button>
+            <button type="button" id="btn-kk-baru" class="btn-toggle-kk" onclick="modeKK('baru')">+ KK Baru</button>
+          </div>
+        </div>
+
+        <!-- Pilih KK yang ada -->
+        <div id="kk-mode-pilih">
+          <div class="form-group">
+            <label>Pilih Kartu Keluarga <span style="color:var(--merah)">*</span></label>
+            <select id="warga-no_kk" onchange="isiInfoKK(this.value)">
+              <option value="">— Pilih No. KK —</option>
+            </select>
+          </div>
+          <div id="kk-info-preview" style="display:none;background:var(--abu-muda);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--teks);margin-top:4px">
+          </div>
+        </div>
+
+        <!-- Input KK baru -->
+        <div id="kk-mode-baru" style="display:none">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>No. Kartu Keluarga <span style="color:var(--merah)">*</span></label>
+              <input type="text" id="kk-no_kk" placeholder="16 digit No. KK" maxlength="16" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')">
+            </div>
+            <div class="form-group">
+              <label>Nama Kepala Keluarga <span style="color:var(--merah)">*</span></label>
+              <input type="text" id="kk-nama_kepala" placeholder="Nama lengkap">
+            </div>
+            <div class="form-group form-full">
+              <label>Alamat <span style="color:var(--merah)">*</span></label>
+              <input type="text" id="kk-alamat" placeholder="Jl/Gang/Nomor rumah">
+            </div>
+            <div class="form-group">
+              <label>RT</label>
+              <input type="text" id="kk-rt" placeholder="001" maxlength="4">
+            </div>
+            <div class="form-group">
+              <label>RW</label>
+              <input type="text" id="kk-rw" placeholder="001" maxlength="4">
+            </div>
+            <div class="form-group">
+              <label>Telepon KK</label>
+              <input type="text" id="kk-telepon" placeholder="08xxxx">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top:2px dashed var(--border);margin:18px 0"></div>
+
+      <!-- ── SEKSI DATA WARGA ── -->
+      <div style="font-size:13px;font-weight:700;color:var(--teks);margin-bottom:12px;display:flex;align-items:center;gap:6px">
+        👤 Data Anggota
+      </div>
       <div class="form-grid">
         <div class="form-group">
-          <label>NIK (16 digit) *</label>
-          <input type="text" id="warga-nik" placeholder="NIK warga" maxlength="16">
+          <label>NIK (16 digit) <span style="color:var(--merah)">*</span></label>
+          <input type="text" id="warga-nik" placeholder="NIK warga" maxlength="16" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')">
         </div>
         <div class="form-group">
-          <label>No. Kartu Keluarga *</label>
-          <input type="text" id="warga-no_kk" placeholder="No. KK">
+          <label>Status Hubungan <span style="color:var(--merah)">*</span></label>
+          <select id="warga-status_hubungan">
+            <option value="">Pilih</option>
+            <option>Kepala Keluarga</option><option>Istri</option><option>Anak</option>
+            <option>Menantu</option><option>Cucu</option>
+            <option>Orang Tua</option><option>Mertua</option><option>Famili Lain</option>
+          </select>
         </div>
         <div class="form-group form-full">
-          <label>Nama Lengkap *</label>
+          <label>Nama Lengkap <span style="color:var(--merah)">*</span></label>
           <input type="text" id="warga-nama_lengkap" placeholder="Nama sesuai KTP">
         </div>
         <div class="form-group">
@@ -1097,8 +1217,7 @@
           <label>Jenis Kelamin</label>
           <select id="warga-jenis_kelamin">
             <option value="">Pilih</option>
-            <option>Laki-laki</option>
-            <option>Perempuan</option>
+            <option>Laki-laki</option><option>Perempuan</option>
           </select>
         </div>
         <div class="form-group">
@@ -1128,15 +1247,6 @@
             <option value="">Pilih</option>
             <option>Belum Kawin</option><option>Kawin</option>
             <option>Cerai Hidup</option><option>Cerai Mati</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Status Hubungan</label>
-          <select id="warga-status_hubungan">
-            <option value="">Pilih</option>
-            <option>Kepala Keluarga</option><option>Istri</option><option>Anak</option>
-            <option>Menantu</option><option>Cucu</option><option>Orang Tua</option>
-            <option>Mertua</option><option>Famili Lain</option>
           </select>
         </div>
         <div class="form-group">
@@ -1173,7 +1283,51 @@
   </div>
 </div>
 
+<!-- Modal Edit KK (hanya edit, tanpa warga) -->
+<div class="modal-overlay" id="modal-kk">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-kk-judul">Edit Kartu Keluarga</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-kk')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="kk-edit-id">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label>No. Kartu Keluarga</label>
+          <input type="text" id="kk-edit-no_kk" disabled style="background:var(--abu-muda);color:var(--abu)">
+        </div>
+        <div class="form-group form-full">
+          <label>Nama Kepala Keluarga *</label>
+          <input type="text" id="kk-edit-nama_kepala" placeholder="Nama lengkap">
+        </div>
+        <div class="form-group form-full">
+          <label>Alamat *</label>
+          <input type="text" id="kk-edit-alamat" placeholder="Jl/Gang/Nomor rumah">
+        </div>
+        <div class="form-group">
+          <label>RT</label>
+          <input type="text" id="kk-edit-rt" placeholder="001">
+        </div>
+        <div class="form-group">
+          <label>RW</label>
+          <input type="text" id="kk-edit-rw" placeholder="001">
+        </div>
+        <div class="form-group form-full">
+          <label>Telepon</label>
+          <input type="text" id="kk-edit-telepon" placeholder="08xxxx">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-kk')">Batal</button>
+      <button class="btn btn-hijau" onclick="simpanKK()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal Surat -->
+
 <div class="modal-overlay" id="modal-surat">
   <div class="modal">
     <div class="modal-header">
@@ -1453,7 +1607,7 @@ function buka(hal) {
   document.getElementById('judul-halaman').textContent = judulMap[hal] || hal;
   
   const ikonMap = {
-    dashboard: '📊', kk: '🏠', warga: '👥',
+    dashboard: '📊', warga: '👥',
     surat: '📄', pengumuman: '📢', kegiatan: '📅'
   };
   document.querySelectorAll('.nav-item').forEach(n => {
@@ -1461,7 +1615,7 @@ function buka(hal) {
   });
   
   if (hal === 'dashboard') muatDashboard();
-  else if (hal === 'kk') muatKK();
+  else if (hal === 'kk') muatWarga();
   else if (hal === 'warga') muatWarga();
   else if (hal === 'surat') muatSurat();
   else if (hal === 'pengumuman') muatPengumuman();
@@ -1538,138 +1692,220 @@ async function muatDashboard() {
 }
 
 // ====== KK ======
-async function muatKK() {
-  const cari = document.getElementById('cari-kk')?.value || '';
-  const data = await apiFetch(`/api/kk?search=${encodeURIComponent(cari)}`);
-  const tbody = document.getElementById('tbody-kk');
-  
-  if (!data || !data.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--abu)">Belum ada data KK</td></tr>';
-    return;
-  }
-  
-  tbody.innerHTML = data.map(kk => `
-    <tr>
-      <td><code style="font-size:12px">${kk.no_kk}</code></td>
-      <td><strong>${kk.nama_kepala}</strong></td>
-      <td style="max-width:200px">${kk.alamat}</td>
-      <td>${kk.rt ? `RT ${kk.rt}/RW ${kk.rw}` : '-'}</td>
-      <td><span class="badge badge-biru">${kk.jumlah_anggota} orang</span></td>
-      <td>${kk.telepon || '-'}</td>
-      <td>
-        <button class="aksi-btn aksi-edit" onclick="modalKK(${JSON.stringify(kk).replace(/"/g,'&quot;')})">✏️ Edit</button>
-        <button class="aksi-btn aksi-hapus" onclick="hapusKK('${kk.id}')">🗑️</button>
-      </td>
-    </tr>
-  `).join('');
-}
+async function muatKK() { muatWarga(); }
 
-function modalKK(data = null) {
-  document.getElementById('modal-kk-judul').textContent = data ? 'Edit Kartu Keluarga' : 'Tambah Kartu Keluarga';
-  document.getElementById('kk-id').value = data?.id || '';
-  document.getElementById('kk-no_kk').value = data?.no_kk || '';
-  document.getElementById('kk-no_kk').disabled = !!data;
-  document.getElementById('kk-nama_kepala').value = data?.nama_kepala || '';
-  document.getElementById('kk-alamat').value = data?.alamat || '';
-  document.getElementById('kk-rt').value = data?.rt || '';
-  document.getElementById('kk-rw').value = data?.rw || '';
-  document.getElementById('kk-telepon').value = data?.telepon || '';
-  bukModal('modal-kk');
-}
-
-async function simpanKK() {
-  const id = document.getElementById('kk-id').value;
-  const body = {
-    no_kk: document.getElementById('kk-no_kk').value,
-    nama_kepala: document.getElementById('kk-nama_kepala').value,
-    alamat: document.getElementById('kk-alamat').value,
-    rt: document.getElementById('kk-rt').value,
-    rw: document.getElementById('kk-rw').value,
-    telepon: document.getElementById('kk-telepon').value,
-  };
-  
-  const url = id ? `/api/kk/${id}` : '/api/kk';
-  const method = id ? 'PUT' : 'POST';
-  const res = await apiFetch(url, { method, body: JSON.stringify(body) });
-  
-  if (res && !res.error) {
-    tutupModal('modal-kk');
-    muatKK();
-    tampilNotif('Data KK berhasil disimpan!', 'hijau');
-  } else {
-    alert(res?.error || 'Gagal menyimpan');
-  }
-}
-
-async function hapusKK(id) {
-  if (!confirm('Hapus data KK ini?')) return;
-  await apiFetch(`/api/kk/${id}`, { method: 'DELETE' });
-  muatKK();
-  tampilNotif('Data KK berhasil dihapus');
-}
-
-// ====== WARGA ======
 async function muatWarga() {
-  const cari = document.getElementById('cari-warga')?.value || '';
-  const status = document.getElementById('filter-status-warga')?.value || '';
-  const data = await apiFetch(`/api/warga?search=${encodeURIComponent(cari)}&status=${status}&page=${halamanWarga}`);
-  const tbody = document.getElementById('tbody-warga');
-  
-  if (!data?.data?.length) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--abu)">Belum ada data warga</td></tr>';
+  const cari = (document.getElementById('cari-warga')?.value || '').toLowerCase();
+  const filterStatus = document.getElementById('filter-status-warga')?.value || '';
+  const filterHubungan = document.getElementById('filter-hubungan-warga')?.value || '';
+  const container = document.getElementById('list-kk-warga');
+  container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--abu)"><div class="spinner" style="margin:0 auto 12px;width:28px;height:28px;border-width:3px;border-color:var(--border);border-top-color:var(--hijau);border-radius:50%;animation:spin 0.7s linear infinite"></div>Memuat data...</div>';
+
+  const [kkList, wargaData] = await Promise.all([
+    apiFetch('/api/kk'),
+    apiFetch('/api/warga?limit=999&search=' + encodeURIComponent(cari) + '&status=' + filterStatus)
+  ]);
+
+  if (!kkList?.length && !wargaData?.data?.length) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--abu)">📭 Belum ada data. Tambahkan KK terlebih dahulu.</div>';
     return;
   }
-  
-  tbody.innerHTML = data.data.map(w => `
-    <tr>
-      <td><code style="font-size:11px">${w.nik}</code></td>
-      <td><strong>${w.nama_lengkap}</strong></td>
-      <td>${w.jenis_kelamin === 'Laki-laki' ? '👨' : '👩'} ${w.jenis_kelamin || '-'}</td>
-      <td>${w.tanggal_lahir ? new Date(w.tanggal_lahir).toLocaleDateString('id-ID') : '-'}</td>
-      <td>${w.pekerjaan || '-'}</td>
-      <td>${w.status_hubungan || '-'}</td>
-      <td><span class="badge ${badgeStatus(w.status_tinggal)}">${w.status_tinggal}</span></td>
-      <td>
-        <button class="aksi-btn aksi-edit" onclick="modalWarga(${JSON.stringify(w).replace(/"/g,'&quot;')})">✏️</button>
-        <button class="aksi-btn aksi-hapus" onclick="hapusWarga('${w.id}')">🗑️</button>
-      </td>
-    </tr>
-  `).join('');
-  
-  // Pagination
-  const total = data.total;
-  const pages = Math.ceil(total / 20);
-  let pagHtml = '';
-  if (pages > 1) {
-    for (let i = 1; i <= pages; i++) {
-      pagHtml += `<button class="${i === halamanWarga ? 'aktif' : ''}" onclick="halamanWarga=${i};muatWarga()">${i}</button>`;
+
+  // Kelompokkan warga per no_kk
+  const wargaPerKK = {};
+  (wargaData?.data || []).forEach(w => {
+    if (!filterHubungan || w.status_hubungan === filterHubungan) {
+      if (!wargaPerKK[w.no_kk]) wargaPerKK[w.no_kk] = [];
+      wargaPerKK[w.no_kk].push(w);
     }
+  });
+
+  // Filter KK: tampilkan semua KK atau yang punya anggota cocok
+  let kkTampil = (kkList || []).filter(kk => {
+    const cocokKK = !cari || kk.no_kk.includes(cari) || kk.nama_kepala.toLowerCase().includes(cari);
+    const punyaAnggota = (wargaPerKK[kk.no_kk]?.length > 0);
+    return !cari || cocokKK || punyaAnggota;
+  });
+
+  if (!kkTampil.length) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--abu)">🔍 Tidak ada data yang cocok.</div>';
+    return;
   }
-  document.getElementById('pag-warga').innerHTML = pagHtml;
+
+  const hubunganUrutan = ['Kepala Keluarga','Istri','Anak','Menantu','Cucu','Orang Tua','Mertua','Famili Lain'];
+
+  container.innerHTML = kkTampil.map((kk, idx) => {
+    const anggota = (wargaPerKK[kk.no_kk] || []).sort((a, b) =>
+      hubunganUrutan.indexOf(a.status_hubungan) - hubunganUrutan.indexOf(b.status_hubungan)
+    );
+    const jmlAnggota = kk.jumlah_anggota || anggota.length;
+    const accId = 'kk-acc-' + idx;
+
+    const barisAnggota = anggota.length ? anggota.map(w => {
+      const wJson = JSON.stringify(w).replace(/\\/g,'\\\\').replace(/"/g,'&quot;');
+      return `<tr>
+        <td>
+          <div style="font-weight:600;font-size:13px">${w.nama_lengkap}</div>
+          <div style="font-size:11px;color:var(--abu);font-family:monospace">${w.nik}</div>
+        </td>
+        <td><span class="hubungan-badge ${w.status_hubungan==='Kepala Keluarga'?'kk-utama':''}">${w.status_hubungan || '—'}</span></td>
+        <td>${w.jenis_kelamin === 'Laki-laki' ? '👨' : w.jenis_kelamin === 'Perempuan' ? '👩' : '—'} ${w.jenis_kelamin||''}</td>
+        <td>${w.tanggal_lahir ? new Date(w.tanggal_lahir).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}) : '—'}</td>
+        <td>${w.pekerjaan || '—'}</td>
+        <td><span class="badge ${badgeStatus(w.status_tinggal)}">${w.status_tinggal}</span></td>
+        <td style="white-space:nowrap">
+          <button class="aksi-btn aksi-edit" onclick='event.stopPropagation();modalWarga(${wJson})' title="Edit">✏️</button>
+          <button class="aksi-btn aksi-hapus" onclick="event.stopPropagation();hapusWarga('${w.id}')" title="Hapus">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="7" class="kk-kosong">Belum ada anggota terdaftar</td></tr>';
+
+    const kkJson = JSON.stringify(kk).replace(/"/g,'&quot;');
+    return `<div class="kk-kartu" id="${accId}">
+      <div class="kk-header" onclick="toggleKK('${accId}')">
+        <span class="kk-chevron">▶</span>
+        <div class="kk-icon">🏠</div>
+        <div class="kk-meta">
+          <div class="kk-meta-nama">${kk.nama_kepala}</div>
+          <div class="kk-meta-sub">No. KK: <code style="font-size:11px">${kk.no_kk}</code> &nbsp;·&nbsp; ${jmlAnggota} anggota${kk.rt ? ' &nbsp;·&nbsp; RT ' + kk.rt + '/RW ' + kk.rw : ''}</div>
+        </div>
+        <div class="kk-actions" onclick="event.stopPropagation()">
+          <button class="aksi-btn aksi-edit" onclick="modalKK(${kkJson})" title="Edit KK">✏️ Edit KK</button>
+          <button class="aksi-btn aksi-hapus" onclick="hapusKK('${kk.id}')" title="Hapus KK">🗑️</button>
+        </div>
+      </div>
+      <div class="kk-body">
+        <div class="kk-info-bar">
+          <span>📍 ${kk.alamat || '—'}</span>
+          ${kk.rt ? '<span>🏘️ RT ' + kk.rt + '/RW ' + kk.rw + '</span>' : ''}
+          ${kk.telepon ? '<span>📱 ' + kk.telepon + '</span>' : ''}
+        </div>
+        <div style="overflow-x:auto">
+          <table class="anggota-tabel">
+            <thead><tr>
+              <th>Nama / NIK</th><th>Hubungan</th><th>L/P</th>
+              <th>Tgl Lahir</th><th>Pekerjaan</th><th>Status</th><th>Aksi</th>
+            </tr></thead>
+            <tbody>${barisAnggota}</tbody>
+          </table>
+        </div>
+        <div class="kk-tambah-warga">
+          <button class="btn-sm btn-sm-hijau" onclick="modalWargaKK('${kk.no_kk}')">👤 + Tambah Anggota</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
-function modalWarga(data = null) {
-  document.getElementById('modal-warga-judul').textContent = data ? 'Edit Data Warga' : 'Tambah Data Warga';
-  const fields = ['id','nik','no_kk','nama_lengkap','tempat_lahir','tanggal_lahir','jenis_kelamin','agama','pendidikan','pekerjaan','status_perkawinan','status_hubungan','golongan_darah','telepon','email','status_tinggal'];
-  fields.forEach(f => {
+function toggleKK(id) {
+  document.getElementById(id).classList.toggle('buka');
+}
+
+// ====== MODE KK TOGGLE ======
+let _kkMode = 'pilih';
+
+function modeKK(mode) {
+  _kkMode = mode;
+  document.getElementById('kk-mode-pilih').style.display = mode === 'pilih' ? '' : 'none';
+  document.getElementById('kk-mode-baru').style.display  = mode === 'baru'  ? '' : 'none';
+  document.getElementById('btn-kk-pilih').classList.toggle('aktif', mode === 'pilih');
+  document.getElementById('btn-kk-baru').classList.toggle('aktif',  mode === 'baru');
+}
+
+function isiInfoKK(no_kk) {
+  const preview = document.getElementById('kk-info-preview');
+  if (!no_kk) { preview.style.display = 'none'; return; }
+  const sel = document.getElementById('warga-no_kk');
+  const opt = sel.options[sel.selectedIndex];
+  preview.style.display = '';
+  preview.innerHTML = '🏠 ' + opt.textContent;
+}
+
+async function modalWarga(data = null) {
+  const editMode = !!data;
+  document.getElementById('modal-warga-judul').textContent = editMode ? 'Edit Data Warga' : 'Tambah Data Warga';
+  document.getElementById('warga-id').value = data?.id || '';
+
+  const seksiKK = document.getElementById('seksi-kk');
+  seksiKK.style.display = editMode ? 'none' : '';
+
+  if (!editMode) {
+    const selectKK = document.getElementById('warga-no_kk');
+    try {
+      const kkList = await apiFetch('/api/kk');
+      selectKK.innerHTML = '<option value="">— Pilih No. KK —</option>';
+      (kkList || []).forEach(kk => {
+        const opt = document.createElement('option');
+        opt.value = kk.no_kk;
+        opt.textContent = kk.no_kk + ' — ' + kk.nama_kepala;
+        selectKK.appendChild(opt);
+      });
+    } catch {
+      selectKK.innerHTML = '<option value="">— Gagal memuat KK —</option>';
+    }
+    modeKK('pilih');
+    document.getElementById('kk-info-preview').style.display = 'none';
+    ['kk-no_kk','kk-nama_kepala','kk-alamat','kk-rt','kk-rw','kk-telepon'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = '';
+    });
+  }
+
+  const wargaFields = ['nik','nama_lengkap','tempat_lahir','tanggal_lahir','jenis_kelamin','agama','pendidikan','pekerjaan','status_perkawinan','status_hubungan','golongan_darah','telepon','email','status_tinggal'];
+  wargaFields.forEach(f => {
     const el = document.getElementById('warga-' + f);
     if (el) el.value = data?.[f] || (f === 'status_tinggal' ? 'tetap' : '');
-    if (f === 'nik' && el) el.disabled = !!data;
   });
+  document.getElementById('warga-nik').disabled = editMode;
   bukModal('modal-warga');
+}
+
+async function modalWargaKK(no_kk) {
+  await modalWarga(null);
+  const sel = document.getElementById('warga-no_kk');
+  sel.value = no_kk;
+  isiInfoKK(no_kk);
+  modeKK('pilih');
 }
 
 async function simpanWarga() {
   const id = document.getElementById('warga-id').value;
-  const fields = ['nik','no_kk','nama_lengkap','tempat_lahir','tanggal_lahir','jenis_kelamin','agama','pendidikan','pekerjaan','status_perkawinan','status_hubungan','golongan_darah','telepon','email','status_tinggal'];
+  const editMode = !!id;
+
+  const wargaFields = ['nik','nama_lengkap','tempat_lahir','tanggal_lahir','jenis_kelamin','agama','pendidikan','pekerjaan','status_perkawinan','status_hubungan','golongan_darah','telepon','email','status_tinggal'];
   const body = {};
-  fields.forEach(f => body[f] = document.getElementById('warga-' + f)?.value || null);
-  
-  const res = await apiFetch(id ? `/api/warga/${id}` : '/api/warga', {
-    method: id ? 'PUT' : 'POST',
+  wargaFields.forEach(f => body[f] = document.getElementById('warga-' + f)?.value || null);
+
+  if (!body.nik || body.nik.length !== 16) { alert('NIK harus 16 digit.'); return; }
+  if (!body.nama_lengkap) { alert('Nama lengkap wajib diisi.'); return; }
+  if (!body.status_hubungan) { alert('Status hubungan dalam keluarga wajib diisi.'); return; }
+
+  if (!editMode) {
+    if (_kkMode === 'baru') {
+      const noKK = document.getElementById('kk-no_kk').value.trim();
+      const namaKepala = document.getElementById('kk-nama_kepala').value.trim();
+      const alamat = document.getElementById('kk-alamat').value.trim();
+      if (!noKK || noKK.length !== 16) { alert('No. KK harus 16 digit.'); return; }
+      if (!namaKepala) { alert('Nama kepala keluarga wajib diisi.'); return; }
+      if (!alamat) { alert('Alamat wajib diisi.'); return; }
+      const kkBody = {
+        no_kk: noKK, nama_kepala: namaKepala, alamat,
+        rt: document.getElementById('kk-rt').value,
+        rw: document.getElementById('kk-rw').value,
+        telepon: document.getElementById('kk-telepon').value,
+      };
+      const kkRes = await apiFetch('/api/kk', { method: 'POST', body: JSON.stringify(kkBody) });
+      if (!kkRes || kkRes.error) { alert(kkRes?.error || 'Gagal menyimpan KK'); return; }
+      body.no_kk = noKK;
+    } else {
+      body.no_kk = document.getElementById('warga-no_kk').value;
+      if (!body.no_kk) { alert('Silakan pilih atau buat Kartu Keluarga terlebih dahulu.'); return; }
+    }
+  }
+
+  const res = await apiFetch(editMode ? '/api/warga/' + id : '/api/warga', {
+    method: editMode ? 'PUT' : 'POST',
     body: JSON.stringify(body)
   });
-  
   if (res && !res.error) {
     tutupModal('modal-warga');
     muatWarga();
@@ -1679,10 +1915,49 @@ async function simpanWarga() {
   }
 }
 
+function modalKK(data) {
+  document.getElementById('kk-edit-id').value = data?.id || '';
+  document.getElementById('kk-edit-no_kk').value = data?.no_kk || '';
+  document.getElementById('kk-edit-nama_kepala').value = data?.nama_kepala || '';
+  document.getElementById('kk-edit-alamat').value = data?.alamat || '';
+  document.getElementById('kk-edit-rt').value = data?.rt || '';
+  document.getElementById('kk-edit-rw').value = data?.rw || '';
+  document.getElementById('kk-edit-telepon').value = data?.telepon || '';
+  bukModal('modal-kk');
+}
+
+async function simpanKK() {
+  const id = document.getElementById('kk-edit-id').value;
+  const body = {
+    nama_kepala: document.getElementById('kk-edit-nama_kepala').value,
+    alamat: document.getElementById('kk-edit-alamat').value,
+    rt: document.getElementById('kk-edit-rt').value,
+    rw: document.getElementById('kk-edit-rw').value,
+    telepon: document.getElementById('kk-edit-telepon').value,
+  };
+  if (!body.nama_kepala) { alert('Nama kepala keluarga wajib diisi.'); return; }
+  const res = await apiFetch('/api/kk/' + id, { method: 'PUT', body: JSON.stringify(body) });
+  if (res && !res.error) {
+    tutupModal('modal-kk');
+    muatWarga();
+    tampilNotif('Data KK berhasil diperbarui!', 'hijau');
+  } else {
+    alert(res?.error || 'Gagal menyimpan');
+  }
+}
+
+async function hapusKK(id) {
+  if (!confirm('Hapus KK ini? Semua anggota yang terhubung juga akan terpengaruh.')) return;
+  const res = await apiFetch('/api/kk/' + id, { method: 'DELETE' });
+  if (res && !res.error) { muatWarga(); tampilNotif('Data KK berhasil dihapus'); }
+  else alert(res?.error || 'Gagal menghapus.');
+}
+
 async function hapusWarga(id) {
   if (!confirm('Hapus data warga ini?')) return;
-  await apiFetch(`/api/warga/${id}`, { method: 'DELETE' });
+  await apiFetch('/api/warga/' + id, { method: 'DELETE' });
   muatWarga();
+  tampilNotif('Data warga berhasil dihapus');
 }
 
 // ====== SURAT ======
