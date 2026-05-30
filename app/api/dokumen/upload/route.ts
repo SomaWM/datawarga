@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import pool from '@/lib/db';
-import { supabase, BUCKET } from '@/lib/storage';
+import { getSupabase, BUCKET } from '@/lib/storage';
 import { verifyToken, unauthorized } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const nik = formData.get('nik') as string;
-    const tipe = formData.get('tipe') as string; // 'ktp' | 'kk'
+    const tipe = formData.get('tipe') as string;
     const file = formData.get('file') as File;
 
     if (!nik || !tipe || !file)
@@ -19,36 +19,28 @@ export async function POST(req: NextRequest) {
     if (!['ktp', 'kk'].includes(tipe))
       return Response.json({ error: 'Tipe harus ktp atau kk' }, { status: 400 });
 
-    // Cek NIK ada di database
     const cekWarga = await pool.query('SELECT id, nama_lengkap FROM warga WHERE nik = $1', [nik]);
     if (cekWarga.rows.length === 0)
       return Response.json({ error: 'NIK tidak ditemukan' }, { status: 404 });
 
-    // Validasi file
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
     if (!allowedTypes.includes(file.type))
       return Response.json({ error: 'Format file harus JPG, PNG, WEBP, atau PDF' }, { status: 400 });
 
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize)
+    if (file.size > 5 * 1024 * 1024)
       return Response.json({ error: 'Ukuran file maksimal 5MB' }, { status: 400 });
 
-    // Upload ke Supabase Storage
     const ext = file.name.split('.').pop();
     const path = `${nik}/foto_${tipe}.${ext}`;
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const buffer = Buffer.from(await file.arrayBuffer());
 
+    const supabase = getSupabase();
     const { error: uploadError } = await supabase.storage
       .from(BUCKET)
-      .upload(path, buffer, {
-        contentType: file.type,
-        upsert: true, // overwrite jika sudah ada
-      });
+      .upload(path, buffer, { contentType: file.type, upsert: true });
 
     if (uploadError) throw uploadError;
 
-    // Simpan path ke database
     const kolom = tipe === 'ktp' ? 'foto_ktp' : 'foto_kk';
     await pool.query(`UPDATE warga SET ${kolom} = $1, updated_at = NOW() WHERE nik = $2`, [path, nik]);
 

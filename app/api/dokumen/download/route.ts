@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { supabase, BUCKET } from '@/lib/storage';
+import { getSupabase, BUCKET } from '@/lib/storage';
 import { verifyToken, unauthorized } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     if (!path)
       return Response.json({ error: 'Path file wajib diisi' }, { status: 400 });
 
-    // Generate signed URL berlaku 60 menit
+    const supabase = getSupabase();
     const { data, error } = await supabase.storage
       .from(BUCKET)
       .createSignedUrl(path, 3600);

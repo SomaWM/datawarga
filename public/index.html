@@ -1228,6 +1228,39 @@
   </div><!-- /layout -->
 </div><!-- /app -->
 
+<!-- Modal Preview Dokumen -->
+<div class="modal-overlay" id="modal-preview-dok" onclick="tutupModal('modal-preview-dok')" style="background:rgba(0,0,0,0.88)">
+  <div style="position:relative;max-width:92vw;max-height:92vh" onclick="event.stopPropagation()">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="color:white;font-size:14px;font-weight:600" id="preview-dok-judul"></div>
+      <div style="display:flex;gap:8px">
+        <button id="preview-dok-print" onclick="printDokDariPreview()"
+          style="background:white;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px">
+          🖨️ Print
+        </button>
+        <button id="preview-dok-download" onclick="downloadDokDariPreview()"
+          style="background:var(--hijau);color:white;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px">
+          ⬇️ Download
+        </button>
+        <button onclick="tutupModal('modal-preview-dok')"
+          style="background:rgba(255,255,255,0.15);border:none;color:white;font-size:20px;width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">
+          ✕
+        </button>
+      </div>
+    </div>
+    <!-- Gambar -->
+    <img id="preview-dok-img"
+      style="max-width:90vw;max-height:80vh;border-radius:10px;display:block;box-shadow:0 8px 40px rgba(0,0,0,0.5)">
+    <!-- PDF -->
+    <div id="preview-dok-pdf"
+      style="display:none;background:white;border-radius:10px;padding:40px;text-align:center;min-width:300px">
+      <div style="font-size:64px">📄</div>
+      <div style="font-size:15px;font-weight:600;margin:12px 0 6px">File PDF</div>
+      <div style="font-size:13px;color:#666">Klik Download atau Print untuk membuka</div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal lihat foto fullscreen -->
 <div class="modal-overlay" id="modal-foto" onclick="tutupModal('modal-foto')" style="background:rgba(0,0,0,0.85)">
   <div style="max-width:90vw;max-height:90vh;position:relative" onclick="event.stopPropagation()">
@@ -2486,7 +2519,9 @@ async function muatDokumen() {
     const ktpBadge = w.foto_ktp
       ? `<div style="display:flex;flex-direction:column;align-items:center;gap:6px">
            <span class="badge badge-hijau">✅ Ada</span>
-           <div style="display:flex;gap:4px">
+           <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center">
+             <button class="btn-dok-aksi" onclick="previewDokumenNIK('${w.nik}','ktp','${w.nama_lengkap}')" title="Preview KTP">👁️</button>
+             <button class="btn-dok-aksi" onclick="printDokumenNIK('${w.nik}','ktp','${w.nama_lengkap}')" title="Print KTP">🖨️</button>
              <button class="btn-dok-aksi" onclick="downloadDokumenNIK('${w.nik}','ktp')" title="Download KTP">⬇️</button>
              <button class="btn-dok-aksi btn-dok-hapus" onclick="hapusDokumenNIK('${w.nik}','ktp',this)" title="Hapus KTP">🗑️</button>
            </div>
@@ -2502,7 +2537,9 @@ async function muatDokumen() {
     const kkBadge = w.foto_kk
       ? `<div style="display:flex;flex-direction:column;align-items:center;gap:6px">
            <span class="badge badge-biru">✅ Ada</span>
-           <div style="display:flex;gap:4px">
+           <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center">
+             <button class="btn-dok-aksi" onclick="previewDokumenNIK('${w.nik}','kk','${w.nama_lengkap}')" title="Preview KK">👁️</button>
+             <button class="btn-dok-aksi" onclick="printDokumenNIK('${w.nik}','kk','${w.nama_lengkap}')" title="Print KK">🖨️</button>
              <button class="btn-dok-aksi" onclick="downloadDokumenNIK('${w.nik}','kk')" title="Download KK">⬇️</button>
              <button class="btn-dok-aksi btn-dok-hapus" onclick="hapusDokumenNIK('${w.nik}','kk',this)" title="Hapus KK">🗑️</button>
            </div>
@@ -2598,21 +2635,121 @@ async function hapusDokumenNIK(nik, tipe, btn) {
   }
 }
 
-// Fungsi lama (dipertahankan untuk modal-foto)
-function lihatDokumen(tipe) {
-  const imgEl = document.getElementById('modal-img-' + tipe);
-  const pdfEl = document.getElementById('modal-pdf-' + tipe);
-  if (imgEl && imgEl.style.display !== 'none') {
-    document.getElementById('modal-foto-img').src = imgEl._url || imgEl.src;
-    bukModal('modal-foto');
-  } else if (pdfEl && pdfEl._url) {
-    window.open(pdfEl._url, '_blank');
-  }
+// Preview dokumen
+let _previewUrl = '';
+let _previewNama = '';
+let _previewTipe = '';
+let _previewNIK = '';
+
+async function previewDokumenNIK(nik, tipe, nama) {
+  const wargaRes = await apiFetch('/api/dokumen/' + nik);
+  if (!wargaRes) return;
+  const path = tipe === 'ktp' ? wargaRes.foto_ktp : wargaRes.foto_kk;
+  if (!path) return;
+
+  const res = await apiFetch('/api/dokumen/download?path=' + encodeURIComponent(path));
+  if (!res?.url) return;
+
+  _previewUrl = res.url;
+  _previewNama = nama;
+  _previewTipe = tipe;
+  _previewNIK = nik;
+
+  const isPdf = path.endsWith('.pdf');
+  document.getElementById('preview-dok-judul').textContent =
+    `${tipe.toUpperCase()} — ${nama} (${nik})`;
+  document.getElementById('preview-dok-img').style.display = isPdf ? 'none' : 'block';
+  document.getElementById('preview-dok-pdf').style.display = isPdf ? 'block' : 'none';
+  if (!isPdf) document.getElementById('preview-dok-img').src = res.url;
+
+  bukModal('modal-preview-dok');
 }
 
-function uploadDokumen() {}
-function downloadDokumen() {}
-function hapusDokumen() {}
+function downloadDokDariPreview() {
+  if (!_previewUrl) return;
+  const a = document.createElement('a');
+  a.href = _previewUrl;
+  a.download = `${_previewNIK}_${_previewTipe}`;
+  a.target = '_blank';
+  a.click();
+}
+
+function printDokDariPreview() {
+  if (!_previewUrl) return;
+  printDokUrl(_previewUrl, _previewNama, _previewTipe);
+}
+
+// Print langsung dari tabel
+async function printDokumenNIK(nik, tipe, nama) {
+  const wargaRes = await apiFetch('/api/dokumen/' + nik);
+  if (!wargaRes) return;
+  const path = tipe === 'ktp' ? wargaRes.foto_ktp : wargaRes.foto_kk;
+  if (!path) return;
+
+  const res = await apiFetch('/api/dokumen/download?path=' + encodeURIComponent(path));
+  if (!res?.url) return;
+
+  printDokUrl(res.url, nama, tipe);
+}
+
+function printDokUrl(url, nama, tipe) {
+  const isPdf = url.includes('.pdf') || url.includes('pdf');
+  if (isPdf) {
+    // PDF: buka di tab baru lalu print
+    const w = window.open(url, '_blank');
+    if (w) { w.onload = () => w.print(); }
+    return;
+  }
+
+  // Gambar: buka window print khusus
+  const w = window.open('', '_blank',
+    'width=900,height=700,toolbar=0,menubar=0,scrollbars=1');
+  w.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <title>${tipe.toUpperCase()} - ${nama}</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: Arial, sans-serif; background: white; }
+    .header {
+      text-align: center; padding: 16px;
+      border-bottom: 2px solid #1a6b3c; margin-bottom: 16px;
+    }
+    .header h2 { color: #1a6b3c; font-size: 16px; }
+    .header p { font-size: 12px; color: #666; margin-top: 4px; }
+    .foto-wrap {
+      display: flex; justify-content: center; padding: 0 20px;
+    }
+    img {
+      max-width: 100%; max-height: 70vh;
+      border: 1px solid #ddd; border-radius: 6px;
+    }
+    .footer {
+      text-align: center; padding: 12px;
+      font-size: 11px; color: #999; margin-top: 12px;
+      border-top: 1px solid #eee;
+    }
+    @media print {
+      .no-print { display: none; }
+      body { margin: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Dukuh Majegan — ${tipe.toUpperCase()}</h2>
+    <p>Nama: <strong>${nama}</strong></p>
+  </div>
+  <div class="foto-wrap">
+    <img src="${url}" onload="window.print()">
+  </div>
+  <div class="footer">Dicetak dari Sistem Administrasi Dukuh Majegan</div>
+</body>
+</html>`);
+  w.document.close();
+}
+
+
 
 </script>
 </body>
