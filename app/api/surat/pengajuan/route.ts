@@ -43,13 +43,13 @@ export async function POST(req: NextRequest) {
 
     // Verifikasi NIK - harus warga tetap
     const wargaResult = await pool.query(
-      `SELECT nik, nama_lengkap FROM warga WHERE nik = $1 AND status_tinggal = 'tetap'`,
+      `SELECT nik, nama_lengkap FROM warga WHERE nik = $1 `,
       [nikBersih]
     );
 
     if (wargaResult.rows.length === 0) {
       return Response.json(
-        { sukses: false, pesan: 'NIK tidak terdaftar sebagai warga tetap Dukuh Majegan' },
+        { sukses: false, pesan: 'NIK tidak terdaftar sebagai warga Dukuh Majegan' },
         { status: 403 }
       );
     }
@@ -117,7 +117,7 @@ export async function GET(req: NextRequest) {
 
     // Verifikasi NIK dulu
     const wargaResult = await pool.query(
-      `SELECT nama_lengkap FROM warga WHERE nik = $1 AND status_tinggal = 'tetap'`,
+      `SELECT nama_lengkap FROM warga WHERE nik = $1 `,
       [nik]
     );
     if (wargaResult.rows.length === 0) {
