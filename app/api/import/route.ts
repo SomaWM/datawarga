@@ -61,8 +61,8 @@ export async function POST(req: NextRequest) {
     }
 
     const ws = wb.Sheets[sheet];
-    // Mulai dari baris ke-4 (skip judul, petunjuk, header)
-    const rows: any[] = XLSX.utils.sheet_to_json(ws, { defval: '', range: 3 });
+    // Mulai dari baris ke-3 sebagai header (index 2), data mulai baris ke-4
+    const rows: any[] = XLSX.utils.sheet_to_json(ws, { defval: '', range: 2 });
 
     if (!rows.length) return Response.json({ error: 'Tidak ada data di sheet' }, { status: 400 });
 
