@@ -992,6 +992,9 @@
         <div class="nav-item" onclick="buka('dokumen')">
           <span class="ikon">📁</span> Dokumen KTP & KK
         </div>
+        <div class="nav-item" onclick="buka('bantuan')">
+          <span class="ikon">🤝</span> Bantuan Pemerintah
+        </div>
       </div>
 
       <div class="nav-section" style="margin-top:auto">
@@ -1223,10 +1226,224 @@
           </div>
         </div>
 
+        <!-- ===== BANTUAN PEMERINTAH ===== -->
+        <div id="hal-bantuan" class="halaman">
+          <!-- Tab Navigasi -->
+          <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+            <button id="tab-btn-penerima" class="btn btn-hijau" onclick="switchTabBantuan('penerima')">🤝 Penerima Bantuan</button>
+            <button id="tab-btn-jenis" class="btn btn-abu" onclick="switchTabBantuan('jenis')">📋 Kelola Jenis Bantuan</button>
+          </div>
+
+          <!-- Tab: Penerima Bantuan -->
+          <div id="tab-penerima">
+            <div class="kartu">
+              <div class="kartu-header" style="flex-wrap:wrap;gap:10px">
+                <h3>🤝 Daftar Penerima Bantuan</h3>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                  <input type="text" id="cari-bantuan" placeholder="🔍 Cari nama / NIK / bantuan..."
+                    style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;min-width:200px;outline:none"
+                    oninput="muatBantuanWarga()">
+                  <select id="filter-jenis-bantuan" onchange="muatBantuanWarga()"
+                    style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+                    <option value="">Semua Jenis</option>
+                  </select>
+                  <select id="filter-status-bantuan" onchange="muatBantuanWarga()"
+                    style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+                    <option value="">Semua Status</option>
+                    <option value="aktif">Aktif</option>
+                    <option value="selesai">Selesai</option>
+                    <option value="ditangguhkan">Ditangguhkan</option>
+                    <option value="tidak_layak">Tidak Layak</option>
+                  </select>
+                  <button class="btn btn-hijau" onclick="modalBantuanWarga()">+ Tambah Penerima</button>
+                </div>
+              </div>
+              <div class="tabel-container">
+                <table>
+                  <thead><tr>
+                    <th>Warga</th><th>NIK</th><th>Jenis Bantuan</th>
+                    <th>Bentuk</th><th>Jumlah/Barang</th><th>Periode</th>
+                    <th>Frekuensi</th><th>Status</th><th>Aksi</th>
+                  </tr></thead>
+                  <tbody id="tbody-bantuan-warga">
+                    <tr><td colspan="9" class="loading"><div class="spinner"></div>Memuat data...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="pagination" id="pag-bantuan" style="padding:12px 20px"></div>
+            </div>
+          </div>
+
+          <!-- Tab: Kelola Jenis Bantuan -->
+          <div id="tab-jenis" style="display:none">
+            <div class="kartu">
+              <div class="kartu-header" style="flex-wrap:wrap;gap:10px">
+                <h3>📋 Daftar Jenis Bantuan</h3>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <select id="filter-aktif-jenis" onchange="muatJenisBantuan()"
+                    style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+                    <option value="">Semua</option>
+                    <option value="true">Aktif</option>
+                    <option value="false">Nonaktif</option>
+                  </select>
+                  <button class="btn btn-hijau" onclick="modalJenisBantuan()">+ Tambah Jenis</button>
+                </div>
+              </div>
+              <div class="tabel-container">
+                <table>
+                  <thead><tr>
+                    <th>Kode</th><th>Nama Bantuan</th><th>Penyelenggara</th>
+                    <th>Kategori</th><th>Status</th><th>Aksi</th>
+                  </tr></thead>
+                  <tbody id="tbody-jenis-bantuan">
+                    <tr><td colspan="6" class="loading"><div class="spinner"></div>Memuat data...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div><!-- /content -->
     </div><!-- /main -->
   </div><!-- /layout -->
 </div><!-- /app -->
+
+<!-- Modal Tambah/Edit Penerima Bantuan -->
+<div class="modal-overlay" id="modal-bantuan-warga">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-header">
+      <h3 id="modal-bw-judul">Tambah Penerima Bantuan</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-bantuan-warga')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="bw-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Cari Warga (Nama / NIK) *</label>
+          <input type="text" id="bw-cari-warga" placeholder="Ketik nama atau NIK..." oninput="cariWargaBantuan()" autocomplete="off">
+          <div id="bw-warga-dropdown" style="display:none;position:absolute;background:white;border:1.5px solid var(--border);border-radius:10px;max-height:180px;overflow-y:auto;z-index:999;width:auto;min-width:300px;box-shadow:var(--bayangan)"></div>
+          <input type="hidden" id="bw-nik">
+          <div id="bw-warga-dipilih" style="display:none;margin-top:8px;padding:10px 14px;background:var(--abu-muda);border-radius:8px;font-size:13px"></div>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Jenis Bantuan *</label>
+          <select id="bw-jenis-bantuan">
+            <option value="">-- Pilih Jenis Bantuan --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Bentuk Bantuan *</label>
+          <select id="bw-bentuk" onchange="toggleBentukBantuan()">
+            <option value="uang">💰 Uang / Tunai</option>
+            <option value="barang">📦 Barang / Natura</option>
+            <option value="campuran">🔀 Campuran</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Frekuensi Penyaluran</label>
+          <select id="bw-frekuensi">
+            <option value="">-- Pilih --</option>
+            <option value="sekali">Sekali</option>
+            <option value="bulanan">Bulanan</option>
+            <option value="triwulan">Triwulan</option>
+            <option value="semesteran">Semesteran</option>
+            <option value="tahunan">Tahunan</option>
+          </select>
+        </div>
+        <div id="grup-jumlah-uang" class="form-group">
+          <label>Jumlah (Rp)</label>
+          <input type="number" id="bw-jumlah-uang" placeholder="Contoh: 300000" min="0">
+        </div>
+        <div id="grup-barang" class="form-group" style="grid-column:1/-1;display:none">
+          <label>Keterangan Barang/Natura</label>
+          <textarea id="bw-deskripsi-barang" placeholder="Contoh: 10 kg beras, 1 liter minyak goreng, 1 kg gula pasir..." rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Periode Mulai *</label>
+          <input type="date" id="bw-periode-mulai">
+        </div>
+        <div class="form-group">
+          <label>Periode Selesai</label>
+          <input type="date" id="bw-periode-selesai">
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="bw-status">
+            <option value="aktif">✅ Aktif</option>
+            <option value="selesai">🏁 Selesai</option>
+            <option value="ditangguhkan">⏸️ Ditangguhkan</option>
+            <option value="tidak_layak">❌ Tidak Layak</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Catatan</label>
+          <textarea id="bw-catatan" placeholder="Catatan tambahan (opsional)..." rows="2"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-bantuan-warga')">Batal</button>
+      <button class="btn btn-hijau" onclick="simpanBantuanWarga()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah/Edit Jenis Bantuan -->
+<div class="modal-overlay" id="modal-jenis-bantuan">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <h3 id="modal-jb-judul">Tambah Jenis Bantuan</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-jenis-bantuan')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="jb-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-group">
+          <label>Kode Bantuan *</label>
+          <input type="text" id="jb-kode" placeholder="Contoh: PKH, BPNT" style="text-transform:uppercase">
+        </div>
+        <div class="form-group">
+          <label>Kategori</label>
+          <select id="jb-kategori">
+            <option value="">-- Pilih --</option>
+            <option value="tunai">💰 Tunai</option>
+            <option value="sembako">🛒 Sembako / Pangan</option>
+            <option value="pendidikan">🎓 Pendidikan</option>
+            <option value="kesehatan">🏥 Kesehatan</option>
+            <option value="perumahan">🏠 Perumahan</option>
+            <option value="pertanian">🌾 Pertanian</option>
+            <option value="modal_usaha">💼 Modal Usaha</option>
+            <option value="lainnya">📦 Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Nama Bantuan *</label>
+          <input type="text" id="jb-nama" placeholder="Contoh: Program Keluarga Harapan (PKH)">
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Penyelenggara</label>
+          <input type="text" id="jb-penyelenggara" placeholder="Contoh: Kemensos RI, Pemkab Sleman">
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Deskripsi</label>
+          <textarea id="jb-deskripsi" placeholder="Penjelasan singkat tentang bantuan ini..." rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="jb-aktif">
+            <option value="true">✅ Aktif</option>
+            <option value="false">❌ Nonaktif</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-jenis-bantuan')">Batal</button>
+      <button class="btn btn-hijau" onclick="simpanJenisBantuan()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
 
 <!-- Modal Import Excel -->
 <div class="modal-overlay" id="modal-import">
@@ -1885,7 +2102,7 @@ function buka(hal) {
   const judulMap = {
     dashboard: 'Dashboard', kk: 'Kartu Keluarga', warga: 'Data Warga',
     surat: 'Surat & Izin', pengumuman: 'Pengumuman', kegiatan: 'Kegiatan',
-    dokumen: '📁 Dokumen KTP & KK'
+    dokumen: '📁 Dokumen KTP & KK', bantuan: '🤝 Bantuan Pemerintah'
   };
   document.getElementById('judul-halaman').textContent = judulMap[hal] || hal;
   
@@ -1904,6 +2121,7 @@ function buka(hal) {
   else if (hal === 'pengumuman') muatPengumuman();
   else if (hal === 'kegiatan') muatKegiatan();
   else if (hal === 'dokumen') muatDokumen();
+  else if (hal === 'bantuan') { muatJenisBantuan(); muatBantuanWarga(); }
 
   // Tutup sidebar otomatis di mobile setelah memilih menu
   if (window.innerWidth <= 900) tutupSidebar();
@@ -2915,6 +3133,253 @@ function printDokUrl(url, nama, tipe) {
 </html>`);
   w.document.close();
 }
+// ====== BANTUAN PEMERINTAH ======
+let halamanBantuan = 1;
+let daftarJenisBantuan = [];
+let cariWargaTimeout = null;
+
+function switchTabBantuan(tab) {
+  document.getElementById('tab-penerima').style.display = tab === 'penerima' ? '' : 'none';
+  document.getElementById('tab-jenis').style.display = tab === 'jenis' ? '' : 'none';
+  document.getElementById('tab-btn-penerima').className = tab === 'penerima' ? 'btn btn-hijau' : 'btn btn-abu';
+  document.getElementById('tab-btn-jenis').className = tab === 'jenis' ? 'btn btn-hijau' : 'btn btn-abu';
+}
+
+// --- Jenis Bantuan ---
+async function muatJenisBantuan() {
+  const aktif = document.getElementById('filter-aktif-jenis')?.value || '';
+  const data = await apiFetch('/api/bantuan/jenis' + (aktif ? `?aktif=${aktif}` : ''));
+  daftarJenisBantuan = data || [];
+
+  // Update select filter di tab penerima
+  const sel = document.getElementById('filter-jenis-bantuan');
+  const selModal = document.getElementById('bw-jenis-bantuan');
+  if (sel) {
+    const prev = sel.value;
+    sel.innerHTML = '<option value="">Semua Jenis</option>' +
+      daftarJenisBantuan.map(j => `<option value="${j.id}">${j.kode} — ${j.nama}</option>`).join('');
+    sel.value = prev;
+  }
+  if (selModal) {
+    selModal.innerHTML = '<option value="">-- Pilih Jenis Bantuan --</option>' +
+      daftarJenisBantuan.map(j => `<option value="${j.id}">[${j.kode}] ${j.nama} (${j.penyelenggara || '-'})</option>`).join('');
+  }
+
+  const tbody = document.getElementById('tbody-jenis-bantuan');
+  if (!tbody) return;
+  if (!daftarJenisBantuan.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--abu)">Belum ada jenis bantuan</td></tr>';
+    return;
+  }
+  const kategoriEmoji = { tunai:'💰', sembako:'🛒', pendidikan:'🎓', kesehatan:'🏥', perumahan:'🏠', pertanian:'🌾', modal_usaha:'💼', lainnya:'📦' };
+  tbody.innerHTML = daftarJenisBantuan.map(j => `
+    <tr>
+      <td><span class="badge badge-biru" style="font-weight:700">${j.kode}</span></td>
+      <td><strong>${j.nama}</strong>${j.deskripsi ? `<br><small style="color:var(--abu);font-size:11px">${j.deskripsi.substring(0,80)}...</small>` : ''}</td>
+      <td>${j.penyelenggara || '-'}</td>
+      <td>${j.kategori ? `${kategoriEmoji[j.kategori] || '📦'} ${j.kategori}` : '-'}</td>
+      <td><span class="badge ${j.aktif ? 'badge-hijau' : 'badge-merah'}">${j.aktif ? 'Aktif' : 'Nonaktif'}</span></td>
+      <td>
+        <button class="aksi-btn aksi-edit" onclick="modalJenisBantuan(${JSON.stringify(j).replace(/"/g,'&quot;')})">✏️</button>
+        <button class="aksi-btn aksi-hapus" onclick="hapusJenisBantuan('${j.id}')">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function modalJenisBantuan(data = null) {
+  document.getElementById('modal-jb-judul').textContent = data ? 'Edit Jenis Bantuan' : 'Tambah Jenis Bantuan';
+  document.getElementById('jb-id').value = data?.id || '';
+  document.getElementById('jb-kode').value = data?.kode || '';
+  document.getElementById('jb-nama').value = data?.nama || '';
+  document.getElementById('jb-penyelenggara').value = data?.penyelenggara || '';
+  document.getElementById('jb-kategori').value = data?.kategori || '';
+  document.getElementById('jb-deskripsi').value = data?.deskripsi || '';
+  document.getElementById('jb-aktif').value = data ? String(data.aktif) : 'true';
+  bukModal('modal-jenis-bantuan');
+}
+
+async function simpanJenisBantuan() {
+  const id = document.getElementById('jb-id').value;
+  const body = {
+    kode: document.getElementById('jb-kode').value.trim().toUpperCase(),
+    nama: document.getElementById('jb-nama').value.trim(),
+    penyelenggara: document.getElementById('jb-penyelenggara').value.trim(),
+    kategori: document.getElementById('jb-kategori').value,
+    deskripsi: document.getElementById('jb-deskripsi').value.trim(),
+    aktif: document.getElementById('jb-aktif').value === 'true',
+  };
+  if (!body.kode || !body.nama) { alert('Kode dan Nama wajib diisi!'); return; }
+  const res = await apiFetch(id ? `/api/bantuan/jenis/${id}` : '/api/bantuan/jenis', {
+    method: id ? 'PUT' : 'POST', body: JSON.stringify(body)
+  });
+  if (res && !res.error) {
+    tutupModal('modal-jenis-bantuan');
+    muatJenisBantuan();
+    tampilNotif('Jenis bantuan berhasil disimpan!', 'hijau');
+  } else if (res?.error) {
+    alert(res.error);
+  }
+}
+
+async function hapusJenisBantuan(id) {
+  if (!confirm('Hapus jenis bantuan ini? Data penerima yang terkait tidak akan terhapus.')) return;
+  const res = await apiFetch(`/api/bantuan/jenis/${id}`, { method: 'DELETE' });
+  if (res?.error) { alert(res.error); return; }
+  muatJenisBantuan();
+  tampilNotif('Jenis bantuan berhasil dihapus');
+}
+
+// --- Penerima Bantuan ---
+async function muatBantuanWarga() {
+  const cari = document.getElementById('cari-bantuan')?.value || '';
+  const jenis = document.getElementById('filter-jenis-bantuan')?.value || '';
+  const status = document.getElementById('filter-status-bantuan')?.value || '';
+  const page = halamanBantuan;
+  const data = await apiFetch(`/api/bantuan/warga?page=${page}&limit=25&search=${encodeURIComponent(cari)}&jenis_bantuan_id=${jenis}&status=${status}`);
+  const tbody = document.getElementById('tbody-bantuan-warga');
+  if (!data?.data?.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--abu)">Belum ada data penerima bantuan</td></tr>';
+    document.getElementById('pag-bantuan').innerHTML = '';
+    return;
+  }
+  const statusBadge = { aktif:'badge-hijau', selesai:'badge-abu', ditangguhkan:'badge-kuning', tidak_layak:'badge-merah' };
+  const bentukLabel = { uang:'💰 Uang', barang:'📦 Barang', campuran:'🔀 Campuran' };
+  tbody.innerHTML = data.data.map(b => {
+    const tgl_mulai = b.periode_mulai ? new Date(b.periode_mulai).toLocaleDateString('id-ID', {month:'short',year:'numeric'}) : '-';
+    const tgl_selesai = b.periode_selesai ? new Date(b.periode_selesai).toLocaleDateString('id-ID', {month:'short',year:'numeric'}) : 'Ongoing';
+    const jumlah = b.bentuk === 'barang' ? (b.deskripsi_barang || '-') :
+      b.jumlah_uang ? 'Rp ' + Number(b.jumlah_uang).toLocaleString('id-ID') +
+        (b.deskripsi_barang ? `<br><small style="color:var(--abu)">${b.deskripsi_barang.substring(0,40)}</small>` : '') : '-';
+    return `<tr>
+      <td><strong>${b.nama_lengkap}</strong><br><small style="color:var(--abu)">${b.rt ? 'RT ' + b.rt + '/' + b.rw : ''} ${b.dusun || ''}</small></td>
+      <td style="font-family:monospace;font-size:12px">${b.nik}</td>
+      <td><span class="badge badge-biru" style="font-size:11px">${b.kode_bantuan}</span><br><small>${b.nama_bantuan}</small><br><small style="color:var(--abu)">${b.penyelenggara || ''}</small></td>
+      <td>${bentukLabel[b.bentuk] || b.bentuk}</td>
+      <td>${jumlah}</td>
+      <td style="font-size:12px">${tgl_mulai}<br>s/d ${tgl_selesai}</td>
+      <td style="font-size:12px">${b.frekuensi || '-'}</td>
+      <td><span class="badge ${statusBadge[b.status] || 'badge-abu'}">${b.status.replace('_',' ')}</span></td>
+      <td>
+        <button class="aksi-btn aksi-edit" onclick="modalBantuanWarga(${JSON.stringify(b).replace(/"/g,'&quot;')})">✏️</button>
+        <button class="aksi-btn aksi-hapus" onclick="hapusBantuanWarga('${b.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Pagination
+  const total = data.total;
+  const totalPage = Math.ceil(total / 25);
+  const pag = document.getElementById('pag-bantuan');
+  if (totalPage <= 1) { pag.innerHTML = `<small style="color:var(--abu)">Total: ${total} penerima</small>`; return; }
+  let html = `<small style="color:var(--abu)">Total: ${total} | Hal ${page}/${totalPage}</small> `;
+  if (page > 1) html += `<button class="btn btn-abu" style="padding:6px 12px;font-size:12px" onclick="halamanBantuan=${page-1};muatBantuanWarga()">← Prev</button> `;
+  if (page < totalPage) html += `<button class="btn btn-abu" style="padding:6px 12px;font-size:12px" onclick="halamanBantuan=${page+1};muatBantuanWarga()">Next →</button>`;
+  pag.innerHTML = html;
+}
+
+async function modalBantuanWarga(data = null) {
+  // Pastikan jenis bantuan sudah dimuat
+  await muatJenisBantuan();
+  document.getElementById('modal-bw-judul').textContent = data ? 'Edit Penerima Bantuan' : 'Tambah Penerima Bantuan';
+  document.getElementById('bw-id').value = data?.id || '';
+  document.getElementById('bw-nik').value = data?.nik || '';
+  document.getElementById('bw-cari-warga').value = data ? `${data.nama_lengkap} — ${data.nik}` : '';
+  document.getElementById('bw-warga-dipilih').style.display = data ? '' : 'none';
+  if (data) document.getElementById('bw-warga-dipilih').innerHTML = `👤 <strong>${data.nama_lengkap}</strong> &nbsp; NIK: ${data.nik}`;
+  document.getElementById('bw-jenis-bantuan').value = data?.jenis_bantuan_id || '';
+  document.getElementById('bw-bentuk').value = data?.bentuk || 'uang';
+  document.getElementById('bw-frekuensi').value = data?.frekuensi || '';
+  document.getElementById('bw-jumlah-uang').value = data?.jumlah_uang || '';
+  document.getElementById('bw-deskripsi-barang').value = data?.deskripsi_barang || '';
+  document.getElementById('bw-periode-mulai').value = data?.periode_mulai?.split('T')[0] || '';
+  document.getElementById('bw-periode-selesai').value = data?.periode_selesai?.split('T')[0] || '';
+  document.getElementById('bw-status').value = data?.status || 'aktif';
+  document.getElementById('bw-catatan').value = data?.catatan || '';
+  toggleBentukBantuan();
+  bukModal('modal-bantuan-warga');
+}
+
+function toggleBentukBantuan() {
+  const bentuk = document.getElementById('bw-bentuk').value;
+  document.getElementById('grup-jumlah-uang').style.display = bentuk === 'barang' ? 'none' : '';
+  document.getElementById('grup-barang').style.display = bentuk === 'uang' ? 'none' : '';
+}
+
+function cariWargaBantuan() {
+  clearTimeout(cariWargaTimeout);
+  const q = document.getElementById('bw-cari-warga').value.trim();
+  const dropdown = document.getElementById('bw-warga-dropdown');
+  if (q.length < 2) { dropdown.style.display = 'none'; return; }
+  cariWargaTimeout = setTimeout(async () => {
+    const data = await apiFetch(`/api/warga?search=${encodeURIComponent(q)}&limit=8`);
+    if (!data?.data?.length) { dropdown.style.display = 'none'; return; }
+    dropdown.style.display = 'block';
+    dropdown.innerHTML = data.data.map(w => `
+      <div onclick="pilihWargaBantuan('${w.nik}','${w.nama_lengkap.replace(/'/g,"\\'")}','${w.rt||''}','${w.rw||''}')"
+        style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)"
+        onmouseover="this.style.background='var(--abu-muda)'" onmouseout="this.style.background=''">
+        <strong>${w.nama_lengkap}</strong><br>
+        <small style="color:var(--abu)">NIK: ${w.nik} &nbsp;|&nbsp; RT ${w.rt||'-'}/${w.rw||'-'} ${w.dusun||''}</small>
+      </div>
+    `).join('');
+  }, 300);
+}
+
+function pilihWargaBantuan(nik, nama, rt, rw) {
+  document.getElementById('bw-nik').value = nik;
+  document.getElementById('bw-cari-warga').value = `${nama} — ${nik}`;
+  document.getElementById('bw-warga-dropdown').style.display = 'none';
+  document.getElementById('bw-warga-dipilih').style.display = '';
+  document.getElementById('bw-warga-dipilih').innerHTML = `👤 <strong>${nama}</strong> &nbsp; NIK: ${nik} &nbsp; RT ${rt||'-'}/${rw||'-'}`;
+}
+
+async function simpanBantuanWarga() {
+  const id = document.getElementById('bw-id').value;
+  const nik = document.getElementById('bw-nik').value;
+  if (!nik) { alert('Pilih warga terlebih dahulu!'); return; }
+  const jenis = document.getElementById('bw-jenis-bantuan').value;
+  if (!jenis) { alert('Pilih jenis bantuan!'); return; }
+  const periodi = document.getElementById('bw-periode-mulai').value;
+  if (!periodi) { alert('Periode mulai wajib diisi!'); return; }
+  const body = {
+    jenis_bantuan_id: jenis,
+    nik,
+    periode_mulai: periodi,
+    periode_selesai: document.getElementById('bw-periode-selesai').value || null,
+    bentuk: document.getElementById('bw-bentuk').value,
+    jumlah_uang: document.getElementById('bw-jumlah-uang').value || null,
+    frekuensi: document.getElementById('bw-frekuensi').value || null,
+    deskripsi_barang: document.getElementById('bw-deskripsi-barang').value || null,
+    status: document.getElementById('bw-status').value,
+    catatan: document.getElementById('bw-catatan').value || null,
+  };
+  const res = await apiFetch(id ? `/api/bantuan/warga/${id}` : '/api/bantuan/warga', {
+    method: id ? 'PUT' : 'POST', body: JSON.stringify(body)
+  });
+  if (res && !res.error) {
+    tutupModal('modal-bantuan-warga');
+    muatBantuanWarga();
+    tampilNotif('Data bantuan berhasil disimpan!', 'hijau');
+  } else if (res?.error) {
+    alert(res.error);
+  }
+}
+
+async function hapusBantuanWarga(id) {
+  if (!confirm('Hapus data penerima bantuan ini?')) return;
+  const res = await apiFetch(`/api/bantuan/warga/${id}`, { method: 'DELETE' });
+  if (res?.error) { alert(res.error); return; }
+  muatBantuanWarga();
+  tampilNotif('Data penerima bantuan berhasil dihapus');
+}
+
+// Tutup dropdown warga saat klik di luar
+document.addEventListener('click', e => {
+  const dd = document.getElementById('bw-warga-dropdown');
+  const inp = document.getElementById('bw-cari-warga');
+  if (dd && inp && !dd.contains(e.target) && e.target !== inp) dd.style.display = 'none';
+});
 
 
 
