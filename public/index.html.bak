@@ -462,8 +462,6 @@
   .badge-merah { background: #fee2e2; color: #dc2626; }
   .badge-biru { background: #dbeafe; color: #1d6fa4; }
   .badge-abu { background: #f1f5f9; color: #64748b; }
-  .badge-oranye { background: #ffedd5; color: #c2410c; }
-  .badge-ungu { background: #ede9fe; color: #7c3aed; }
 
   /* Search & Filter Bar */
   .filter-bar {
@@ -1775,16 +1773,6 @@
             <option value="non_domisili">Penduduk non Domisili</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Status Ekonomi</label>
-          <select id="warga-status_ekonomi">
-            <option value="mampu">✅ Mampu</option>
-            <option value="rentan_miskin">⚠️ Rentan Miskin</option>
-            <option value="tidak_mampu">🔶 Tidak Mampu</option>
-            <option value="miskin">🔴 Miskin</option>
-            <option value="sangat_miskin">🆘 Sangat Miskin</option>
-          </select>
-        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -2286,14 +2274,13 @@ async function muatWarga() {
         <td>${w.jenis_kelamin === 'Laki-laki' ? '👨' : w.jenis_kelamin === 'Perempuan' ? '👩' : '—'} ${w.jenis_kelamin||''}</td>
         <td>${w.tanggal_lahir ? new Date(w.tanggal_lahir).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}) : '—'}</td>
         <td>${w.pekerjaan || '—'}</td>
-        <td>${badgeEkonomi(w.status_ekonomi)}</td>
         <td><span class="badge ${badgeStatus(w.status_tinggal)}">${w.status_tinggal}</span></td>
         <td style="white-space:nowrap">
           <button class="aksi-btn aksi-edit" onclick='event.stopPropagation();modalWarga(${wJson})' title="Edit">✏️</button>
           <button class="aksi-btn aksi-hapus" onclick="event.stopPropagation();hapusWarga('${w.id}')" title="Hapus">🗑️</button>
         </td>
       </tr>`;
-    }).join('') : '<tr><td colspan="8" class="kk-kosong">Belum ada anggota terdaftar</td></tr>';
+    }).join('') : '<tr><td colspan="7" class="kk-kosong">Belum ada anggota terdaftar</td></tr>';
 
     const kkJson = JSON.stringify(kk).replace(/"/g,'&quot;');
     return `<div class="kk-kartu" id="${accId}">
@@ -2319,7 +2306,7 @@ async function muatWarga() {
           <table class="anggota-tabel">
             <thead><tr>
               <th>Nama / NIK</th><th>Hubungan</th><th>L/P</th>
-              <th>Tgl Lahir</th><th>Pekerjaan</th><th>Ekonomi</th><th>Status</th><th>Aksi</th>
+              <th>Tgl Lahir</th><th>Pekerjaan</th><th>Status</th><th>Aksi</th>
             </tr></thead>
             <tbody>${barisAnggota}</tbody>
           </table>
@@ -2385,10 +2372,10 @@ async function modalWarga(data = null) {
     });
   }
 
-  const wargaFields = ['nik','nama_lengkap','tempat_lahir','tanggal_lahir','jenis_kelamin','agama','pendidikan','pekerjaan','status_perkawinan','status_hubungan','golongan_darah','telepon','email','status_tinggal','status_ekonomi'];
+  const wargaFields = ['nik','nama_lengkap','tempat_lahir','tanggal_lahir','jenis_kelamin','agama','pendidikan','pekerjaan','status_perkawinan','status_hubungan','golongan_darah','telepon','email','status_tinggal'];
   wargaFields.forEach(f => {
     const el = document.getElementById('warga-' + f);
-    if (el) el.value = data?.[f] || (f === 'status_tinggal' ? 'domisili_asli' : f === 'status_ekonomi' ? 'mampu' : '');
+    if (el) el.value = data?.[f] || (f === 'status_tinggal' ? 'domisili_asli' : '');
   });
   document.getElementById('warga-nik').disabled = editMode;
   bukModal('modal-warga');
@@ -2406,7 +2393,7 @@ async function simpanWarga() {
   const id = document.getElementById('warga-id').value;
   const editMode = !!id;
 
-  const wargaFields = ['nik','nama_lengkap','tempat_lahir','tanggal_lahir','jenis_kelamin','agama','pendidikan','pekerjaan','status_perkawinan','status_hubungan','golongan_darah','telepon','email','status_tinggal','status_ekonomi'];
+  const wargaFields = ['nik','nama_lengkap','tempat_lahir','tanggal_lahir','jenis_kelamin','agama','pendidikan','pekerjaan','status_perkawinan','status_hubungan','golongan_darah','telepon','email','status_tinggal'];
   const body = {};
   wargaFields.forEach(f => body[f] = document.getElementById('warga-' + f)?.value || null);
 
@@ -2780,18 +2767,6 @@ function badgeSurat(status) {
 
 function badgeStatus(status) {
   return { domisili_asli: 'badge-hijau', non_ktp: 'badge-biru', sementara: 'badge-kuning', non_domisili: 'badge-abu' }[status] || 'badge-abu';
-}
-
-function badgeEkonomi(status) {
-  const map = {
-    mampu: { cls: 'badge-hijau', label: '✅ Mampu' },
-    rentan_miskin: { cls: 'badge-kuning', label: '⚠️ Rentan Miskin' },
-    tidak_mampu: { cls: 'badge-oranye', label: '🔶 Tidak Mampu' },
-    miskin: { cls: 'badge-merah', label: '🔴 Miskin' },
-    sangat_miskin: { cls: 'badge-ungu', label: '🆘 Sangat Miskin' },
-  };
-  const e = map[status] || { cls: 'badge-abu', label: status || '—' };
-  return `<span class="badge ${e.cls}" style="font-size:11px">${e.label}</span>`;
 }
 
 function tampilNotif(pesan, tipe = 'hijau') {

@@ -60,17 +60,17 @@ export async function POST(req: NextRequest) {
     const {
       nik, no_kk, nama_lengkap, tempat_lahir, tanggal_lahir, jenis_kelamin,
       agama, pendidikan, pekerjaan, status_perkawinan, status_hubungan,
-      golongan_darah, telepon, email, status_tinggal, status_ekonomi,
+      golongan_darah, telepon, email, status_tinggal,
     } = await req.json();
 
     const result = await pool.query(
       `INSERT INTO warga (nik, no_kk, nama_lengkap, tempat_lahir, tanggal_lahir, jenis_kelamin,
         agama, pendidikan, pekerjaan, status_perkawinan, status_hubungan, golongan_darah,
-        telepon, email, status_tinggal, status_ekonomi)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING *`,
+        telepon, email, status_tinggal)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING *`,
       [nik, no_kk, nama_lengkap, tempat_lahir, tanggal_lahir, jenis_kelamin,
         agama, pendidikan, pekerjaan, status_perkawinan, status_hubungan, golongan_darah,
-        telepon, email, status_tinggal || 'domisili_asli', status_ekonomi || 'mampu']
+        telepon, email, status_tinggal || 'tetap']
     );
     return Response.json(result.rows[0], { status: 201 });
   } catch (err: any) {
