@@ -1,0 +1,3412 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistem Administrasi Dukuh Majegan</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --hijau: #1a6b3c;
+    --hijau-muda: #2d9657;
+    --hijau-terang: #4aba7a;
+    --kuning: #f5a623;
+    --kuning-muda: #ffd166;
+    --merah: #e63946;
+    --biru: #1d6fa4;
+    --biru-muda: #4da3d4;
+    --abu: #64748b;
+    --abu-muda: #f1f5f9;
+    --putih: #ffffff;
+    --teks: #1e293b;
+    --teks-muda: #64748b;
+    --border: #e2e8f0;
+    --bayangan: 0 4px 24px rgba(0,0,0,0.08);
+    --bayangan-besar: 0 10px 40px rgba(0,0,0,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #f0f4f8;
+    color: var(--teks);
+    min-height: 100vh;
+  }
+
+  /* ============ LOGIN PAGE ============ */
+  #halaman-login {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f3d22 0%, #1a6b3c 40%, #2d9657 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #halaman-login::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 50%;
+    top: -200px; right: -150px;
+  }
+
+  #halaman-login::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 50%;
+    bottom: -100px; left: -100px;
+  }
+
+  .login-card {
+    background: white;
+    border-radius: 24px;
+    padding: 48px 44px;
+    width: 420px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1;
+  }
+
+  .login-logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .login-logo .lambang {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--hijau), var(--hijau-terang));
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 36px;
+    box-shadow: 0 8px 24px rgba(26,107,60,0.3);
+  }
+
+  .login-logo h1 {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--hijau);
+    line-height: 1.3;
+  }
+
+  .login-logo p {
+    font-size: 13px;
+    color: var(--abu);
+    margin-top: 4px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teks);
+    margin-bottom: 8px;
+  }
+
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.2s;
+    background: var(--putih);
+    color: var(--teks);
+  }
+
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: var(--hijau);
+    box-shadow: 0 0 0 3px rgba(26,107,60,0.1);
+  }
+
+  .form-group textarea { resize: vertical; min-height: 80px; }
+
+  .btn {
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-hijau {
+    background: linear-gradient(135deg, var(--hijau), var(--hijau-muda));
+    color: white;
+    box-shadow: 0 4px 12px rgba(26,107,60,0.3);
+  }
+  .btn-hijau:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(26,107,60,0.4); }
+
+  .btn-kuning {
+    background: linear-gradient(135deg, #e67e00, var(--kuning));
+    color: white;
+  }
+  .btn-kuning:hover { transform: translateY(-1px); }
+
+  .btn-merah {
+    background: linear-gradient(135deg, #c0392b, var(--merah));
+    color: white;
+  }
+  .btn-merah:hover { transform: translateY(-1px); }
+
+  .btn-abu {
+    background: var(--abu-muda);
+    color: var(--teks);
+    border: 1px solid var(--border);
+  }
+  .btn-abu:hover { background: var(--border); }
+
+  .btn-full { width: 100%; justify-content: center; padding: 14px; }
+
+  .alert {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .alert-merah { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+  .alert-hijau { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+  .alert.show { display: block; }
+
+  /* ============ MAIN APP ============ */
+  #app { display: none; }
+
+  .layout {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, #0f3d22 0%, #1a6b3c 100%);
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+    transition: transform 0.3s;
+  }
+
+  .sidebar-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sidebar-logo .icon {
+    width: 42px; height: 42px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+
+  .sidebar-logo h2 {
+    font-size: 15px;
+    font-weight: 800;
+    color: white;
+    line-height: 1.2;
+  }
+
+  .sidebar-logo p {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    margin-top: 2px;
+  }
+
+  .nav-section {
+    padding: 12px 0;
+  }
+
+  .nav-label {
+    padding: 8px 20px;
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+    font-weight: 500;
+    border-left: 3px solid transparent;
+  }
+
+  .nav-item:hover {
+    background: rgba(255,255,255,0.08);
+    color: white;
+  }
+
+  .nav-item.aktif {
+    background: rgba(255,255,255,0.12);
+    color: white;
+    border-left-color: var(--kuning-muda);
+  }
+
+  .nav-item .ikon { font-size: 18px; width: 24px; text-align: center; }
+
+  /* Main Content */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Top Bar */
+  .topbar {
+    background: white;
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .topbar h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--teks);
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .user-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 10px;
+    transition: background 0.2s;
+  }
+  .user-badge:hover { background: var(--abu-muda); }
+
+  .avatar {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--hijau), var(--hijau-terang));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .user-info { line-height: 1.2; }
+  .user-info .nama { font-size: 13px; font-weight: 600; }
+  .user-info .role { font-size: 11px; color: var(--abu); }
+
+  /* Content Area */
+  .content {
+    padding: 28px;
+    flex: 1;
+  }
+
+  .halaman { display: none; }
+  .halaman.aktif { display: block; }
+
+  /* Cards */
+  .kartu {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--bayangan);
+    margin-bottom: 20px;
+  }
+
+  .kartu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .kartu-header h3 {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  /* Stat Cards */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-kartu {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--bayangan);
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .stat-ikon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .stat-ikon.hijau { background: rgba(26,107,60,0.1); }
+  .stat-ikon.biru { background: rgba(29,111,164,0.1); }
+  .stat-ikon.kuning { background: rgba(245,166,35,0.1); }
+  .stat-ikon.merah { background: rgba(230,57,70,0.1); }
+
+  .stat-info .angka {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--teks);
+    line-height: 1;
+  }
+
+  .stat-info .label {
+    font-size: 12px;
+    color: var(--abu);
+    margin-top: 4px;
+  }
+
+  /* Tabel */
+  .tabel-container {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead th {
+    background: var(--abu-muda);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--abu);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  tbody tr:hover { background: var(--abu-muda); }
+  tbody tr:last-child { border-bottom: none; }
+
+  tbody td {
+    padding: 12px 16px;
+    vertical-align: middle;
+  }
+
+  /* Badge Status */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-hijau { background: #dcfce7; color: #16a34a; }
+  .badge-kuning { background: #fef3c7; color: #d97706; }
+  .badge-merah { background: #fee2e2; color: #dc2626; }
+  .badge-biru { background: #dbeafe; color: #1d6fa4; }
+  .badge-abu { background: #f1f5f9; color: #64748b; }
+  .badge-oranye { background: #ffedd5; color: #c2410c; }
+  .badge-ungu { background: #ede9fe; color: #7c3aed; }
+
+  /* Search & Filter Bar */
+  .filter-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .filter-bar input, .filter-bar select {
+    padding: 10px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: inherit;
+    background: white;
+  }
+  .filter-bar input:focus, .filter-bar select:focus {
+    outline: none;
+    border-color: var(--hijau);
+  }
+
+  .filter-bar input { flex: 1; min-width: 200px; }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.show { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--bayangan-besar);
+  }
+
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+  }
+
+  .modal-header h3 { font-size: 16px; font-weight: 700; }
+
+  .modal-body { padding: 24px; }
+
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+
+  .btn-tutup {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--abu);
+    line-height: 1;
+    padding: 4px;
+    border-radius: 6px;
+  }
+  .btn-tutup:hover { background: var(--abu-muda); }
+
+  /* Form Grid */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-full { grid-column: 1 / -1; }
+
+  /* Aksi buttons */
+  .aksi-btn {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+  }
+  .aksi-edit { background: #dbeafe; color: #1d6fa4; }
+  .aksi-hapus { background: #fee2e2; color: #dc2626; }
+  .aksi-lihat { background: #f0fdf4; color: #16a34a; }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    justify-content: flex-end;
+  }
+
+  .pagination button {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .pagination button:hover, .pagination button.aktif {
+    background: var(--hijau);
+    color: white;
+    border-color: var(--hijau);
+  }
+
+  /* Pengumuman Cards */
+  .pengumuman-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .pengumuman-item {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    border-left: 4px solid var(--hijau);
+    box-shadow: var(--bayangan);
+    transition: transform 0.2s;
+  }
+  .pengumuman-item:hover { transform: translateY(-2px); }
+  .pengumuman-item.penting { border-left-color: var(--kuning); }
+
+  .pengumuman-item h4 { font-size: 15px; margin-bottom: 8px; }
+  .pengumuman-item p { font-size: 13px; color: var(--abu); line-height: 1.5; }
+  .pengumuman-meta { display: flex; gap: 8px; margin-top: 12px; font-size: 11px; color: var(--abu); }
+
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--abu);
+  }
+
+  .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--hijau);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+  }
+
+  /* ===== KK ACCORDION ===== */
+  .kk-kartu {
+    background: var(--putih);
+    border-radius: 12px;
+    box-shadow: var(--bayangan);
+    margin-bottom: 12px;
+    overflow: hidden;
+    border: 1.5px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .kk-kartu.buka { border-color: var(--hijau-terang, #4aba7a); }
+
+  .kk-header {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    cursor: pointer;
+    gap: 12px;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .kk-header:hover { background: var(--abu-muda); }
+
+  .kk-chevron {
+    font-size: 11px;
+    color: var(--abu);
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  .kk-kartu.buka .kk-chevron { transform: rotate(90deg); }
+
+  .kk-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #e8f5ee, #d0eedd);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .kk-meta { flex: 1; min-width: 0; }
+  .kk-meta-nama { font-weight: 700; font-size: 14px; color: var(--teks); }
+  .kk-meta-sub { font-size: 12px; color: var(--abu); margin-top: 2px; }
+  .kk-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  .kk-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 0 18px 14px;
+    animation: fadeDown 0.2s ease;
+  }
+  .kk-kartu.buka .kk-body { display: block; }
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .btn-toggle-kk {
+    font-size: 12px; font-weight: 600; padding: 5px 14px;
+    border-radius: 20px; border: 1.5px solid var(--border);
+    background: var(--putih); color: var(--abu);
+    cursor: pointer; font-family: inherit; transition: all 0.2s;
+  }
+  .btn-toggle-kk.aktif { background: var(--hijau); color: white; border-color: var(--hijau); }
+
+  /* ===== DOKUMEN ===== */
+  .dok-box {
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--putih);
+  }
+  .dok-judul {
+    padding: 12px 16px;
+    font-weight: 700; font-size: 14px; color: var(--teks);
+    background: var(--abu-muda);
+    border-bottom: 1px solid var(--border);
+  }
+  .dok-preview {
+    min-height: 160px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px;
+    background: #fafafa;
+  }
+  .dok-kosong { font-size: 13px; color: var(--abu); text-align: center; }
+  .dok-aksi {
+    padding: 12px 16px;
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    border-top: 1px solid var(--border);
+  }
+
+  .dok-upload-overlay {
+    position: absolute; inset: 0;
+    background: rgba(26,107,60,0.08);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+    pointer-events: none;
+  }
+
+  .warga-card-mini {
+    background: var(--hijau-pucat, #e8f5ee);
+    border: 1.5px solid var(--hijau-terang, #4aba7a);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+  }
+  .warga-card-mini .avatar-mini {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--hijau); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; flex-shrink: 0;
+  }
+
+  @media (max-width: 600px) {
+    #panel-upload-dokumen .grid-dok { grid-template-columns: 1fr !important; }
+  }
+
+  /* Tombol aksi dokumen inline di tabel */
+  .btn-dok-upload {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 6px;
+    background: var(--hijau); color: white;
+    cursor: pointer; transition: opacity 0.2s;
+    border: none; font-family: inherit;
+  }
+  .btn-dok-upload:hover { opacity: 0.85; }
+
+  .btn-dok-aksi {
+    font-size: 13px; padding: 4px 8px;
+    border: 1.5px solid var(--border); border-radius: 6px;
+    background: var(--putih); cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-dok-aksi:hover { background: var(--abu-muda); }
+  .btn-dok-hapus:hover { background: #fee2e2; border-color: #fca5a5; }
+
+  .kk-info-bar {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    padding: 12px 0 14px;
+    font-size: 12px; color: var(--abu);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .kk-info-bar span { display: flex; align-items: center; gap: 4px; }
+
+  .anggota-tabel { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .anggota-tabel th {
+    background: var(--abu-muda); color: var(--teks-muda);
+    font-weight: 600; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.4px; padding: 8px 10px; text-align: left;
+  }
+  .anggota-tabel td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .anggota-tabel tr:last-child td { border-bottom: none; }
+  .anggota-tabel tr:hover td { background: var(--abu-muda); }
+
+  .hubungan-badge {
+    display: inline-block;
+    font-size: 11px; font-weight: 600;
+    padding: 2px 9px; border-radius: 20px;
+    background: #ede9fe; color: #5b21b6;
+  }
+  .hubungan-badge.kk-utama { background: #fef3c7; color: #92400e; }
+
+  .kk-tambah-warga {
+    margin-top: 12px;
+    padding: 8px 0 2px;
+    border-top: 1px dashed var(--border);
+  }
+  .btn-sm {
+    font-size: 12px; padding: 5px 12px;
+    border-radius: 6px; border: none;
+    cursor: pointer; font-family: inherit; font-weight: 600;
+    transition: opacity 0.2s;
+  }
+  .btn-sm:hover { opacity: 0.82; }
+  .btn-sm-hijau { background: var(--hijau); color: white; }
+  .btn-sm-abu { background: var(--abu-muda); color: var(--teks); border: 1px solid var(--border); }
+
+  .kk-kosong { text-align:center; padding: 20px; color: var(--abu); font-size: 13px; }
+
+  @media (max-width: 600px) {
+    .kk-actions .aksi-btn span { display: none; }
+    .anggota-tabel th:nth-child(4),
+    .anggota-tabel td:nth-child(4),
+    .anggota-tabel th:nth-child(5),
+    .anggota-tabel td:nth-child(5) { display: none; }
+  }
+
+  /* Hamburger Button */
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 8px;
+    transition: background 0.2s;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+  }
+  .hamburger:hover { background: var(--border); }
+  .hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--teks);
+    border-radius: 2px;
+    transition: transform 0.3s, opacity 0.3s;
+  }
+
+  /* Sidebar overlay (mobile) */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 99;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .sidebar-overlay.aktif {
+    display: block;
+    opacity: 1;
+  }
+
+  /* Tombol tutup sidebar (mobile) */
+  .sidebar-close {
+    display: none;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: white;
+    font-size: 18px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .sidebar-close:hover { background: rgba(255,255,255,0.3); }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .sidebar {
+      transform: translateX(-100%);
+      position: fixed;
+      z-index: 100;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+    }
+    .sidebar.buka { transform: translateX(0); }
+    .sidebar-close { display: flex; }
+    .main { margin-left: 0; }
+    .form-grid { grid-template-columns: 1fr; }
+    .hamburger { display: flex; }
+    .topbar { padding: 14px 16px; }
+    .dashboard-grid-bawah { grid-template-columns: 1fr !important; }
+  }
+
+  /* Cetak Surat */
+  .surat-preview {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-family: 'Noto Serif', serif;
+  }
+
+  .kop-surat {
+    text-align: center;
+    border-bottom: 3px double #333;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+
+  .kop-surat h2 { font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
+  .kop-surat p { font-size: 12px; margin-top: 4px; }
+
+  @media print {
+    body * { visibility: hidden; }
+    .surat-preview, .surat-preview * { visibility: visible; }
+    .surat-preview { position: absolute; top: 0; left: 0; width: 100%; border: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== HALAMAN LOGIN ====== -->
+<div id="halaman-login">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="lambang">🏛️</div>
+      <h1>Sistem Administrasi<br>Dukuh Majegan</h1>
+      <p>Pandowoharjo, Sleman, D.I. Yogyakarta</p>
+    </div>
+    <div id="alert-login" class="alert alert-merah"></div>
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="login-username" placeholder="Masukkan username" value="dukuh">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="login-password" placeholder="Masukkan password" value="password">
+    </div>
+    <button class="btn btn-hijau btn-full" onclick="login()">🔐 Masuk</button>
+    <p style="text-align:center; margin-top:16px; font-size:12px; color:var(--abu)">
+      Default: dukuh / password
+    </p>
+  </div>
+</div>
+
+<!-- ====== MAIN APP ====== -->
+<div id="app">
+  <div class="layout">
+    
+    <!-- OVERLAY SIDEBAR (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="tutupSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+      <button class="sidebar-close" onclick="tutupSidebar()" aria-label="Tutup menu">✕</button>
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="icon">🏛️</div>
+          <div>
+            <h2>Dukuh Majegan</h2>
+            <p>Pandowoharjo, Sleman</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Menu Utama</div>
+        <div class="nav-item aktif" onclick="buka('dashboard')">
+          <span class="ikon">📊</span> Dashboard
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Data Warga</div>
+        <div class="nav-item" onclick="buka('warga')">
+          <span class="ikon">👥</span> Data Warga
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Administrasi</div>
+        <div class="nav-item" onclick="buka('surat')">
+          <span class="ikon">📄</span> Surat & Izin
+        </div>
+        <div class="nav-item" onclick="buka('pengumuman')">
+          <span class="ikon">📢</span> Pengumuman
+        </div>
+        <div class="nav-item" onclick="buka('kegiatan')">
+          <span class="ikon">📅</span> Kegiatan
+        </div>
+        <div class="nav-item" onclick="buka('dokumen')">
+          <span class="ikon">📁</span> Dokumen KTP & KK
+        </div>
+        <div class="nav-item" onclick="buka('bantuan')">
+          <span class="ikon">🤝</span> Bantuan Pemerintah
+        </div>
+      </div>
+
+      <div class="nav-section" style="margin-top:auto">
+        <div class="nav-label">Akun</div>
+        <div class="nav-item" onclick="window.open('/pengajuan.html','_blank')">
+          <span class="ikon">📋</span> Form Pengajuan Warga
+        </div>
+        <div class="nav-item" onclick="logout()">
+          <span class="ikon">🚪</span> Keluar
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div class="main">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <button class="hamburger" id="btn-hamburger" onclick="toggleSidebar()" aria-label="Buka menu">
+            <span></span><span></span><span></span>
+          </button>
+          <h2 id="judul-halaman">Dashboard</h2>
+        </div>
+        <div class="topbar-right">
+          <div class="user-badge">
+            <div class="avatar" id="avatar-user">D</div>
+            <div class="user-info">
+              <div class="nama" id="nama-user">Dukuh</div>
+              <div class="role" id="role-user">Administrator</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- ===== DASHBOARD ===== -->
+        <div id="hal-dashboard" class="halaman aktif">
+          <div class="stat-grid" id="stat-grid">
+            <div class="stat-kartu">
+              <div class="stat-ikon hijau">👥</div>
+              <div class="stat-info"><div class="angka" id="stat-warga">—</div><div class="label">Total Warga</div></div>
+            </div>
+            <div class="stat-kartu">
+              <div class="stat-ikon biru">🏠</div>
+              <div class="stat-info"><div class="angka" id="stat-kk">—</div><div class="label">Kepala Keluarga</div></div>
+            </div>
+            <div class="stat-kartu">
+              <div class="stat-ikon kuning">📄</div>
+              <div class="stat-info"><div class="angka" id="stat-surat">—</div><div class="label">Surat Bulan Ini</div></div>
+            </div>
+            <div class="stat-kartu">
+              <div class="stat-ikon merah">⏳</div>
+              <div class="stat-info"><div class="angka" id="stat-pending">—</div><div class="label">Surat Pending</div></div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid-bawah" style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+            <div class="kartu">
+              <div class="kartu-header">
+                <h3>📄 Surat Terbaru</h3>
+                <button class="btn btn-abu" onclick="buka('surat')">Lihat Semua</button>
+              </div>
+              <div id="surat-terbaru"><div class="loading"><div class="spinner"></div>Memuat...</div></div>
+            </div>
+            <div class="kartu">
+              <div class="kartu-header">
+                <h3>📢 Pengumuman Aktif</h3>
+                <button class="btn btn-abu" onclick="buka('pengumuman')">Lihat Semua</button>
+              </div>
+              <div id="pengumuman-terbaru"><div class="loading"><div class="spinner"></div>Memuat...</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== KARTU KELUARGA ===== -->
+        <!-- ===== DATA WARGA (merged with KK) ===== -->
+        <div id="hal-kk" class="halaman" style="display:none"></div>
+
+        <div id="hal-warga" class="halaman">
+          <!-- HEADER BAR -->
+          <div class="kartu" style="margin-bottom:16px">
+            <div class="kartu-header" style="flex-wrap:wrap;gap:10px">
+              <h3>👥 Data Warga</h3>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <input type="text" id="cari-warga" placeholder="🔍 Cari nama, NIK, atau no. KK..." oninput="muatWarga()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;min-width:220px;outline:none">
+                <select id="filter-status-warga" onchange="muatWarga()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+                  <option value="">Semua Status</option>
+                  <option value="domisili_asli">Domisili Asli</option>
+                  <option value="non_ktp">Penduduk non KTP</option>
+                  <option value="sementara">Penduduk Sementara</option>
+                  <option value="non_domisili">Penduduk non Domisili</option>
+                </select>
+                <select id="filter-hubungan-warga" onchange="muatWarga()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+                  <option value="">Semua Hubungan</option>
+                  <option>Kepala Keluarga</option>
+                  <option>Istri</option><option>Anak</option>
+                  <option>Menantu</option><option>Cucu</option>
+                  <option>Orang Tua</option><option>Mertua</option>
+                  <option>Famili Lain</option>
+                </select>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-abu" onclick="bukModal('modal-import')" title="Import dari Excel">📥 Import Excel</button>
+                  <button class="btn btn-hijau" onclick="modalWarga()">👤 + Warga</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DAFTAR KK ACCORDION -->
+          <div id="list-kk-warga">
+            <div style="text-align:center;padding:40px;color:var(--abu)"><div class="spinner" style="margin:0 auto 12px"></div>Memuat data...</div>
+          </div>
+          <div class="pagination" id="pag-warga"></div>
+        </div>
+
+        <!-- ===== SURAT ===== -->
+        <div id="hal-surat" class="halaman">
+          <div class="kartu">
+            <div class="kartu-header">
+              <h3>📄 Manajemen Surat</h3>
+              <button class="btn btn-hijau" onclick="modalSurat()">+ Buat Surat</button>
+            </div>
+            <div class="filter-bar">
+              <input type="text" id="cari-surat" placeholder="🔍 Cari nama atau no. surat..." oninput="muatSurat()">
+              <select id="filter-status-surat" onchange="muatSurat()">
+                <option value="">Semua Status</option>
+                <option value="pending">Pending</option>
+                <option value="diproses">Diproses</option>
+                <option value="selesai">Selesai</option>
+                <option value="ditolak">Ditolak</option>
+              </select>
+              <select id="filter-jenis-surat" onchange="muatSurat()">
+                <option value="">Semua Jenis</option>
+                <option>Surat Keterangan Domisili</option>
+                <option>Surat Keterangan Tidak Mampu</option>
+                <option>Surat Keterangan Usaha</option>
+                <option>Surat Keterangan Kelahiran</option>
+                <option>Surat Keterangan Kematian</option>
+                <option>Surat Izin Keramaian</option>
+                <option>Surat Pengantar</option>
+                <option>Surat Pemberitahuan</option>
+              </select>
+            </div>
+            <div class="tabel-container">
+              <table>
+                <thead><tr>
+                  <th>No. Surat</th><th>Jenis Surat</th><th>Pemohon</th>
+                  <th>Keperluan</th><th>Status</th><th>Tanggal</th><th>Aksi</th>
+                </tr></thead>
+                <tbody id="tbody-surat">
+                  <tr><td colspan="7" class="loading"><div class="spinner"></div>Memuat data...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination" id="pag-surat"></div>
+          </div>
+        </div>
+
+        <!-- ===== PENGUMUMAN ===== -->
+        <div id="hal-pengumuman" class="halaman">
+          <div class="kartu">
+            <div class="kartu-header">
+              <h3>📢 Pengumuman Dukuh</h3>
+              <button class="btn btn-hijau" onclick="modalPengumuman()">+ Tambah Pengumuman</button>
+            </div>
+            <div class="pengumuman-grid" id="grid-pengumuman">
+              <div class="loading"><div class="spinner"></div>Memuat...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== KEGIATAN ===== -->
+        <div id="hal-kegiatan" class="halaman">
+          <div class="kartu">
+            <div class="kartu-header">
+              <h3>📅 Kegiatan Dukuh</h3>
+              <button class="btn btn-hijau" onclick="modalKegiatan()">+ Tambah Kegiatan</button>
+            </div>
+            <div class="tabel-container">
+              <table>
+                <thead><tr>
+                  <th>Nama Kegiatan</th><th>Tanggal</th><th>Waktu</th>
+                  <th>Lokasi</th><th>Penanggung Jawab</th><th>Status</th><th>Aksi</th>
+                </tr></thead>
+                <tbody id="tbody-kegiatan">
+                  <tr><td colspan="7" class="loading"><div class="spinner"></div>Memuat data...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== DOKUMEN ===== -->
+        <div id="hal-dokumen" class="halaman">
+          <div class="kartu" style="margin-bottom:16px">
+            <div class="kartu-header" style="flex-wrap:wrap;gap:10px">
+              <h3>📁 Dokumen Warga (KTP & KK)</h3>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <input type="text" id="cari-dokumen"
+                  placeholder="🔍 Cari NIK atau nama..."
+                  style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;min-width:220px;outline:none"
+                  oninput="muatDokumen()" onkeypress="if(event.key==='Enter') muatDokumen()">
+                <select id="filter-dokumen" onchange="muatDokumen()"
+                  style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+                  <option value="">Semua</option>
+                  <option value="lengkap">✅ Dokumen Lengkap</option>
+                  <option value="sebagian">⚠️ Sebagian</option>
+                  <option value="kosong">❌ Belum Ada</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabel warga + status dokumen -->
+          <div class="kartu" style="padding:0;overflow:hidden">
+            <div class="tabel-container">
+              <table id="tabel-dokumen">
+                <thead><tr>
+                  <th>Nama / NIK</th>
+                  <th style="text-align:center">KTP</th>
+                  <th style="text-align:center">KK</th>
+                </tr></thead>
+                <tbody id="tbody-dokumen">
+                  <tr><td colspan="3" class="loading"><div class="spinner"></div>Memuat data...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination" id="pag-dokumen" style="padding:12px 20px"></div>
+          </div>
+        </div>
+
+        <!-- ===== BANTUAN PEMERINTAH ===== -->
+        <div id="hal-bantuan" class="halaman">
+          <!-- Tab Navigasi -->
+          <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+            <button id="tab-btn-penerima" class="btn btn-hijau" onclick="switchTabBantuan('penerima')">🤝 Penerima Bantuan</button>
+            <button id="tab-btn-jenis" class="btn btn-abu" onclick="switchTabBantuan('jenis')">📋 Kelola Jenis Bantuan</button>
+          </div>
+
+          <!-- Tab: Penerima Bantuan -->
+          <div id="tab-penerima">
+            <div class="kartu">
+              <div class="kartu-header" style="flex-wrap:wrap;gap:10px">
+                <h3>🤝 Daftar Penerima Bantuan</h3>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                  <input type="text" id="cari-bantuan" placeholder="🔍 Cari nama / NIK / bantuan..."
+                    style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;min-width:200px;outline:none"
+                    oninput="muatBantuanWarga()">
+                  <select id="filter-jenis-bantuan" onchange="muatBantuanWarga()"
+                    style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+                    <option value="">Semua Jenis</option>
+                  </select>
+                  <select id="filter-status-bantuan" onchange="muatBantuanWarga()"
+                    style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+                    <option value="">Semua Status</option>
+                    <option value="aktif">Aktif</option>
+                    <option value="selesai">Selesai</option>
+                    <option value="ditangguhkan">Ditangguhkan</option>
+                    <option value="tidak_layak">Tidak Layak</option>
+                  </select>
+                  <button class="btn btn-hijau" onclick="modalBantuanWarga()">+ Tambah Penerima</button>
+                </div>
+              </div>
+              <div class="tabel-container">
+                <table>
+                  <thead><tr>
+                    <th>Warga</th><th>NIK</th><th>Jenis Bantuan</th>
+                    <th>Bentuk</th><th>Jumlah/Barang</th><th>Periode</th>
+                    <th>Frekuensi</th><th>Status</th><th>Aksi</th>
+                  </tr></thead>
+                  <tbody id="tbody-bantuan-warga">
+                    <tr><td colspan="9" class="loading"><div class="spinner"></div>Memuat data...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="pagination" id="pag-bantuan" style="padding:12px 20px"></div>
+            </div>
+          </div>
+
+          <!-- Tab: Kelola Jenis Bantuan -->
+          <div id="tab-jenis" style="display:none">
+            <div class="kartu">
+              <div class="kartu-header" style="flex-wrap:wrap;gap:10px">
+                <h3>📋 Daftar Jenis Bantuan</h3>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <select id="filter-aktif-jenis" onchange="muatJenisBantuan()"
+                    style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+                    <option value="">Semua</option>
+                    <option value="true">Aktif</option>
+                    <option value="false">Nonaktif</option>
+                  </select>
+                  <button class="btn btn-hijau" onclick="modalJenisBantuan()">+ Tambah Jenis</button>
+                </div>
+              </div>
+              <div class="tabel-container">
+                <table>
+                  <thead><tr>
+                    <th>Kode</th><th>Nama Bantuan</th><th>Penyelenggara</th>
+                    <th>Kategori</th><th>Status</th><th>Aksi</th>
+                  </tr></thead>
+                  <tbody id="tbody-jenis-bantuan">
+                    <tr><td colspan="6" class="loading"><div class="spinner"></div>Memuat data...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /content -->
+    </div><!-- /main -->
+  </div><!-- /layout -->
+</div><!-- /app -->
+
+<!-- Modal Tambah/Edit Penerima Bantuan -->
+<div class="modal-overlay" id="modal-bantuan-warga">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-header">
+      <h3 id="modal-bw-judul">Tambah Penerima Bantuan</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-bantuan-warga')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="bw-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Cari Warga (Nama / NIK) *</label>
+          <input type="text" id="bw-cari-warga" placeholder="Ketik nama atau NIK..." oninput="cariWargaBantuan()" autocomplete="off">
+          <div id="bw-warga-dropdown" style="display:none;position:absolute;background:white;border:1.5px solid var(--border);border-radius:10px;max-height:180px;overflow-y:auto;z-index:999;width:auto;min-width:300px;box-shadow:var(--bayangan)"></div>
+          <input type="hidden" id="bw-nik">
+          <div id="bw-warga-dipilih" style="display:none;margin-top:8px;padding:10px 14px;background:var(--abu-muda);border-radius:8px;font-size:13px"></div>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Jenis Bantuan *</label>
+          <select id="bw-jenis-bantuan">
+            <option value="">-- Pilih Jenis Bantuan --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Bentuk Bantuan *</label>
+          <select id="bw-bentuk" onchange="toggleBentukBantuan()">
+            <option value="uang">💰 Uang / Tunai</option>
+            <option value="barang">📦 Barang / Natura</option>
+            <option value="campuran">🔀 Campuran</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Frekuensi Penyaluran</label>
+          <select id="bw-frekuensi">
+            <option value="">-- Pilih --</option>
+            <option value="sekali">Sekali</option>
+            <option value="bulanan">Bulanan</option>
+            <option value="triwulan">Triwulan</option>
+            <option value="semesteran">Semesteran</option>
+            <option value="tahunan">Tahunan</option>
+          </select>
+        </div>
+        <div id="grup-jumlah-uang" class="form-group">
+          <label>Jumlah (Rp)</label>
+          <input type="number" id="bw-jumlah-uang" placeholder="Contoh: 300000" min="0">
+        </div>
+        <div id="grup-barang" class="form-group" style="grid-column:1/-1;display:none">
+          <label>Keterangan Barang/Natura</label>
+          <textarea id="bw-deskripsi-barang" placeholder="Contoh: 10 kg beras, 1 liter minyak goreng, 1 kg gula pasir..." rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Periode Mulai *</label>
+          <input type="date" id="bw-periode-mulai">
+        </div>
+        <div class="form-group">
+          <label>Periode Selesai</label>
+          <input type="date" id="bw-periode-selesai">
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="bw-status">
+            <option value="aktif">✅ Aktif</option>
+            <option value="selesai">🏁 Selesai</option>
+            <option value="ditangguhkan">⏸️ Ditangguhkan</option>
+            <option value="tidak_layak">❌ Tidak Layak</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Catatan</label>
+          <textarea id="bw-catatan" placeholder="Catatan tambahan (opsional)..." rows="2"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-bantuan-warga')">Batal</button>
+      <button class="btn btn-hijau" onclick="simpanBantuanWarga()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah/Edit Jenis Bantuan -->
+<div class="modal-overlay" id="modal-jenis-bantuan">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <h3 id="modal-jb-judul">Tambah Jenis Bantuan</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-jenis-bantuan')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="jb-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-group">
+          <label>Kode Bantuan *</label>
+          <input type="text" id="jb-kode" placeholder="Contoh: PKH, BPNT" style="text-transform:uppercase">
+        </div>
+        <div class="form-group">
+          <label>Kategori</label>
+          <select id="jb-kategori">
+            <option value="">-- Pilih --</option>
+            <option value="tunai">💰 Tunai</option>
+            <option value="sembako">🛒 Sembako / Pangan</option>
+            <option value="pendidikan">🎓 Pendidikan</option>
+            <option value="kesehatan">🏥 Kesehatan</option>
+            <option value="perumahan">🏠 Perumahan</option>
+            <option value="pertanian">🌾 Pertanian</option>
+            <option value="modal_usaha">💼 Modal Usaha</option>
+            <option value="lainnya">📦 Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Nama Bantuan *</label>
+          <input type="text" id="jb-nama" placeholder="Contoh: Program Keluarga Harapan (PKH)">
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Penyelenggara</label>
+          <input type="text" id="jb-penyelenggara" placeholder="Contoh: Kemensos RI, Pemkab Sleman">
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Deskripsi</label>
+          <textarea id="jb-deskripsi" placeholder="Penjelasan singkat tentang bantuan ini..." rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="jb-aktif">
+            <option value="true">✅ Aktif</option>
+            <option value="false">❌ Nonaktif</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-jenis-bantuan')">Batal</button>
+      <button class="btn btn-hijau" onclick="simpanJenisBantuan()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Import Excel -->
+<div class="modal-overlay" id="modal-import">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-header">
+      <h3>📥 Import Data dari Excel</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-import')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Download template -->
+      <div style="background:var(--hijau-pucat,#e8f5ee);border:1.5px solid #4aba7a;border-radius:10px;padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px">
+        <div style="font-size:28px">📋</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:13px;color:var(--hijau)">Belum punya template?</div>
+          <div style="font-size:12px;color:var(--teks-muda,#64748b);margin-top:2px">Download template Excel yang sudah disiapkan dengan format yang benar.</div>
+        </div>
+        <a href="/template_import_warga.xlsx" download
+          style="background:var(--hijau);color:white;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap">
+          ⬇️ Download Template
+        </a>
+      </div>
+
+      <!-- Pilih sheet -->
+      <div class="form-group" style="margin-bottom:14px">
+        <label style="font-size:13px;font-weight:600;color:var(--teks)">Jenis Data yang Diimport <span style="color:var(--merah)">*</span></label>
+        <select id="import-sheet" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;outline:none;margin-top:6px">
+          <option value="Data KK">🏠 Data KK (Kartu Keluarga)</option>
+          <option value="Data Warga">👤 Data Warga (Anggota)</option>
+        </select>
+        <div style="font-size:11px;color:var(--abu,#64748b);margin-top:5px">
+          ⚠️ Import <strong>Data KK</strong> terlebih dahulu sebelum import <strong>Data Warga</strong>
+        </div>
+      </div>
+
+      <!-- Upload file -->
+      <div class="form-group" style="margin-bottom:0">
+        <label style="font-size:13px;font-weight:600;color:var(--teks)">Pilih File Excel (.xlsx) <span style="color:var(--merah)">*</span></label>
+        <div id="import-dropzone"
+          style="margin-top:8px;border:2px dashed var(--border);border-radius:10px;padding:28px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--abu-muda,#f1f5f9)"
+          onclick="document.getElementById('import-file').click()"
+          ondragover="event.preventDefault();this.style.borderColor='var(--hijau)';this.style.background='#e8f5ee'"
+          ondragleave="this.style.borderColor='var(--border)';this.style.background='var(--abu-muda)'"
+          ondrop="event.preventDefault();this.style.borderColor='var(--border)';this.style.background='var(--abu-muda)';handleImportDrop(event)">
+          <div style="font-size:32px">📂</div>
+          <div style="font-size:13px;font-weight:600;color:var(--teks);margin-top:8px" id="import-file-label">Klik atau drag file .xlsx ke sini</div>
+          <div style="font-size:11px;color:var(--abu);margin-top:4px">Format: .xlsx | Maks: 10MB</div>
+          <input type="file" id="import-file" accept=".xlsx" style="display:none" onchange="updateImportLabel(this)">
+        </div>
+      </div>
+
+      <!-- Hasil import -->
+      <div id="import-hasil" style="display:none;margin-top:16px"></div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-import')">Tutup</button>
+      <button class="btn btn-hijau" id="btn-import-proses" onclick="prosesImport()">
+        <span id="import-label">📥 Proses Import</span>
+        <div id="import-spinner" class="spinner" style="display:none"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Preview Dokumen -->
+
+<div class="modal-overlay" id="modal-preview-dok" onclick="tutupModal('modal-preview-dok')" style="background:rgba(0,0,0,0.88)">
+  <div style="position:relative;max-width:92vw;max-height:92vh" onclick="event.stopPropagation()">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="color:white;font-size:14px;font-weight:600" id="preview-dok-judul"></div>
+      <div style="display:flex;gap:8px">
+        <button id="preview-dok-print" onclick="printDokDariPreview()"
+          style="background:white;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px">
+          🖨️ Print
+        </button>
+        <button id="preview-dok-download" onclick="downloadDokDariPreview()"
+          style="background:var(--hijau);color:white;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px">
+          ⬇️ Download
+        </button>
+        <button onclick="tutupModal('modal-preview-dok')"
+          style="background:rgba(255,255,255,0.15);border:none;color:white;font-size:20px;width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">
+          ✕
+        </button>
+      </div>
+    </div>
+    <!-- Gambar -->
+    <img id="preview-dok-img"
+      style="max-width:90vw;max-height:80vh;border-radius:10px;display:block;box-shadow:0 8px 40px rgba(0,0,0,0.5)">
+    <!-- PDF -->
+    <div id="preview-dok-pdf"
+      style="display:none;background:white;border-radius:10px;padding:40px;text-align:center;min-width:300px">
+      <div style="font-size:64px">📄</div>
+      <div style="font-size:15px;font-weight:600;margin:12px 0 6px">File PDF</div>
+      <div style="font-size:13px;color:#666">Klik Download atau Print untuk membuka</div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal lihat foto fullscreen -->
+<div class="modal-overlay" id="modal-foto" onclick="tutupModal('modal-foto')" style="background:rgba(0,0,0,0.85)">
+  <div style="max-width:90vw;max-height:90vh;position:relative" onclick="event.stopPropagation()">
+    <button onclick="tutupModal('modal-foto')" style="position:absolute;top:-36px;right:0;background:none;border:none;color:white;font-size:24px;cursor:pointer">✕</button>
+    <img id="modal-foto-img" style="max-width:90vw;max-height:85vh;border-radius:8px;display:block">
+  </div>
+</div>
+
+<!-- Modal detail dokumen per warga -->
+<div class="modal-overlay" id="modal-dokumen">
+  <div class="modal" style="max-width:720px">
+    <div class="modal-header">
+      <h3 id="modal-dok-judul">Dokumen Warga</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-dokumen')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-dok-info" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--abu-muda);border-radius:10px;margin-bottom:20px">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <!-- KTP -->
+        <div class="dok-box">
+          <div class="dok-judul">🪪 Foto KTP</div>
+          <div class="dok-preview" id="modal-preview-ktp" style="min-height:180px;cursor:pointer" onclick="lihatDokumen('ktp')">
+            <div class="dok-kosong" id="modal-kosong-ktp">📄 Belum ada foto KTP<br><small style="color:var(--abu)">Upload di bawah</small></div>
+            <img id="modal-img-ktp" style="display:none;width:100%;border-radius:8px" title="Klik untuk perbesar">
+            <div id="modal-pdf-ktp" style="display:none;text-align:center;padding:30px">
+              <div style="font-size:40px">📄</div>
+              <div style="font-size:12px;color:var(--abu);margin-top:6px">File PDF — klik untuk buka</div>
+            </div>
+          </div>
+          <div class="dok-aksi">
+            <label class="btn btn-hijau" style="cursor:pointer;font-size:13px;padding:7px 14px;display:inline-flex;align-items:center;gap:6px">
+              📤 Upload KTP
+              <input type="file" id="modal-file-ktp" accept="image/*,.pdf" style="display:none" onchange="uploadDokumen('ktp')">
+            </label>
+            <button class="btn btn-abu" id="modal-btn-dl-ktp" onclick="downloadDokumen('ktp')" style="display:none;font-size:13px;padding:7px 14px">⬇️ Download</button>
+            <button class="aksi-btn aksi-hapus" id="modal-btn-del-ktp" onclick="hapusDokumen('ktp')" style="display:none" title="Hapus KTP">🗑️</button>
+          </div>
+        </div>
+
+        <!-- KK -->
+        <div class="dok-box">
+          <div class="dok-judul">🏠 Foto KK</div>
+          <div class="dok-preview" id="modal-preview-kk" style="min-height:180px;cursor:pointer" onclick="lihatDokumen('kk')">
+            <div class="dok-kosong" id="modal-kosong-kk">📄 Belum ada foto KK<br><small style="color:var(--abu)">Upload di bawah</small></div>
+            <img id="modal-img-kk" style="display:none;width:100%;border-radius:8px" title="Klik untuk perbesar">
+            <div id="modal-pdf-kk" style="display:none;text-align:center;padding:30px">
+              <div style="font-size:40px">📄</div>
+              <div style="font-size:12px;color:var(--abu);margin-top:6px">File PDF — klik untuk buka</div>
+            </div>
+          </div>
+          <div class="dok-aksi">
+            <label class="btn btn-hijau" style="cursor:pointer;font-size:13px;padding:7px 14px;display:inline-flex;align-items:center;gap:6px">
+              📤 Upload KK
+              <input type="file" id="modal-file-kk" accept="image/*,.pdf" style="display:none" onchange="uploadDokumen('kk')">
+            </label>
+            <button class="btn btn-abu" id="modal-btn-dl-kk" onclick="downloadDokumen('kk')" style="display:none;font-size:13px;padding:7px 14px">⬇️ Download</button>
+            <button class="aksi-btn aksi-hapus" id="modal-btn-del-kk" onclick="hapusDokumen('kk')" style="display:none" title="Hapus KK">🗑️</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-dokumen')">Tutup</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============ MODALS ============ -->
+
+<!-- Modal KK -->
+<div class="modal-overlay" id="modal-warga">
+  <div class="modal" style="max-width:760px">
+    <div class="modal-header">
+      <h3 id="modal-warga-judul">Tambah Data Warga</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-warga')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="warga-id">
+      <input type="hidden" id="kk-id">
+
+      <!-- ── SEKSI DATA KK ── -->
+      <div id="seksi-kk">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:700;color:var(--teks);display:flex;align-items:center;gap:6px">
+            🏠 Data Kartu Keluarga
+          </div>
+          <div id="toggle-kk-bar" style="display:flex;gap:6px">
+            <button type="button" id="btn-kk-pilih" class="btn-toggle-kk aktif" onclick="modeKK('pilih')">Pilih KK</button>
+            <button type="button" id="btn-kk-baru" class="btn-toggle-kk" onclick="modeKK('baru')">+ KK Baru</button>
+          </div>
+        </div>
+
+        <!-- Pilih KK yang ada -->
+        <div id="kk-mode-pilih">
+          <div class="form-group">
+            <label>Pilih Kartu Keluarga <span style="color:var(--merah)">*</span></label>
+            <select id="warga-no_kk" onchange="isiInfoKK(this.value)">
+              <option value="">— Pilih No. KK —</option>
+            </select>
+          </div>
+          <div id="kk-info-preview" style="display:none;background:var(--abu-muda);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--teks);margin-top:4px">
+          </div>
+        </div>
+
+        <!-- Input KK baru -->
+        <div id="kk-mode-baru" style="display:none">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>No. Kartu Keluarga <span style="color:var(--merah)">*</span></label>
+              <input type="text" id="kk-no_kk" placeholder="16 digit No. KK" maxlength="16" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')">
+            </div>
+            <div class="form-group">
+              <label>Nama Kepala Keluarga <span style="color:var(--merah)">*</span></label>
+              <input type="text" id="kk-nama_kepala" placeholder="Nama lengkap">
+            </div>
+            <div class="form-group form-full">
+              <label>Alamat <span style="color:var(--merah)">*</span></label>
+              <input type="text" id="kk-alamat" placeholder="Jl/Gang/Nomor rumah">
+            </div>
+            <div class="form-group">
+              <label>RT</label>
+              <input type="text" id="kk-rt" placeholder="001" maxlength="4">
+            </div>
+            <div class="form-group">
+              <label>RW</label>
+              <input type="text" id="kk-rw" placeholder="001" maxlength="4">
+            </div>
+            <div class="form-group">
+              <label>Telepon KK</label>
+              <input type="text" id="kk-telepon" placeholder="08xxxx">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top:2px dashed var(--border);margin:18px 0"></div>
+
+      <!-- ── SEKSI DATA WARGA ── -->
+      <div style="font-size:13px;font-weight:700;color:var(--teks);margin-bottom:12px;display:flex;align-items:center;gap:6px">
+        👤 Data Anggota
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>NIK (16 digit) <span style="color:var(--merah)">*</span></label>
+          <input type="text" id="warga-nik" placeholder="NIK warga" maxlength="16" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')">
+        </div>
+        <div class="form-group">
+          <label>Status Hubungan <span style="color:var(--merah)">*</span></label>
+          <select id="warga-status_hubungan">
+            <option value="">Pilih</option>
+            <option>Kepala Keluarga</option><option>Istri</option><option>Anak</option>
+            <option>Menantu</option><option>Cucu</option>
+            <option>Orang Tua</option><option>Mertua</option><option>Famili Lain</option>
+          </select>
+        </div>
+        <div class="form-group form-full">
+          <label>Nama Lengkap <span style="color:var(--merah)">*</span></label>
+          <input type="text" id="warga-nama_lengkap" placeholder="Nama sesuai KTP">
+        </div>
+        <div class="form-group">
+          <label>Tempat Lahir</label>
+          <input type="text" id="warga-tempat_lahir" placeholder="Kota">
+        </div>
+        <div class="form-group">
+          <label>Tanggal Lahir</label>
+          <input type="date" id="warga-tanggal_lahir">
+        </div>
+        <div class="form-group">
+          <label>Jenis Kelamin</label>
+          <select id="warga-jenis_kelamin">
+            <option value="">Pilih</option>
+            <option>Laki-laki</option><option>Perempuan</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Agama</label>
+          <select id="warga-agama">
+            <option value="">Pilih</option>
+            <option>Islam</option><option>Kristen</option><option>Katolik</option>
+            <option>Hindu</option><option>Buddha</option><option>Konghucu</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Pendidikan</label>
+          <select id="warga-pendidikan">
+            <option value="">Pilih</option>
+            <option>Tidak/Belum Sekolah</option><option>SD</option><option>SMP</option>
+            <option>SMA/SMK</option><option>D1/D2/D3</option><option>S1</option>
+            <option>S2</option><option>S3</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Pekerjaan</label>
+          <input type="text" id="warga-pekerjaan" placeholder="Pekerjaan">
+        </div>
+        <div class="form-group">
+          <label>Status Perkawinan</label>
+          <select id="warga-status_perkawinan">
+            <option value="">Pilih</option>
+            <option>Belum Kawin</option><option>Kawin</option>
+            <option>Cerai Hidup</option><option>Cerai Mati</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Golongan Darah</label>
+          <select id="warga-golongan_darah">
+            <option value="">Pilih</option>
+            <option>A</option><option>B</option><option>AB</option><option>O</option>
+            <option>A+</option><option>B+</option><option>AB+</option><option>O+</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Telepon</label>
+          <input type="text" id="warga-telepon" placeholder="08xxxx">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="warga-email" placeholder="email@contoh.com">
+        </div>
+        <div class="form-group">
+          <label>Status Tinggal</label>
+          <select id="warga-status_tinggal">
+            <option value="domisili_asli">Domisili Asli</option>
+            <option value="non_ktp">Penduduk non KTP</option>
+            <option value="sementara">Penduduk Sementara</option>
+            <option value="non_domisili">Penduduk non Domisili</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status Ekonomi</label>
+          <select id="warga-status_ekonomi">
+            <option value="mampu">✅ Mampu</option>
+            <option value="rentan_miskin">⚠️ Rentan Miskin</option>
+            <option value="miskin">🔴 Miskin</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-warga')">Batal</button>
+      <button class="btn btn-hijau" onclick="simpanWarga()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Edit KK (hanya edit, tanpa warga) -->
+<div class="modal-overlay" id="modal-kk">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-kk-judul">Edit Kartu Keluarga</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-kk')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="kk-edit-id">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label>No. Kartu Keluarga</label>
+          <input type="text" id="kk-edit-no_kk" disabled style="background:var(--abu-muda);color:var(--abu)">
+        </div>
+        <div class="form-group form-full">
+          <label>Nama Kepala Keluarga *</label>
+          <input type="text" id="kk-edit-nama_kepala" placeholder="Nama lengkap">
+        </div>
+        <div class="form-group form-full">
+          <label>Alamat *</label>
+          <input type="text" id="kk-edit-alamat" placeholder="Jl/Gang/Nomor rumah">
+        </div>
+        <div class="form-group">
+          <label>RT</label>
+          <input type="text" id="kk-edit-rt" placeholder="001">
+        </div>
+        <div class="form-group">
+          <label>RW</label>
+          <input type="text" id="kk-edit-rw" placeholder="001">
+        </div>
+        <div class="form-group form-full">
+          <label>Telepon</label>
+          <input type="text" id="kk-edit-telepon" placeholder="08xxxx">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-kk')">Batal</button>
+      <button class="btn btn-hijau" onclick="simpanKK()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Surat -->
+
+<div class="modal-overlay" id="modal-surat">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>📄 Buat Surat Baru</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-surat')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label>Jenis Surat *</label>
+          <select id="surat-jenis">
+            <option value="">Pilih Jenis Surat</option>
+            <option>Surat Keterangan Domisili</option>
+            <option>Surat Keterangan Tidak Mampu</option>
+            <option>Surat Keterangan Usaha</option>
+            <option>Surat Keterangan Kelahiran</option>
+            <option>Surat Keterangan Kematian</option>
+            <option>Surat Izin Keramaian</option>
+            <option>Surat Pengantar</option>
+            <option>Surat Pemberitahuan</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>NIK Pemohon</label>
+          <input type="text" id="surat-nik" placeholder="NIK (opsional)" maxlength="16">
+        </div>
+        <div class="form-group">
+          <label>Nama Pemohon *</label>
+          <input type="text" id="surat-nama" placeholder="Nama pemohon">
+        </div>
+        <div class="form-group form-full">
+          <label>Perihal</label>
+          <input type="text" id="surat-perihal" placeholder="Perihal singkat">
+        </div>
+        <div class="form-group form-full">
+          <label>Keperluan / Keterangan</label>
+          <textarea id="surat-keperluan" placeholder="Jelaskan keperluan pembuatan surat..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-surat')">Batal</button>
+      <button class="btn btn-hijau" onclick="simpanSurat()">📄 Buat Surat</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Update Status Surat -->
+<div class="modal-overlay" id="modal-status-surat">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <h3>Update Status Surat</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-status-surat')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="status-surat-id">
+      <div class="form-group">
+        <label>Status Baru</label>
+        <select id="status-surat-nilai">
+          <option value="pending">⏳ Pending</option>
+          <option value="diproses">🔄 Diproses</option>
+          <option value="selesai">✅ Selesai</option>
+          <option value="ditolak">❌ Ditolak</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Catatan</label>
+        <textarea id="status-surat-catatan" placeholder="Catatan (opsional)"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-status-surat')">Batal</button>
+      <button class="btn btn-hijau" onclick="updateStatusSurat()">💾 Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Pengumuman -->
+<div class="modal-overlay" id="modal-pengumuman">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-pengumuman-judul">Tambah Pengumuman</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-pengumuman')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="pengumuman-id">
+      <div class="form-group">
+        <label>Judul Pengumuman *</label>
+        <input type="text" id="pengumuman-judul" placeholder="Judul pengumuman">
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Kategori</label>
+          <select id="pengumuman-kategori">
+            <option value="umum">Umum</option>
+            <option value="kesehatan">Kesehatan</option>
+            <option value="keamanan">Keamanan</option>
+            <option value="infrastruktur">Infrastruktur</option>
+            <option value="sosial">Sosial</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Penting?</label>
+          <select id="pengumuman-penting">
+            <option value="false">Tidak</option>
+            <option value="true">Ya (Urgent)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tanggal Mulai</label>
+          <input type="date" id="pengumuman-mulai">
+        </div>
+        <div class="form-group">
+          <label>Tanggal Selesai</label>
+          <input type="date" id="pengumuman-selesai">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Isi Pengumuman *</label>
+        <textarea id="pengumuman-isi" placeholder="Isi pengumuman lengkap..." style="min-height:120px"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-pengumuman')">Batal</button>
+      <button class="btn btn-hijau" onclick="simpanPengumuman()">📢 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Kegiatan -->
+<div class="modal-overlay" id="modal-kegiatan">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-kegiatan-judul">Tambah Kegiatan</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-kegiatan')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="kegiatan-id">
+      <div class="form-group">
+        <label>Nama Kegiatan *</label>
+        <input type="text" id="kegiatan-nama" placeholder="Nama kegiatan">
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Tanggal *</label>
+          <input type="date" id="kegiatan-tanggal">
+        </div>
+        <div class="form-group">
+          <label>Waktu</label>
+          <input type="time" id="kegiatan-waktu">
+        </div>
+        <div class="form-group form-full">
+          <label>Lokasi</label>
+          <input type="text" id="kegiatan-lokasi" placeholder="Lokasi kegiatan">
+        </div>
+        <div class="form-group">
+          <label>Penanggung Jawab</label>
+          <input type="text" id="kegiatan-pj" placeholder="Nama PJ">
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="kegiatan-status">
+            <option value="rencana">Rencana</option>
+            <option value="berlangsung">Berlangsung</option>
+            <option value="selesai">Selesai</option>
+            <option value="batal">Batal</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Deskripsi</label>
+        <textarea id="kegiatan-deskripsi" placeholder="Deskripsi kegiatan..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-kegiatan')">Batal</button>
+      <button class="btn btn-hijau" onclick="simpanKegiatan()">📅 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+let token = localStorage.getItem('token_majegan') || '';
+let userData = {};
+let halamanWarga = 1;
+let halamanSurat = 1;
+
+// ====== AUTH ======
+async function login() {
+  const username = document.getElementById('login-username').value;
+  const password = document.getElementById('login-password').value;
+  const alert = document.getElementById('alert-login');
+  
+  try {
+    const res = await fetch(`${API}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    
+    if (!res.ok) {
+      alert.textContent = data.error;
+      alert.className = 'alert alert-merah show';
+      return;
+    }
+    
+    token = data.token;
+    userData = data.user;
+    localStorage.setItem('token_majegan', token);
+    
+    document.getElementById('halaman-login').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('nama-user').textContent = userData.nama;
+    document.getElementById('role-user').textContent = userData.role === 'dukuh' ? 'Kepala Dukuh' : 'Staff';
+    document.getElementById('avatar-user').textContent = userData.nama[0].toUpperCase();
+    
+    muatDashboard();
+  } catch {
+    alert.textContent = 'Tidak dapat terhubung ke server. Pastikan backend berjalan.';
+    alert.className = 'alert alert-merah show';
+  }
+}
+
+function logout() {
+  if (window.innerWidth <= 900) tutupSidebar();
+  token = '';
+  localStorage.removeItem('token_majegan');
+  location.reload();
+}
+
+document.getElementById('login-password').addEventListener('keypress', e => {
+  if (e.key === 'Enter') login();
+});
+
+// Auto-login jika token ada
+if (token) {
+  document.getElementById('halaman-login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  muatDashboard();
+}
+
+// ====== NAVIGASI ======
+// ===== SIDEBAR MOBILE =====
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const isOpen = sidebar.classList.contains('buka');
+  if (isOpen) {
+    tutupSidebar();
+  } else {
+    sidebar.classList.add('buka');
+    overlay.classList.add('aktif');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function tutupSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  sidebar.classList.remove('buka');
+  overlay.classList.remove('aktif');
+  document.body.style.overflow = '';
+}
+
+// Tutup sidebar otomatis saat pindah halaman di mobile
+function buka(hal) {
+  document.querySelectorAll('.halaman').forEach(h => h.classList.remove('aktif'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('aktif'));
+  document.getElementById('hal-' + hal).classList.add('aktif');
+  
+  const judulMap = {
+    dashboard: 'Dashboard', kk: 'Kartu Keluarga', warga: 'Data Warga',
+    surat: 'Surat & Izin', pengumuman: 'Pengumuman', kegiatan: 'Kegiatan',
+    dokumen: '📁 Dokumen KTP & KK', bantuan: '🤝 Bantuan Pemerintah'
+  };
+  document.getElementById('judul-halaman').textContent = judulMap[hal] || hal;
+  
+  const ikonMap = {
+    dashboard: '📊', warga: '👥',
+    surat: '📄', pengumuman: '📢', kegiatan: '📅'
+  };
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.textContent.trim().includes(judulMap[hal])) n.classList.add('aktif');
+  });
+  
+  if (hal === 'dashboard') muatDashboard();
+  else if (hal === 'kk') muatWarga();
+  else if (hal === 'warga') muatWarga();
+  else if (hal === 'surat') muatSurat();
+  else if (hal === 'pengumuman') muatPengumuman();
+  else if (hal === 'kegiatan') muatKegiatan();
+  else if (hal === 'dokumen') muatDokumen();
+  else if (hal === 'bantuan') { muatJenisBantuan(); muatBantuanWarga(); }
+
+  // Tutup sidebar otomatis di mobile setelah memilih menu
+  if (window.innerWidth <= 900) tutupSidebar();
+}
+
+// ====== API HELPER ======
+async function apiFetch(url, opts = {}) {
+  const res = await fetch(API + url, {
+    ...opts,
+    headers: { 
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      ...opts.headers 
+    }
+  });
+  if (res.status === 401) { logout(); return null; }
+  return res.json();
+}
+
+// ====== DASHBOARD ======
+async function muatDashboard() {
+  try {
+    const [statsW, statsS, surat, pengumuman] = await Promise.all([
+      apiFetch('/api/warga/statistik'),
+      apiFetch('/api/surat/statistik'),
+      apiFetch('/api/surat?limit=5'),
+      apiFetch('/api/pengumuman')
+    ]);
+
+    if (statsW) {
+      document.getElementById('stat-warga').textContent = statsW.total_warga?.toLocaleString() || '0';
+      document.getElementById('stat-kk').textContent = statsW.jumlah_kk?.toLocaleString() || '0';
+    }
+    if (statsS) {
+      document.getElementById('stat-surat').textContent = statsS.total || '0';
+      document.getElementById('stat-pending').textContent = statsS.pending || '0';
+    }
+
+    // Surat terbaru
+    if (surat?.data) {
+      const html = surat.data.slice(0,5).map(s => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border)">
+          <div>
+            <div style="font-size:13px; font-weight:600">${s.pemohon_nama}</div>
+            <div style="font-size:11px; color:var(--abu)">${s.jenis_surat}</div>
+          </div>
+          <span class="badge ${badgeSurat(s.status)}">${s.status}</span>
+        </div>
+      `).join('');
+      document.getElementById('surat-terbaru').innerHTML = html || '<p style="color:var(--abu);text-align:center;padding:20px">Belum ada surat</p>';
+    }
+
+    // Pengumuman
+    if (pengumuman) {
+      const html = pengumuman.slice(0,3).map(p => `
+        <div style="padding:12px 0; border-bottom:1px solid var(--border)">
+          <div style="display:flex; gap:8px; align-items:flex-start">
+            ${p.penting ? '<span class="badge badge-kuning">🔔 Penting</span>' : ''}
+            <span class="badge badge-abu">${p.kategori}</span>
+          </div>
+          <div style="font-size:14px; font-weight:600; margin-top:6px">${p.judul}</div>
+          <div style="font-size:12px; color:var(--abu); margin-top:4px">${p.isi.substring(0,100)}...</div>
+        </div>
+      `).join('');
+      document.getElementById('pengumuman-terbaru').innerHTML = html || '<p style="color:var(--abu);text-align:center;padding:20px">Belum ada pengumuman</p>';
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// ====== KK ======
+async function muatKK() { muatWarga(); }
+
+async function muatWarga() {
+  const cari = (document.getElementById('cari-warga')?.value || '').toLowerCase().trim();
+  const filterStatus = document.getElementById('filter-status-warga')?.value || '';
+  const filterHubungan = document.getElementById('filter-hubungan-warga')?.value || '';
+  const container = document.getElementById('list-kk-warga');
+  container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--abu)"><div class="spinner" style="margin:0 auto 12px;width:28px;height:28px;border-width:3px;border-color:var(--border);border-top-color:var(--hijau);border-radius:50%;animation:spin 0.7s linear infinite"></div>Memuat data...</div>';
+
+  // Ambil semua data tanpa filter di API — filter di client agar konsisten
+  const [kkList, wargaData] = await Promise.all([
+    apiFetch('/api/kk'),
+    apiFetch('/api/warga?limit=9999')
+  ]);
+
+  if (!kkList?.length && !wargaData?.data?.length) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--abu)">📭 Belum ada data. Tambahkan KK terlebih dahulu.</div>';
+    return;
+  }
+
+  // Filter warga di client — terapkan semua filter sekaligus
+  const semuaWarga = (wargaData?.data || []).filter(w => {
+    const cocokCari = !cari ||
+      w.nama_lengkap.toLowerCase().includes(cari) ||
+      w.nik.includes(cari) ||
+      (w.no_kk || '').includes(cari);
+    const cocokStatus = !filterStatus || w.status_tinggal === filterStatus;
+    const cocokHubungan = !filterHubungan || w.status_hubungan === filterHubungan;
+    return cocokCari && cocokStatus && cocokHubungan;
+  });
+
+  // Kelompokkan warga yang lolos filter per no_kk
+  const wargaPerKK = {};
+  semuaWarga.forEach(w => {
+    if (!wargaPerKK[w.no_kk]) wargaPerKK[w.no_kk] = [];
+    wargaPerKK[w.no_kk].push(w);
+  });
+
+  // Filter KK yang tampil:
+  // - Jika ada filter aktif: hanya KK yang punya anggota lolos filter
+  // - Jika tidak ada filter: semua KK tampil, termasuk KK kosong
+  const adaFilter = cari || filterStatus || filterHubungan;
+  let kkTampil = (kkList || []).filter(kk => {
+    if (adaFilter) {
+      // Saat filter aktif: KK nama/no_kk cocok pencarian ATAU punya anggota lolos filter
+      const cocokKK = cari && (
+        kk.nama_kepala.toLowerCase().includes(cari) ||
+        kk.no_kk.includes(cari)
+      );
+      const punyaAnggota = (wargaPerKK[kk.no_kk]?.length > 0);
+      return cocokKK || punyaAnggota;
+    }
+    return true; // tanpa filter: tampilkan semua KK
+  });
+
+  if (!kkTampil.length) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--abu)">🔍 Tidak ada data yang cocok dengan filter.</div>';
+    return;
+  }
+
+  const hubunganUrutan = ['Kepala Keluarga','Istri','Anak','Menantu','Cucu','Orang Tua','Mertua','Famili Lain'];
+
+  container.innerHTML = kkTampil.map((kk, idx) => {
+    const anggota = (wargaPerKK[kk.no_kk] || []).sort((a, b) =>
+      hubunganUrutan.indexOf(a.status_hubungan) - hubunganUrutan.indexOf(b.status_hubungan)
+    );
+    const jmlAnggota = kk.jumlah_anggota || anggota.length;
+    const accId = 'kk-acc-' + idx;
+
+    const barisAnggota = anggota.length ? anggota.map(w => {
+      const wJson = JSON.stringify(w).replace(/\\/g,'\\\\').replace(/"/g,'&quot;');
+      return `<tr>
+        <td>
+          <div style="font-weight:600;font-size:13px">${w.nama_lengkap}</div>
+          <div style="font-size:11px;color:var(--abu);font-family:monospace">${w.nik}</div>
+        </td>
+        <td><span class="hubungan-badge ${w.status_hubungan==='Kepala Keluarga'?'kk-utama':''}">${w.status_hubungan || '—'}</span></td>
+        <td>${w.jenis_kelamin === 'Laki-laki' ? '👨' : w.jenis_kelamin === 'Perempuan' ? '👩' : '—'} ${w.jenis_kelamin||''}</td>
+        <td>${w.tanggal_lahir ? new Date(w.tanggal_lahir).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}) : '—'}</td>
+        <td>${w.pekerjaan || '—'}</td>
+        <td>${badgeEkonomi(w.status_ekonomi)}</td>
+        <td><span class="badge ${badgeStatus(w.status_tinggal)}">${w.status_tinggal}</span></td>
+        <td style="white-space:nowrap">
+          <button class="aksi-btn aksi-edit" onclick='event.stopPropagation();modalWarga(${wJson})' title="Edit">✏️</button>
+          <button class="aksi-btn aksi-hapus" onclick="event.stopPropagation();hapusWarga('${w.id}')" title="Hapus">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="8" class="kk-kosong">Belum ada anggota terdaftar</td></tr>';
+
+    const kkJson = JSON.stringify(kk).replace(/"/g,'&quot;');
+    return `<div class="kk-kartu" id="${accId}">
+      <div class="kk-header" onclick="toggleKK('${accId}')">
+        <span class="kk-chevron">▶</span>
+        <div class="kk-icon">🏠</div>
+        <div class="kk-meta">
+          <div class="kk-meta-nama">${kk.nama_kepala}</div>
+          <div class="kk-meta-sub">No. KK: <code style="font-size:11px">${kk.no_kk}</code> &nbsp;·&nbsp; ${jmlAnggota} anggota${kk.rt ? ' &nbsp;·&nbsp; RT ' + kk.rt + '/RW ' + kk.rw : ''}</div>
+        </div>
+        <div class="kk-actions" onclick="event.stopPropagation()">
+          <button class="aksi-btn aksi-edit" onclick="modalKK(${kkJson})" title="Edit KK">✏️ Edit KK</button>
+          <button class="aksi-btn aksi-hapus" onclick="hapusKK('${kk.id}')" title="Hapus KK">🗑️</button>
+        </div>
+      </div>
+      <div class="kk-body">
+        <div class="kk-info-bar">
+          <span>📍 ${kk.alamat || '—'}</span>
+          ${kk.rt ? '<span>🏘️ RT ' + kk.rt + '/RW ' + kk.rw + '</span>' : ''}
+          ${kk.telepon ? '<span>📱 ' + kk.telepon + '</span>' : ''}
+        </div>
+        <div style="overflow-x:auto">
+          <table class="anggota-tabel">
+            <thead><tr>
+              <th>Nama / NIK</th><th>Hubungan</th><th>L/P</th>
+              <th>Tgl Lahir</th><th>Pekerjaan</th><th>Ekonomi</th><th>Status</th><th>Aksi</th>
+            </tr></thead>
+            <tbody>${barisAnggota}</tbody>
+          </table>
+        </div>
+        <div class="kk-tambah-warga">
+          <button class="btn-sm btn-sm-hijau" onclick="modalWargaKK('${kk.no_kk}')">👤 + Tambah Anggota</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleKK(id) {
+  document.getElementById(id).classList.toggle('buka');
+}
+
+// ====== MODE KK TOGGLE ======
+let _kkMode = 'pilih';
+
+function modeKK(mode) {
+  _kkMode = mode;
+  document.getElementById('kk-mode-pilih').style.display = mode === 'pilih' ? '' : 'none';
+  document.getElementById('kk-mode-baru').style.display  = mode === 'baru'  ? '' : 'none';
+  document.getElementById('btn-kk-pilih').classList.toggle('aktif', mode === 'pilih');
+  document.getElementById('btn-kk-baru').classList.toggle('aktif',  mode === 'baru');
+}
+
+function isiInfoKK(no_kk) {
+  const preview = document.getElementById('kk-info-preview');
+  if (!no_kk) { preview.style.display = 'none'; return; }
+  const sel = document.getElementById('warga-no_kk');
+  const opt = sel.options[sel.selectedIndex];
+  preview.style.display = '';
+  preview.innerHTML = '🏠 ' + opt.textContent;
+}
+
+async function modalWarga(data = null) {
+  const editMode = !!data;
+  document.getElementById('modal-warga-judul').textContent = editMode ? 'Edit Data Warga' : 'Tambah Data Warga';
+  document.getElementById('warga-id').value = data?.id || '';
+
+  const seksiKK = document.getElementById('seksi-kk');
+  seksiKK.style.display = editMode ? 'none' : '';
+
+  if (!editMode) {
+    const selectKK = document.getElementById('warga-no_kk');
+    try {
+      const kkList = await apiFetch('/api/kk');
+      selectKK.innerHTML = '<option value="">— Pilih No. KK —</option>';
+      (kkList || []).forEach(kk => {
+        const opt = document.createElement('option');
+        opt.value = kk.no_kk;
+        opt.textContent = kk.no_kk + ' — ' + kk.nama_kepala;
+        selectKK.appendChild(opt);
+      });
+    } catch {
+      selectKK.innerHTML = '<option value="">— Gagal memuat KK —</option>';
+    }
+    modeKK('pilih');
+    document.getElementById('kk-info-preview').style.display = 'none';
+    ['kk-no_kk','kk-nama_kepala','kk-alamat','kk-rt','kk-rw','kk-telepon'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = '';
+    });
+  }
+
+  const wargaFields = ['nik','nama_lengkap','tempat_lahir','tanggal_lahir','jenis_kelamin','agama','pendidikan','pekerjaan','status_perkawinan','status_hubungan','golongan_darah','telepon','email','status_tinggal','status_ekonomi'];
+  wargaFields.forEach(f => {
+    const el = document.getElementById('warga-' + f);
+    if (el) el.value = data?.[f] || (f === 'status_tinggal' ? 'domisili_asli' : f === 'status_ekonomi' ? 'mampu' : '');
+  });
+  document.getElementById('warga-nik').disabled = editMode;
+  bukModal('modal-warga');
+}
+
+async function modalWargaKK(no_kk) {
+  await modalWarga(null);
+  const sel = document.getElementById('warga-no_kk');
+  sel.value = no_kk;
+  isiInfoKK(no_kk);
+  modeKK('pilih');
+}
+
+async function simpanWarga() {
+  const id = document.getElementById('warga-id').value;
+  const editMode = !!id;
+
+  const wargaFields = ['nik','nama_lengkap','tempat_lahir','tanggal_lahir','jenis_kelamin','agama','pendidikan','pekerjaan','status_perkawinan','status_hubungan','golongan_darah','telepon','email','status_tinggal','status_ekonomi'];
+  const body = {};
+  wargaFields.forEach(f => body[f] = document.getElementById('warga-' + f)?.value || null);
+
+  if (!body.nik || body.nik.length !== 16) { alert('NIK harus 16 digit.'); return; }
+  if (!body.nama_lengkap) { alert('Nama lengkap wajib diisi.'); return; }
+  if (!body.status_hubungan) { alert('Status hubungan dalam keluarga wajib diisi.'); return; }
+
+  if (!editMode) {
+    if (_kkMode === 'baru') {
+      const noKK = document.getElementById('kk-no_kk').value.trim();
+      const namaKepala = document.getElementById('kk-nama_kepala').value.trim();
+      const alamat = document.getElementById('kk-alamat').value.trim();
+      if (!noKK || noKK.length !== 16) { alert('No. KK harus 16 digit.'); return; }
+      if (!namaKepala) { alert('Nama kepala keluarga wajib diisi.'); return; }
+      if (!alamat) { alert('Alamat wajib diisi.'); return; }
+      const kkBody = {
+        no_kk: noKK, nama_kepala: namaKepala, alamat,
+        rt: document.getElementById('kk-rt').value,
+        rw: document.getElementById('kk-rw').value,
+        telepon: document.getElementById('kk-telepon').value,
+      };
+      const kkRes = await apiFetch('/api/kk', { method: 'POST', body: JSON.stringify(kkBody) });
+      if (!kkRes || kkRes.error) { alert(kkRes?.error || 'Gagal menyimpan KK'); return; }
+      body.no_kk = noKK;
+    } else {
+      body.no_kk = document.getElementById('warga-no_kk').value;
+      if (!body.no_kk) { alert('Silakan pilih atau buat Kartu Keluarga terlebih dahulu.'); return; }
+    }
+  }
+
+  const res = await apiFetch(editMode ? '/api/warga/' + id : '/api/warga', {
+    method: editMode ? 'PUT' : 'POST',
+    body: JSON.stringify(body)
+  });
+  if (res && !res.error) {
+    tutupModal('modal-warga');
+    muatWarga();
+    tampilNotif('Data warga berhasil disimpan!', 'hijau');
+  } else {
+    alert(res?.error || 'Gagal menyimpan');
+  }
+}
+
+function modalKK(data) {
+  document.getElementById('kk-edit-id').value = data?.id || '';
+  document.getElementById('kk-edit-no_kk').value = data?.no_kk || '';
+  document.getElementById('kk-edit-nama_kepala').value = data?.nama_kepala || '';
+  document.getElementById('kk-edit-alamat').value = data?.alamat || '';
+  document.getElementById('kk-edit-rt').value = data?.rt || '';
+  document.getElementById('kk-edit-rw').value = data?.rw || '';
+  document.getElementById('kk-edit-telepon').value = data?.telepon || '';
+  bukModal('modal-kk');
+}
+
+async function simpanKK() {
+  const id = document.getElementById('kk-edit-id').value;
+  const body = {
+    nama_kepala: document.getElementById('kk-edit-nama_kepala').value,
+    alamat: document.getElementById('kk-edit-alamat').value,
+    rt: document.getElementById('kk-edit-rt').value,
+    rw: document.getElementById('kk-edit-rw').value,
+    telepon: document.getElementById('kk-edit-telepon').value,
+  };
+  if (!body.nama_kepala) { alert('Nama kepala keluarga wajib diisi.'); return; }
+  const res = await apiFetch('/api/kk/' + id, { method: 'PUT', body: JSON.stringify(body) });
+  if (res && !res.error) {
+    tutupModal('modal-kk');
+    muatWarga();
+    tampilNotif('Data KK berhasil diperbarui!', 'hijau');
+  } else {
+    alert(res?.error || 'Gagal menyimpan');
+  }
+}
+
+async function hapusKK(id) {
+  if (!confirm('Hapus KK ini? Semua anggota yang terhubung juga akan terpengaruh.')) return;
+  const res = await apiFetch('/api/kk/' + id, { method: 'DELETE' });
+  if (res && !res.error) { muatWarga(); tampilNotif('Data KK berhasil dihapus'); }
+  else alert(res?.error || 'Gagal menghapus.');
+}
+
+async function hapusWarga(id) {
+  if (!confirm('Hapus data warga ini?')) return;
+  await apiFetch('/api/warga/' + id, { method: 'DELETE' });
+  muatWarga();
+  tampilNotif('Data warga berhasil dihapus');
+}
+
+// ====== SURAT ======
+async function muatSurat() {
+  const cari = document.getElementById('cari-surat')?.value || '';
+  const status = document.getElementById('filter-status-surat')?.value || '';
+  const jenis = document.getElementById('filter-jenis-surat')?.value || '';
+  const data = await apiFetch(`/api/surat?search=${encodeURIComponent(cari)}&status=${status}&jenis=${encodeURIComponent(jenis)}&page=${halamanSurat}`);
+  const tbody = document.getElementById('tbody-surat');
+  
+  if (!data?.data?.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--abu)">Belum ada data surat</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = data.data.map(s => `
+    <tr>
+      <td><code style="font-size:11px">${s.nomor_surat}</code></td>
+      <td>${s.jenis_surat}</td>
+      <td><strong>${s.pemohon_nama}</strong></td>
+      <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${s.keperluan || '-'}</td>
+      <td><span class="badge ${badgeSurat(s.status)}">${s.status}</span></td>
+      <td>${new Date(s.created_at).toLocaleDateString('id-ID')}</td>
+      <td style="display:flex; gap:4px">
+        <button class="aksi-btn aksi-lihat" onclick="cetakSurat(${JSON.stringify(s).replace(/"/g,'&quot;')})">🖨️</button>
+        <button class="aksi-btn aksi-edit" onclick="modalUpdateStatus('${s.id}', '${s.status}')">🔄</button>
+        <button class="aksi-btn aksi-hapus" onclick="hapusSurat('${s.id}')">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function modalSurat() { bukModal('modal-surat'); }
+
+async function simpanSurat() {
+  const body = {
+    jenis_surat: document.getElementById('surat-jenis').value,
+    pemohon_nik: document.getElementById('surat-nik').value || null,
+    pemohon_nama: document.getElementById('surat-nama').value,
+    perihal: document.getElementById('surat-perihal').value,
+    keperluan: document.getElementById('surat-keperluan').value,
+  };
+  
+  if (!body.jenis_surat || !body.pemohon_nama) {
+    alert('Jenis surat dan nama pemohon wajib diisi!');
+    return;
+  }
+  
+  const res = await apiFetch('/api/surat', { method: 'POST', body: JSON.stringify(body) });
+  if (res && !res.error) {
+    tutupModal('modal-surat');
+    muatSurat();
+    tampilNotif('Surat berhasil dibuat!', 'hijau');
+  } else {
+    alert(res?.error || 'Gagal membuat surat');
+  }
+}
+
+function modalUpdateStatus(id, status) {
+  document.getElementById('status-surat-id').value = id;
+  document.getElementById('status-surat-nilai').value = status;
+  document.getElementById('status-surat-catatan').value = '';
+  bukModal('modal-status-surat');
+}
+
+async function updateStatusSurat() {
+  const id = document.getElementById('status-surat-id').value;
+  const body = {
+    status: document.getElementById('status-surat-nilai').value,
+    catatan: document.getElementById('status-surat-catatan').value,
+  };
+  const res = await apiFetch(`/api/surat/${id}/status`, { method: 'PUT', body: JSON.stringify(body) });
+  if (res && !res.error) {
+    tutupModal('modal-status-surat');
+    muatSurat();
+    tampilNotif('Status surat diperbarui!', 'hijau');
+  }
+}
+
+async function hapusSurat(id) {
+  if (!confirm('Hapus surat ini?')) return;
+  await apiFetch(`/api/surat/${id}`, { method: 'DELETE' });
+  muatSurat();
+}
+
+function cetakSurat(surat) {
+  const tanggal = new Date(surat.created_at).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <!DOCTYPE html><html><head>
+    <meta charset="UTF-8">
+    <style>
+      body { font-family: 'Times New Roman', serif; max-width:700px; margin:40px auto; padding:20px; font-size:14px; }
+      .kop { text-align:center; border-bottom:3px double #000; padding-bottom:12px; margin-bottom:20px; }
+      .kop h2 { font-size:16px; text-transform:uppercase; margin:0; }
+      .kop p { margin:2px 0; font-size:12px; }
+      .nomor { text-align:center; margin:16px 0; }
+      .isi { line-height:2; }
+      .isi table { width:100%; }
+      .isi td:first-child { width:200px; vertical-align:top; }
+      .ttd { margin-top:40px; text-align:right; }
+      .ttd .nama { margin-top:70px; font-weight:bold; text-decoration:underline; }
+    </style>
+    </head><body>
+    <div class="kop">
+      <h2>Pemerintah Desa Pandowoharjo</h2>
+      <p>Dusun Majegan, Pandowoharjo, Sleman, D.I. Yogyakarta</p>
+    </div>
+    <div class="nomor">
+      <strong>${surat.nomor_surat}</strong>
+    </div>
+    <p style="text-align:center; font-size:16px; font-weight:bold; text-transform:uppercase; margin-bottom:20px">${surat.jenis_surat}</p>
+    <p>Yang bertanda tangan di bawah ini, Kepala Dukuh Majegan, Desa Pandowoharjo, Kecamatan Sleman, Kabupaten Sleman, Daerah Istimewa Yogyakarta, dengan ini menerangkan bahwa:</p>
+    <br>
+    <div class="isi">
+      <table>
+        <tr><td>Nama</td><td>: <strong>${surat.pemohon_nama}</strong></td></tr>
+        <tr><td>NIK</td><td>: ${surat.pemohon_nik || '-'}</td></tr>
+        <tr><td>Keperluan</td><td>: ${surat.keperluan || '-'}</td></tr>
+      </table>
+    </div>
+    <br>
+    <p>Demikian surat keterangan ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>
+    <div class="ttd">
+      <p>Majegan, ${tanggal}</p>
+      <p>Kepala Dukuh Majegan</p>
+      <p class="nama">.................................</p>
+    </div>
+    <script>setTimeout(() => window.print(), 500);<\/script>
+    </body></html>
+  `);
+}
+
+// ====== PENGUMUMAN ======
+async function muatPengumuman() {
+  const data = await apiFetch('/api/pengumuman');
+  const grid = document.getElementById('grid-pengumuman');
+  
+  if (!data?.length) {
+    grid.innerHTML = '<p style="color:var(--abu);text-align:center;padding:40px">Belum ada pengumuman</p>';
+    return;
+  }
+  
+  grid.innerHTML = data.map(p => `
+    <div class="pengumuman-item ${p.penting ? 'penting' : ''}">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px">
+        <div style="display:flex; gap:6px; flex-wrap:wrap">
+          ${p.penting ? '<span class="badge badge-kuning">🔔 Penting</span>' : ''}
+          <span class="badge badge-abu">${p.kategori}</span>
+        </div>
+        <div style="display:flex; gap:4px">
+          <button class="aksi-btn aksi-edit" onclick="modalPengumuman(${JSON.stringify(p).replace(/"/g,'&quot;')})">✏️</button>
+          <button class="aksi-btn aksi-hapus" onclick="hapusPengumuman('${p.id}')">🗑️</button>
+        </div>
+      </div>
+      <h4>${p.judul}</h4>
+      <p>${p.isi}</p>
+      <div class="pengumuman-meta">
+        <span>📅 ${new Date(p.created_at).toLocaleDateString('id-ID')}</span>
+        ${p.dibuat_oleh_nama ? `<span>👤 ${p.dibuat_oleh_nama}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function modalPengumuman(data = null) {
+  document.getElementById('modal-pengumuman-judul').textContent = data ? 'Edit Pengumuman' : 'Tambah Pengumuman';
+  document.getElementById('pengumuman-id').value = data?.id || '';
+  document.getElementById('pengumuman-judul').value = data?.judul || '';
+  document.getElementById('pengumuman-isi').value = data?.isi || '';
+  document.getElementById('pengumuman-kategori').value = data?.kategori || 'umum';
+  document.getElementById('pengumuman-penting').value = data?.penting ? 'true' : 'false';
+  document.getElementById('pengumuman-mulai').value = data?.tanggal_mulai?.split('T')[0] || '';
+  document.getElementById('pengumuman-selesai').value = data?.tanggal_selesai?.split('T')[0] || '';
+  bukModal('modal-pengumuman');
+}
+
+async function simpanPengumuman() {
+  const id = document.getElementById('pengumuman-id').value;
+  const body = {
+    judul: document.getElementById('pengumuman-judul').value,
+    isi: document.getElementById('pengumuman-isi').value,
+    kategori: document.getElementById('pengumuman-kategori').value,
+    penting: document.getElementById('pengumuman-penting').value === 'true',
+    tanggal_mulai: document.getElementById('pengumuman-mulai').value || null,
+    tanggal_selesai: document.getElementById('pengumuman-selesai').value || null,
+  };
+  
+  const res = await apiFetch(id ? `/api/pengumuman/${id}` : '/api/pengumuman', {
+    method: id ? 'PUT' : 'POST',
+    body: JSON.stringify(body)
+  });
+  
+  if (res && !res.error) {
+    tutupModal('modal-pengumuman');
+    muatPengumuman();
+    tampilNotif('Pengumuman berhasil disimpan!', 'hijau');
+  }
+}
+
+async function hapusPengumuman(id) {
+  if (!confirm('Hapus pengumuman ini?')) return;
+  await apiFetch(`/api/pengumuman/${id}`, { method: 'DELETE' });
+  muatPengumuman();
+}
+
+// ====== KEGIATAN ======
+async function muatKegiatan() {
+  const data = await apiFetch('/api/kegiatan');
+  const tbody = document.getElementById('tbody-kegiatan');
+  
+  if (!data?.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--abu)">Belum ada kegiatan</td></tr>';
+    return;
+  }
+  
+  const statusBadge = { rencana: 'badge-biru', berlangsung: 'badge-kuning', selesai: 'badge-hijau', batal: 'badge-merah' };
+  
+  tbody.innerHTML = data.map(k => `
+    <tr>
+      <td><strong>${k.nama_kegiatan}</strong></td>
+      <td>${new Date(k.tanggal).toLocaleDateString('id-ID')}</td>
+      <td>${k.waktu ? k.waktu.substring(0,5) : '-'}</td>
+      <td>${k.lokasi || '-'}</td>
+      <td>${k.penanggung_jawab || '-'}</td>
+      <td><span class="badge ${statusBadge[k.status] || 'badge-abu'}">${k.status}</span></td>
+      <td>
+        <button class="aksi-btn aksi-edit" onclick="modalKegiatan(${JSON.stringify(k).replace(/"/g,'&quot;')})">✏️</button>
+        <button class="aksi-btn aksi-hapus" onclick="hapusKegiatan('${k.id}')">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function modalKegiatan(data = null) {
+  document.getElementById('modal-kegiatan-judul').textContent = data ? 'Edit Kegiatan' : 'Tambah Kegiatan';
+  document.getElementById('kegiatan-id').value = data?.id || '';
+  document.getElementById('kegiatan-nama').value = data?.nama_kegiatan || '';
+  document.getElementById('kegiatan-tanggal').value = data?.tanggal?.split('T')[0] || '';
+  document.getElementById('kegiatan-waktu').value = data?.waktu?.substring(0,5) || '';
+  document.getElementById('kegiatan-lokasi').value = data?.lokasi || '';
+  document.getElementById('kegiatan-pj').value = data?.penanggung_jawab || '';
+  document.getElementById('kegiatan-status').value = data?.status || 'rencana';
+  document.getElementById('kegiatan-deskripsi').value = data?.deskripsi || '';
+  bukModal('modal-kegiatan');
+}
+
+async function simpanKegiatan() {
+  const id = document.getElementById('kegiatan-id').value;
+  const body = {
+    nama_kegiatan: document.getElementById('kegiatan-nama').value,
+    tanggal: document.getElementById('kegiatan-tanggal').value,
+    waktu: document.getElementById('kegiatan-waktu').value || null,
+    lokasi: document.getElementById('kegiatan-lokasi').value,
+    penanggung_jawab: document.getElementById('kegiatan-pj').value,
+    status: document.getElementById('kegiatan-status').value,
+    deskripsi: document.getElementById('kegiatan-deskripsi').value,
+  };
+  
+  const res = await apiFetch(id ? `/api/kegiatan/${id}` : '/api/kegiatan', {
+    method: id ? 'PUT' : 'POST',
+    body: JSON.stringify(body)
+  });
+  
+  if (res && !res.error) {
+    tutupModal('modal-kegiatan');
+    muatKegiatan();
+    tampilNotif('Kegiatan berhasil disimpan!', 'hijau');
+  }
+}
+
+async function hapusKegiatan(id) {
+  if (!confirm('Hapus kegiatan ini?')) return;
+  await apiFetch(`/api/kegiatan/${id}`, { method: 'DELETE' });
+  muatKegiatan();
+}
+
+// ====== HELPER ======
+function bukModal(id) { document.getElementById(id).classList.add('show'); }
+function tutupModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function badgeSurat(status) {
+  return { pending: 'badge-kuning', diproses: 'badge-biru', selesai: 'badge-hijau', ditolak: 'badge-merah' }[status] || 'badge-abu';
+}
+
+function badgeStatus(status) {
+  return { domisili_asli: 'badge-hijau', non_ktp: 'badge-biru', sementara: 'badge-kuning', non_domisili: 'badge-abu' }[status] || 'badge-abu';
+}
+
+function badgeEkonomi(status) {
+  const map = {
+    mampu:        { cls: 'badge-hijau',  label: '✅ Mampu' },
+    rentan_miskin:{ cls: 'badge-kuning', label: '⚠️ Rentan Miskin' },
+    miskin:       { cls: 'badge-merah',  label: '🔴 Miskin' },
+    // nilai lama — tampilkan apa adanya supaya data lama tidak error
+    tidak_mampu:  { cls: 'badge-oranye', label: '🔶 Tidak Mampu' },
+    sangat_miskin:{ cls: 'badge-ungu',   label: '🆘 Sangat Miskin' },
+  };
+  const e = map[status] || { cls: 'badge-abu', label: status || '—' };
+  return `<span class="badge ${e.cls}" style="font-size:11px">${e.label}</span>`;
+}
+
+function tampilNotif(pesan, tipe = 'hijau') {
+  const notif = document.createElement('div');
+  notif.style.cssText = `
+    position:fixed; top:20px; right:20px; z-index:9999;
+    background:${tipe === 'hijau' ? '#1a6b3c' : '#e63946'};
+    color:white; padding:12px 20px; border-radius:12px;
+    font-size:14px; font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,0.2);
+    animation:slideIn 0.3s ease;
+  `;
+  notif.textContent = pesan;
+  document.body.appendChild(notif);
+  setTimeout(() => notif.remove(), 3000);
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('show');
+  });
+});
+
+// Keyboard shortcut ESC
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));
+});
+// ====== IMPORT EXCEL ======
+function handleImportDrop(e) {
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    document.getElementById('import-file').files = e.dataTransfer.files;
+    updateImportLabel(document.getElementById('import-file'));
+  }
+}
+
+function updateImportLabel(input) {
+  const label = document.getElementById('import-file-label');
+  if (input.files[0]) {
+    label.textContent = '✅ ' + input.files[0].name;
+    label.style.color = 'var(--hijau)';
+  }
+}
+
+async function prosesImport() {
+  const file = document.getElementById('import-file').files[0];
+  const sheet = document.getElementById('import-sheet').value;
+  const hasilEl = document.getElementById('import-hasil');
+
+  if (!file) { alert('Pilih file Excel (.xlsx) terlebih dahulu.'); return; }
+
+  document.getElementById('btn-import-proses').disabled = true;
+  document.getElementById('import-label').style.display = 'none';
+  document.getElementById('import-spinner').style.display = 'block';
+  hasilEl.style.display = 'none';
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('sheet', sheet);
+
+  try {
+    const res = await fetch(API + '/api/import', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: formData
+    });
+    const data = await res.json();
+
+    if (data.error) {
+      hasilEl.style.display = 'block';
+      hasilEl.innerHTML = `<div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;padding:12px 14px;color:#c0392b;font-size:13px">❌ ${data.error}</div>`;
+    } else {
+      const errHtml = data.errors?.length
+        ? `<div style="margin-top:10px;max-height:150px;overflow-y:auto;background:#fff;border:1px solid var(--border);border-radius:6px;padding:8px 10px">
+            ${data.errors.slice(0,20).map(e => `<div style="font-size:11px;color:#c0392b;padding:2px 0;border-bottom:1px solid #fee2e2">⚠️ ${e}</div>`).join('')}
+            ${data.errors.length > 20 ? `<div style="font-size:11px;color:var(--abu);padding-top:4px">...dan ${data.errors.length - 20} error lainnya</div>` : ''}
+           </div>` : '';
+
+      const bgColor = data.gagal === 0 ? '#dcfce7' : '#fff3cd';
+      const borderColor = data.gagal === 0 ? '#86efac' : '#fcd34d';
+      const icon = data.gagal === 0 ? '✅' : '⚠️';
+
+      hasilEl.style.display = 'block';
+      hasilEl.innerHTML = `
+        <div style="background:${bgColor};border:1.5px solid ${borderColor};border-radius:8px;padding:14px 16px">
+          <div style="font-weight:700;font-size:14px;margin-bottom:8px">${icon} ${data.pesan}</div>
+          <div style="display:flex;gap:16px;font-size:13px">
+            <span>✅ Berhasil: <strong>${data.berhasil}</strong></span>
+            <span>❌ Gagal: <strong>${data.gagal}</strong></span>
+            <span>⏭️ Dilewati: <strong>${data.dilewati}</strong></span>
+          </div>
+          ${errHtml}
+        </div>`;
+
+      if (data.berhasil > 0) {
+        muatWarga(); // refresh tabel
+        tampilNotif(`${data.berhasil} data berhasil diimport!`, 'hijau');
+      }
+    }
+  } catch {
+    hasilEl.style.display = 'block';
+    hasilEl.innerHTML = `<div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;padding:12px 14px;color:#c0392b;font-size:13px">❌ Gagal terhubung ke server</div>`;
+  }
+
+  document.getElementById('btn-import-proses').disabled = false;
+  document.getElementById('import-label').style.display = 'inline';
+  document.getElementById('import-spinner').style.display = 'none';
+}
+
+
+let _dokNIK = '';
+let _dokData = null;
+let _halamanDok = 1;
+
+async function muatDokumen() {
+  const cari = (document.getElementById('cari-dokumen')?.value || '').trim();
+  const filter = document.getElementById('filter-dokumen')?.value || '';
+  const tbody = document.getElementById('tbody-dokumen');
+  tbody.innerHTML = '<tr><td colspan="3" class="loading"><div class="spinner"></div>Memuat...</td></tr>';
+
+  const data = await apiFetch('/api/warga?limit=999&search=' + encodeURIComponent(cari));
+  let rows = data?.data || [];
+
+  // Filter berdasarkan kelengkapan dokumen
+  if (filter === 'lengkap') rows = rows.filter(w => w.foto_ktp && w.foto_kk);
+  else if (filter === 'sebagian') rows = rows.filter(w => (w.foto_ktp || w.foto_kk) && !(w.foto_ktp && w.foto_kk));
+  else if (filter === 'kosong') rows = rows.filter(w => !w.foto_ktp && !w.foto_kk);
+
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--abu)">Tidak ada data ditemukan</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.map(w => {
+    const ktpBadge = w.foto_ktp
+      ? `<div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+           <span class="badge badge-hijau">✅ Ada</span>
+           <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center">
+             <button class="btn-dok-aksi" onclick="previewDokumenNIK('${w.nik}','ktp','${w.nama_lengkap}')" title="Preview KTP">👁️</button>
+             <button class="btn-dok-aksi" onclick="printDokumenNIK('${w.nik}','ktp','${w.nama_lengkap}')" title="Print KTP">🖨️</button>
+             <button class="btn-dok-aksi" onclick="downloadDokumenNIK('${w.nik}','ktp')" title="Download KTP">⬇️</button>
+             <button class="btn-dok-aksi btn-dok-hapus" onclick="hapusDokumenNIK('${w.nik}','ktp',this)" title="Hapus KTP">🗑️</button>
+           </div>
+         </div>`
+      : `<div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+           <span class="badge badge-abu">— Belum</span>
+           <label class="btn-dok-upload" title="Upload KTP">
+             📤 Upload
+             <input type="file" accept="image/*,.pdf" style="display:none" onchange="uploadDokumenNIK('${w.nik}','ktp',this)">
+           </label>
+         </div>`;
+
+    const kkBadge = w.foto_kk
+      ? `<div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+           <span class="badge badge-biru">✅ Ada</span>
+           <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center">
+             <button class="btn-dok-aksi" onclick="previewDokumenNIK('${w.nik}','kk','${w.nama_lengkap}')" title="Preview KK">👁️</button>
+             <button class="btn-dok-aksi" onclick="printDokumenNIK('${w.nik}','kk','${w.nama_lengkap}')" title="Print KK">🖨️</button>
+             <button class="btn-dok-aksi" onclick="downloadDokumenNIK('${w.nik}','kk')" title="Download KK">⬇️</button>
+             <button class="btn-dok-aksi btn-dok-hapus" onclick="hapusDokumenNIK('${w.nik}','kk',this)" title="Hapus KK">🗑️</button>
+           </div>
+         </div>`
+      : `<div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+           <span class="badge badge-abu">— Belum</span>
+           <label class="btn-dok-upload" title="Upload KK">
+             📤 Upload
+             <input type="file" accept="image/*,.pdf" style="display:none" onchange="uploadDokumenNIK('${w.nik}','kk',this)">
+           </label>
+         </div>`;
+
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--hijau);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0">${w.nama_lengkap.charAt(0)}</div>
+          <div>
+            <div style="font-weight:600;font-size:13px">${w.nama_lengkap}</div>
+            <div style="font-size:11px;color:var(--abu);font-family:monospace">${w.nik}</div>
+          </div>
+        </div>
+      </td>
+      <td style="text-align:center;vertical-align:middle">${ktpBadge}</td>
+      <td style="text-align:center;vertical-align:middle">${kkBadge}</td>
+    </tr>`;
+  }).join('');
+}
+
+// Upload langsung dari tabel
+async function uploadDokumenNIK(nik, tipe, inputEl) {
+  const file = inputEl.files[0];
+  if (!file) return;
+
+  const label = inputEl.parentElement;
+  const origText = label.innerHTML;
+  label.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;border-color:rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block"></div> Uploading...';
+  label.style.pointerEvents = 'none';
+
+  const formData = new FormData();
+  formData.append('nik', nik);
+  formData.append('tipe', tipe);
+  formData.append('file', file);
+
+  try {
+    const res = await fetch(API + '/api/dokumen/upload', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: formData
+    });
+    const data = await res.json();
+    if (data.sukses) {
+      tampilNotif('Foto ' + tipe.toUpperCase() + ' berhasil diupload!', 'hijau');
+      muatDokumen(); // refresh tabel
+    } else {
+      alert(data.error || 'Gagal upload');
+      label.innerHTML = origText;
+      label.style.pointerEvents = '';
+    }
+  } catch {
+    alert('Gagal terhubung ke server');
+    label.innerHTML = origText;
+    label.style.pointerEvents = '';
+  }
+  inputEl.value = '';
+}
+
+// Download langsung dari tabel
+async function downloadDokumenNIK(nik, tipe) {
+  const wargaRes = await apiFetch('/api/dokumen/' + nik);
+  if (!wargaRes) return;
+  const path = tipe === 'ktp' ? wargaRes.foto_ktp : wargaRes.foto_kk;
+  if (!path) return;
+  const res = await apiFetch('/api/dokumen/download?path=' + encodeURIComponent(path));
+  if (res?.url) {
+    const a = document.createElement('a');
+    a.href = res.url;
+    a.download = nik + '_' + tipe + '.' + path.split('.').pop();
+    a.target = '_blank';
+    a.click();
+  }
+}
+
+// Hapus langsung dari tabel
+async function hapusDokumenNIK(nik, tipe, btn) {
+  if (!confirm('Hapus foto ' + tipe.toUpperCase() + ' untuk warga ini?')) return;
+  btn.disabled = true;
+  const res = await apiFetch('/api/dokumen/' + nik + '?tipe=' + tipe, { method: 'DELETE' });
+  if (res?.sukses) {
+    tampilNotif('Foto ' + tipe.toUpperCase() + ' berhasil dihapus');
+    muatDokumen();
+  } else {
+    btn.disabled = false;
+  }
+}
+
+// Preview dokumen
+let _previewUrl = '';
+let _previewNama = '';
+let _previewTipe = '';
+let _previewNIK = '';
+
+async function previewDokumenNIK(nik, tipe, nama) {
+  const wargaRes = await apiFetch('/api/dokumen/' + nik);
+  if (!wargaRes) return;
+  const path = tipe === 'ktp' ? wargaRes.foto_ktp : wargaRes.foto_kk;
+  if (!path) return;
+
+  const res = await apiFetch('/api/dokumen/download?path=' + encodeURIComponent(path));
+  if (!res?.url) return;
+
+  _previewUrl = res.url;
+  _previewNama = nama;
+  _previewTipe = tipe;
+  _previewNIK = nik;
+
+  const isPdf = path.endsWith('.pdf');
+  document.getElementById('preview-dok-judul').textContent =
+    `${tipe.toUpperCase()} — ${nama} (${nik})`;
+  document.getElementById('preview-dok-img').style.display = isPdf ? 'none' : 'block';
+  document.getElementById('preview-dok-pdf').style.display = isPdf ? 'block' : 'none';
+  if (!isPdf) document.getElementById('preview-dok-img').src = res.url;
+
+  bukModal('modal-preview-dok');
+}
+
+function downloadDokDariPreview() {
+  if (!_previewUrl) return;
+  const a = document.createElement('a');
+  a.href = _previewUrl;
+  a.download = `${_previewNIK}_${_previewTipe}`;
+  a.target = '_blank';
+  a.click();
+}
+
+function printDokDariPreview() {
+  if (!_previewUrl) return;
+  printDokUrl(_previewUrl, _previewNama, _previewTipe);
+}
+
+// Print langsung dari tabel
+async function printDokumenNIK(nik, tipe, nama) {
+  const wargaRes = await apiFetch('/api/dokumen/' + nik);
+  if (!wargaRes) return;
+  const path = tipe === 'ktp' ? wargaRes.foto_ktp : wargaRes.foto_kk;
+  if (!path) return;
+
+  const res = await apiFetch('/api/dokumen/download?path=' + encodeURIComponent(path));
+  if (!res?.url) return;
+
+  printDokUrl(res.url, nama, tipe);
+}
+
+function printDokUrl(url, nama, tipe) {
+  const isPdf = url.includes('.pdf') || url.includes('pdf');
+  if (isPdf) {
+    // PDF: buka di tab baru lalu print
+    const w = window.open(url, '_blank');
+    if (w) { w.onload = () => w.print(); }
+    return;
+  }
+
+  // Gambar: buka window print khusus
+  const w = window.open('', '_blank',
+    'width=900,height=700,toolbar=0,menubar=0,scrollbars=1');
+  w.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <title>${tipe.toUpperCase()} - ${nama}</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: Arial, sans-serif; background: white; }
+    .header {
+      text-align: center; padding: 16px;
+      border-bottom: 2px solid #1a6b3c; margin-bottom: 16px;
+    }
+    .header h2 { color: #1a6b3c; font-size: 16px; }
+    .header p { font-size: 12px; color: #666; margin-top: 4px; }
+    .foto-wrap {
+      display: flex; justify-content: center; padding: 0 20px;
+    }
+    img {
+      max-width: 100%; max-height: 70vh;
+      border: 1px solid #ddd; border-radius: 6px;
+    }
+    .footer {
+      text-align: center; padding: 12px;
+      font-size: 11px; color: #999; margin-top: 12px;
+      border-top: 1px solid #eee;
+    }
+    @media print {
+      .no-print { display: none; }
+      body { margin: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Dukuh Majegan — ${tipe.toUpperCase()}</h2>
+    <p>Nama: <strong>${nama}</strong></p>
+  </div>
+  <div class="foto-wrap">
+    <img src="${url}" onload="window.print()">
+  </div>
+  <div class="footer">Dicetak dari Sistem Administrasi Dukuh Majegan</div>
+</body>
+</html>`);
+  w.document.close();
+}
+// ====== BANTUAN PEMERINTAH ======
+let halamanBantuan = 1;
+let daftarJenisBantuan = [];
+let cariWargaTimeout = null;
+
+function switchTabBantuan(tab) {
+  document.getElementById('tab-penerima').style.display = tab === 'penerima' ? '' : 'none';
+  document.getElementById('tab-jenis').style.display = tab === 'jenis' ? '' : 'none';
+  document.getElementById('tab-btn-penerima').className = tab === 'penerima' ? 'btn btn-hijau' : 'btn btn-abu';
+  document.getElementById('tab-btn-jenis').className = tab === 'jenis' ? 'btn btn-hijau' : 'btn btn-abu';
+}
+
+// --- Jenis Bantuan ---
+async function muatJenisBantuan() {
+  const aktif = document.getElementById('filter-aktif-jenis')?.value || '';
+  const data = await apiFetch('/api/bantuan/jenis' + (aktif ? `?aktif=${aktif}` : ''));
+  daftarJenisBantuan = data || [];
+
+  // Update select filter di tab penerima
+  const sel = document.getElementById('filter-jenis-bantuan');
+  const selModal = document.getElementById('bw-jenis-bantuan');
+  if (sel) {
+    const prev = sel.value;
+    sel.innerHTML = '<option value="">Semua Jenis</option>' +
+      daftarJenisBantuan.map(j => `<option value="${j.id}">${j.kode} — ${j.nama}</option>`).join('');
+    sel.value = prev;
+  }
+  if (selModal) {
+    selModal.innerHTML = '<option value="">-- Pilih Jenis Bantuan --</option>' +
+      daftarJenisBantuan.map(j => `<option value="${j.id}">[${j.kode}] ${j.nama} (${j.penyelenggara || '-'})</option>`).join('');
+  }
+
+  const tbody = document.getElementById('tbody-jenis-bantuan');
+  if (!tbody) return;
+  if (!daftarJenisBantuan.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--abu)">Belum ada jenis bantuan</td></tr>';
+    return;
+  }
+  const kategoriEmoji = { tunai:'💰', sembako:'🛒', pendidikan:'🎓', kesehatan:'🏥', perumahan:'🏠', pertanian:'🌾', modal_usaha:'💼', lainnya:'📦' };
+  tbody.innerHTML = daftarJenisBantuan.map(j => `
+    <tr>
+      <td><span class="badge badge-biru" style="font-weight:700">${j.kode}</span></td>
+      <td><strong>${j.nama}</strong>${j.deskripsi ? `<br><small style="color:var(--abu);font-size:11px">${j.deskripsi.substring(0,80)}...</small>` : ''}</td>
+      <td>${j.penyelenggara || '-'}</td>
+      <td>${j.kategori ? `${kategoriEmoji[j.kategori] || '📦'} ${j.kategori}` : '-'}</td>
+      <td><span class="badge ${j.aktif ? 'badge-hijau' : 'badge-merah'}">${j.aktif ? 'Aktif' : 'Nonaktif'}</span></td>
+      <td>
+        <button class="aksi-btn aksi-edit" onclick="modalJenisBantuan(${JSON.stringify(j).replace(/"/g,'&quot;')})">✏️</button>
+        <button class="aksi-btn aksi-hapus" onclick="hapusJenisBantuan('${j.id}')">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function modalJenisBantuan(data = null) {
+  document.getElementById('modal-jb-judul').textContent = data ? 'Edit Jenis Bantuan' : 'Tambah Jenis Bantuan';
+  document.getElementById('jb-id').value = data?.id || '';
+  document.getElementById('jb-kode').value = data?.kode || '';
+  document.getElementById('jb-nama').value = data?.nama || '';
+  document.getElementById('jb-penyelenggara').value = data?.penyelenggara || '';
+  document.getElementById('jb-kategori').value = data?.kategori || '';
+  document.getElementById('jb-deskripsi').value = data?.deskripsi || '';
+  document.getElementById('jb-aktif').value = data ? String(data.aktif) : 'true';
+  bukModal('modal-jenis-bantuan');
+}
+
+async function simpanJenisBantuan() {
+  const id = document.getElementById('jb-id').value;
+  const body = {
+    kode: document.getElementById('jb-kode').value.trim().toUpperCase(),
+    nama: document.getElementById('jb-nama').value.trim(),
+    penyelenggara: document.getElementById('jb-penyelenggara').value.trim(),
+    kategori: document.getElementById('jb-kategori').value,
+    deskripsi: document.getElementById('jb-deskripsi').value.trim(),
+    aktif: document.getElementById('jb-aktif').value === 'true',
+  };
+  if (!body.kode || !body.nama) { alert('Kode dan Nama wajib diisi!'); return; }
+  const res = await apiFetch(id ? `/api/bantuan/jenis/${id}` : '/api/bantuan/jenis', {
+    method: id ? 'PUT' : 'POST', body: JSON.stringify(body)
+  });
+  if (res && !res.error) {
+    tutupModal('modal-jenis-bantuan');
+    muatJenisBantuan();
+    tampilNotif('Jenis bantuan berhasil disimpan!', 'hijau');
+  } else if (res?.error) {
+    alert(res.error);
+  }
+}
+
+async function hapusJenisBantuan(id) {
+  if (!confirm('Hapus jenis bantuan ini? Data penerima yang terkait tidak akan terhapus.')) return;
+  const res = await apiFetch(`/api/bantuan/jenis/${id}`, { method: 'DELETE' });
+  if (res?.error) { alert(res.error); return; }
+  muatJenisBantuan();
+  tampilNotif('Jenis bantuan berhasil dihapus');
+}
+
+// --- Penerima Bantuan ---
+async function muatBantuanWarga() {
+  const cari = document.getElementById('cari-bantuan')?.value || '';
+  const jenis = document.getElementById('filter-jenis-bantuan')?.value || '';
+  const status = document.getElementById('filter-status-bantuan')?.value || '';
+  const page = halamanBantuan;
+  const data = await apiFetch(`/api/bantuan/warga?page=${page}&limit=25&search=${encodeURIComponent(cari)}&jenis_bantuan_id=${jenis}&status=${status}`);
+  const tbody = document.getElementById('tbody-bantuan-warga');
+  if (!data?.data?.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--abu)">Belum ada data penerima bantuan</td></tr>';
+    document.getElementById('pag-bantuan').innerHTML = '';
+    return;
+  }
+  const statusBadge = { aktif:'badge-hijau', selesai:'badge-abu', ditangguhkan:'badge-kuning', tidak_layak:'badge-merah' };
+  const bentukLabel = { uang:'💰 Uang', barang:'📦 Barang', campuran:'🔀 Campuran' };
+  tbody.innerHTML = data.data.map(b => {
+    const tgl_mulai = b.periode_mulai ? new Date(b.periode_mulai).toLocaleDateString('id-ID', {month:'short',year:'numeric'}) : '-';
+    const tgl_selesai = b.periode_selesai ? new Date(b.periode_selesai).toLocaleDateString('id-ID', {month:'short',year:'numeric'}) : 'Ongoing';
+    const jumlah = b.bentuk === 'barang' ? (b.deskripsi_barang || '-') :
+      b.jumlah_uang ? 'Rp ' + Number(b.jumlah_uang).toLocaleString('id-ID') +
+        (b.deskripsi_barang ? `<br><small style="color:var(--abu)">${b.deskripsi_barang.substring(0,40)}</small>` : '') : '-';
+    return `<tr>
+      <td><strong>${b.nama_lengkap}</strong><br><small style="color:var(--abu)">${b.rt ? 'RT ' + b.rt + '/' + b.rw : ''} ${b.dusun || ''}</small></td>
+      <td style="font-family:monospace;font-size:12px">${b.nik}</td>
+      <td><span class="badge badge-biru" style="font-size:11px">${b.kode_bantuan}</span><br><small>${b.nama_bantuan}</small><br><small style="color:var(--abu)">${b.penyelenggara || ''}</small></td>
+      <td>${bentukLabel[b.bentuk] || b.bentuk}</td>
+      <td>${jumlah}</td>
+      <td style="font-size:12px">${tgl_mulai}<br>s/d ${tgl_selesai}</td>
+      <td style="font-size:12px">${b.frekuensi || '-'}</td>
+      <td><span class="badge ${statusBadge[b.status] || 'badge-abu'}">${b.status.replace('_',' ')}</span></td>
+      <td>
+        <button class="aksi-btn aksi-edit" onclick="modalBantuanWarga(${JSON.stringify(b).replace(/"/g,'&quot;')})">✏️</button>
+        <button class="aksi-btn aksi-hapus" onclick="hapusBantuanWarga('${b.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Pagination
+  const total = data.total;
+  const totalPage = Math.ceil(total / 25);
+  const pag = document.getElementById('pag-bantuan');
+  if (totalPage <= 1) { pag.innerHTML = `<small style="color:var(--abu)">Total: ${total} penerima</small>`; return; }
+  let html = `<small style="color:var(--abu)">Total: ${total} | Hal ${page}/${totalPage}</small> `;
+  if (page > 1) html += `<button class="btn btn-abu" style="padding:6px 12px;font-size:12px" onclick="halamanBantuan=${page-1};muatBantuanWarga()">← Prev</button> `;
+  if (page < totalPage) html += `<button class="btn btn-abu" style="padding:6px 12px;font-size:12px" onclick="halamanBantuan=${page+1};muatBantuanWarga()">Next →</button>`;
+  pag.innerHTML = html;
+}
+
+async function modalBantuanWarga(data = null) {
+  // Pastikan jenis bantuan sudah dimuat
+  await muatJenisBantuan();
+  document.getElementById('modal-bw-judul').textContent = data ? 'Edit Penerima Bantuan' : 'Tambah Penerima Bantuan';
+  document.getElementById('bw-id').value = data?.id || '';
+  document.getElementById('bw-nik').value = data?.nik || '';
+  document.getElementById('bw-cari-warga').value = data ? `${data.nama_lengkap} — ${data.nik}` : '';
+  document.getElementById('bw-warga-dipilih').style.display = data ? '' : 'none';
+  if (data) document.getElementById('bw-warga-dipilih').innerHTML = `👤 <strong>${data.nama_lengkap}</strong> &nbsp; NIK: ${data.nik}`;
+  document.getElementById('bw-jenis-bantuan').value = data?.jenis_bantuan_id || '';
+  document.getElementById('bw-bentuk').value = data?.bentuk || 'uang';
+  document.getElementById('bw-frekuensi').value = data?.frekuensi || '';
+  document.getElementById('bw-jumlah-uang').value = data?.jumlah_uang || '';
+  document.getElementById('bw-deskripsi-barang').value = data?.deskripsi_barang || '';
+  document.getElementById('bw-periode-mulai').value = data?.periode_mulai?.split('T')[0] || '';
+  document.getElementById('bw-periode-selesai').value = data?.periode_selesai?.split('T')[0] || '';
+  document.getElementById('bw-status').value = data?.status || 'aktif';
+  document.getElementById('bw-catatan').value = data?.catatan || '';
+  toggleBentukBantuan();
+  bukModal('modal-bantuan-warga');
+}
+
+function toggleBentukBantuan() {
+  const bentuk = document.getElementById('bw-bentuk').value;
+  document.getElementById('grup-jumlah-uang').style.display = bentuk === 'barang' ? 'none' : '';
+  document.getElementById('grup-barang').style.display = bentuk === 'uang' ? 'none' : '';
+}
+
+function cariWargaBantuan() {
+  clearTimeout(cariWargaTimeout);
+  const q = document.getElementById('bw-cari-warga').value.trim();
+  const dropdown = document.getElementById('bw-warga-dropdown');
+  if (q.length < 2) { dropdown.style.display = 'none'; return; }
+  cariWargaTimeout = setTimeout(async () => {
+    const data = await apiFetch(`/api/warga?search=${encodeURIComponent(q)}&limit=8`);
+    if (!data?.data?.length) { dropdown.style.display = 'none'; return; }
+    dropdown.style.display = 'block';
+    dropdown.innerHTML = data.data.map(w => `
+      <div onclick="pilihWargaBantuan('${w.nik}','${w.nama_lengkap.replace(/'/g,"\\'")}','${w.rt||''}','${w.rw||''}')"
+        style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)"
+        onmouseover="this.style.background='var(--abu-muda)'" onmouseout="this.style.background=''">
+        <strong>${w.nama_lengkap}</strong><br>
+        <small style="color:var(--abu)">NIK: ${w.nik} &nbsp;|&nbsp; RT ${w.rt||'-'}/${w.rw||'-'} ${w.dusun||''}</small>
+      </div>
+    `).join('');
+  }, 300);
+}
+
+function pilihWargaBantuan(nik, nama, rt, rw) {
+  document.getElementById('bw-nik').value = nik;
+  document.getElementById('bw-cari-warga').value = `${nama} — ${nik}`;
+  document.getElementById('bw-warga-dropdown').style.display = 'none';
+  document.getElementById('bw-warga-dipilih').style.display = '';
+  document.getElementById('bw-warga-dipilih').innerHTML = `👤 <strong>${nama}</strong> &nbsp; NIK: ${nik} &nbsp; RT ${rt||'-'}/${rw||'-'}`;
+}
+
+async function simpanBantuanWarga() {
+  const id = document.getElementById('bw-id').value;
+  const nik = document.getElementById('bw-nik').value;
+  if (!nik) { alert('Pilih warga terlebih dahulu!'); return; }
+  const jenis = document.getElementById('bw-jenis-bantuan').value;
+  if (!jenis) { alert('Pilih jenis bantuan!'); return; }
+  const periodi = document.getElementById('bw-periode-mulai').value;
+  if (!periodi) { alert('Periode mulai wajib diisi!'); return; }
+  const body = {
+    jenis_bantuan_id: jenis,
+    nik,
+    periode_mulai: periodi,
+    periode_selesai: document.getElementById('bw-periode-selesai').value || null,
+    bentuk: document.getElementById('bw-bentuk').value,
+    jumlah_uang: document.getElementById('bw-jumlah-uang').value || null,
+    frekuensi: document.getElementById('bw-frekuensi').value || null,
+    deskripsi_barang: document.getElementById('bw-deskripsi-barang').value || null,
+    status: document.getElementById('bw-status').value,
+    catatan: document.getElementById('bw-catatan').value || null,
+  };
+  const res = await apiFetch(id ? `/api/bantuan/warga/${id}` : '/api/bantuan/warga', {
+    method: id ? 'PUT' : 'POST', body: JSON.stringify(body)
+  });
+  if (res && !res.error) {
+    tutupModal('modal-bantuan-warga');
+    muatBantuanWarga();
+    tampilNotif('Data bantuan berhasil disimpan!', 'hijau');
+  } else if (res?.error) {
+    alert(res.error);
+  }
+}
+
+async function hapusBantuanWarga(id) {
+  if (!confirm('Hapus data penerima bantuan ini?')) return;
+  const res = await apiFetch(`/api/bantuan/warga/${id}`, { method: 'DELETE' });
+  if (res?.error) { alert(res.error); return; }
+  muatBantuanWarga();
+  tampilNotif('Data penerima bantuan berhasil dihapus');
+}
+
+// Tutup dropdown warga saat klik di luar
+document.addEventListener('click', e => {
+  const dd = document.getElementById('bw-warga-dropdown');
+  const inp = document.getElementById('bw-cari-warga');
+  if (dd && inp && !dd.contains(e.target) && e.target !== inp) dd.style.display = 'none';
+});
+
+
+
+</script>
+</body>
+</html>

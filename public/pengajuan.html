@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pengajuan Surat – Dukuh Majegan</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --hijau: #1a6b3c;
+    --hijau-muda: #2d9657;
+    --hijau-terang: #4aba7a;
+    --hijau-pucat: #e8f5ee;
+    --kuning: #f5a623;
+    --merah: #e63946;
+    --merah-pucat: #ffeaeb;
+    --biru: #1d6fa4;
+    --abu: #64748b;
+    --abu-muda: #f1f5f9;
+    --putih: #ffffff;
+    --teks: #1e293b;
+    --teks-muda: #64748b;
+    --border: #e2e8f0;
+    --bayangan: 0 4px 24px rgba(0,0,0,0.08);
+    --bayangan-besar: 0 10px 40px rgba(0,0,0,0.14);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #f0f4f8;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #0f3d22 0%, #1a6b3c 100%);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header-ikon { font-size: 28px; line-height: 1; }
+  .header-teks h1 { font-size: 16px; font-weight: 700; color: #fff; line-height: 1.2; }
+  .header-teks p { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+  .header-link {
+    margin-left: auto;
+    font-size: 12px;
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    background: rgba(255,255,255,0.12);
+    padding: 6px 14px;
+    border-radius: 20px;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .header-link:hover { background: rgba(255,255,255,0.22); }
+
+  /* ── MAIN ── */
+  main {
+    flex: 1;
+    max-width: 600px;
+    width: 100%;
+    margin: 32px auto;
+    padding: 0 16px 40px;
+  }
+
+  /* ── INTRO ── */
+  .intro {
+    background: var(--putih);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--bayangan);
+    border-left: 5px solid var(--hijau);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .intro-ikon { font-size: 32px; flex-shrink: 0; margin-top: 2px; }
+  .intro h2 { font-size: 16px; font-weight: 700; color: var(--teks); margin-bottom: 6px; }
+  .intro p { font-size: 13px; color: var(--teks-muda); line-height: 1.6; }
+
+  /* ── CARD ── */
+  .kartu {
+    background: var(--putih);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: var(--bayangan);
+    margin-bottom: 20px;
+  }
+  .kartu-judul {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--teks);
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .kartu-judul .step-badge {
+    background: var(--hijau);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ── FORM ── */
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teks);
+    margin-bottom: 6px;
+  }
+  .form-group label span { color: var(--merah); }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    color: var(--teks);
+    background: var(--putih);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--hijau);
+    box-shadow: 0 0 0 3px rgba(26,107,60,0.1);
+  }
+  .form-group textarea { resize: vertical; min-height: 90px; }
+  .form-group .hint {
+    font-size: 11px;
+    color: var(--abu);
+    margin-top: 5px;
+  }
+
+  /* ── WARGA INFO BOX ── */
+  .warga-info {
+    background: var(--hijau-pucat);
+    border: 1.5px solid var(--hijau-terang);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-top: 12px;
+    display: none;
+    align-items: center;
+    gap: 12px;
+  }
+  .warga-info.tampil { display: flex; }
+  .warga-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--hijau);
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .warga-nama { font-size: 14px; font-weight: 700; color: var(--hijau); }
+  .warga-nik { font-size: 12px; color: var(--hijau-muda); margin-top: 2px; }
+
+  /* ── TOMBOL CEK ── */
+  .btn-cek {
+    width: 100%;
+    padding: 12px;
+    background: var(--hijau);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-cek:hover { background: var(--hijau-muda); }
+  .btn-cek:active { transform: scale(0.98); }
+  .btn-cek:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+
+  /* ── FORM PENGAJUAN (tersembunyi awal) ── */
+  #form-pengajuan { display: none; }
+  #form-pengajuan.tampil { display: block; }
+
+  /* ── TOMBOL SUBMIT ── */
+  .btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--hijau) 0%, var(--hijau-muda) 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(26,107,60,0.35);
+    margin-top: 8px;
+  }
+  .btn-submit:hover { opacity: 0.92; }
+  .btn-submit:active { transform: scale(0.98); }
+  .btn-submit:disabled { background: #aaa; cursor: not-allowed; box-shadow: none; }
+
+  /* ── ALERT ── */
+  .alert {
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    display: none;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+  }
+  .alert.tampil { display: flex; }
+  .alert-merah { background: var(--merah-pucat); color: #c0392b; border: 1px solid #f8a7ac; }
+  .alert-hijau { background: var(--hijau-pucat); color: var(--hijau); border: 1px solid var(--hijau-terang); }
+  .alert-ikon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── SUKSES PANEL ── */
+  #panel-sukses {
+    display: none;
+    text-align: center;
+    padding: 20px 0 8px;
+  }
+  #panel-sukses.tampil { display: block; }
+  .sukses-ikon { font-size: 64px; margin-bottom: 16px; animation: bounceIn 0.5s ease; }
+  @keyframes bounceIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  #panel-sukses h3 { font-size: 20px; font-weight: 800; color: var(--hijau); margin-bottom: 8px; }
+  #panel-sukses p { font-size: 14px; color: var(--teks-muda); line-height: 1.6; }
+
+  .nomor-surat-box {
+    background: var(--hijau-pucat);
+    border: 2px dashed var(--hijau-terang);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 20px 0;
+  }
+  .nomor-surat-box .label { font-size: 11px; color: var(--abu); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .nomor-surat-box .nomor { font-size: 17px; font-weight: 800; color: var(--hijau); margin-top: 4px; letter-spacing: 0.5px; }
+
+  .btn-ulang {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 11px 24px;
+    background: var(--abu-muda);
+    color: var(--teks);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+  }
+  .btn-ulang:hover { background: #e2e8f0; }
+
+  /* ── RIWAYAT ── */
+  #panel-riwayat { display: none; }
+  #panel-riwayat.tampil { display: block; }
+
+  .riwayat-item {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .riwayat-item:last-child { border-bottom: none; }
+  .riwayat-jenis { font-size: 13px; font-weight: 600; color: var(--teks); }
+  .riwayat-nomor { font-size: 11px; color: var(--abu); margin-top: 3px; font-family: monospace; }
+  .riwayat-tanggal { font-size: 11px; color: var(--abu); margin-top: 3px; }
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .badge-pending { background: #fff3cd; color: #856404; }
+  .badge-diproses { background: #cfe2ff; color: #0d47a1; }
+  .badge-selesai { background: var(--hijau-pucat); color: var(--hijau); }
+  .badge-ditolak { background: var(--merah-pucat); color: var(--merah); }
+
+  .kosong { text-align: center; color: var(--abu); font-size: 13px; padding: 20px 0; }
+
+  /* ── TAB ── */
+  .tab-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--putih);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--abu);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .tab.aktif {
+    border-color: var(--hijau);
+    color: var(--hijau);
+    background: var(--hijau-pucat);
+  }
+
+  /* ── SPINNER ── */
+  .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--putih);
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--abu);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    main { margin: 16px auto; }
+    .kartu { padding: 20px 18px; }
+    .intro { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-ikon">🏛️</div>
+  <div class="header-teks">
+    <h1>Dukuh Majegan</h1>
+    <p>Pandowoharjo, Sleman, D.I. Yogyakarta</p>
+  </div>
+  <a href="/" class="header-link">🔐 Masuk Admin</a>
+</header>
+
+<main>
+  <!-- INTRO -->
+  <div class="intro">
+    <div class="intro-ikon">📋</div>
+    <div>
+      <h2>Pengajuan Surat Online</h2>
+      <p>Ajukan permohonan surat ke Dukuh Majegan dari rumah. Masukkan NIK Anda untuk memulai. Layanan ini untuk warga yang terdaftar di Dukuh Majegan.</p>
+    </div>
+  </div>
+
+  <!-- TAB NAVIGASI -->
+  <div class="tab-bar">
+    <button class="tab aktif" id="tab-ajukan" onclick="gantiTab('ajukan')">📝 Ajukan Surat</button>
+    <button class="tab" id="tab-riwayat" onclick="gantiTab('riwayat')">🔍 Cek Status</button>
+  </div>
+
+  <!-- ========== PANEL: AJUKAN SURAT ========== -->
+  <div id="panel-ajukan">
+
+    <!-- LANGKAH 1: CEK NIK -->
+    <div class="kartu" id="kartu-nik">
+      <div class="kartu-judul">
+        <div class="step-badge">1</div>
+        Verifikasi Data Diri
+      </div>
+
+      <div class="form-group">
+        <label>Nomor Induk Kependudukan (NIK) <span>*</span></label>
+        <input type="text" id="input-nik" placeholder="Masukkan 16 digit NIK"
+          maxlength="16" inputmode="numeric" pattern="\d{16}"
+          oninput="this.value=this.value.replace(/\D/g,'')"
+          onkeypress="if(event.key==='Enter') cekNIK()">
+        <div class="hint">NIK tercantum di KTP / KK Anda</div>
+      </div>
+
+      <div id="alert-nik" class="alert">
+        <span class="alert-ikon">⚠️</span>
+        <span id="alert-nik-pesan"></span>
+      </div>
+
+      <div class="warga-info" id="warga-info">
+        <div class="warga-avatar" id="warga-avatar">?</div>
+        <div>
+          <div class="warga-nama" id="warga-nama"></div>
+          <div class="warga-nik" id="warga-nik-display">NIK terverifikasi ✓</div>
+        </div>
+      </div>
+
+      <button class="btn-cek" id="btn-cek" onclick="cekNIK()">
+        <span id="cek-label">🔍 Verifikasi NIK</span>
+        <div id="cek-spinner" class="spinner" style="display:none"></div>
+      </button>
+    </div>
+
+    <!-- LANGKAH 2: FORM SURAT (muncul setelah NIK valid) -->
+    <div id="form-pengajuan">
+      <div class="kartu">
+        <div class="kartu-judul">
+          <div class="step-badge">2</div>
+          Isi Permohonan Surat
+        </div>
+
+        <div id="alert-form" class="alert">
+          <span class="alert-ikon">⚠️</span>
+          <span id="alert-form-pesan"></span>
+        </div>
+
+        <div id="panel-sukses">
+          <div class="sukses-ikon">✅</div>
+          <h3>Pengajuan Berhasil!</h3>
+          <p>Permohonan surat Anda telah diterima. Silakan datang ke kantor dukuh atau tunggu konfirmasi dari petugas.</p>
+          <div class="nomor-surat-box">
+            <div class="label">Nomor Surat Pengajuan</div>
+            <div class="nomor" id="nomor-hasil"></div>
+          </div>
+          <p style="font-size:12px; color:var(--abu)">Simpan nomor surat di atas untuk keperluan pelacakan status.</p>
+          <button class="btn-ulang" onclick="ajukanLagi()">➕ Ajukan Surat Lain</button>
+        </div>
+
+        <div id="isi-form">
+          <div class="form-group">
+            <label>Jenis Surat <span>*</span></label>
+            <select id="jenis-surat">
+              <option value="">— Pilih jenis surat —</option>
+              <option>Surat Keterangan Domisili</option>
+              <option>Surat Keterangan Tidak Mampu</option>
+              <option>Surat Keterangan Usaha</option>
+              <option>Surat Keterangan Kelahiran</option>
+              <option>Surat Keterangan Kematian</option>
+              <option>Surat Izin Keramaian</option>
+              <option>Surat Pengantar</option>
+              <option>Surat Pemberitahuan</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Keperluan / Keterangan <span>*</span></label>
+            <textarea id="keperluan" placeholder="Jelaskan keperluan pengajuan surat ini secara singkat dan jelas..."></textarea>
+            <div class="hint">Contoh: Untuk keperluan pendaftaran beasiswa, untuk persyaratan BPJS, dsb.</div>
+          </div>
+
+          <button class="btn-submit" id="btn-submit" onclick="kirimPengajuan()">
+            <span id="submit-label">📤 Kirim Pengajuan</span>
+            <div id="submit-spinner" class="spinner" style="display:none"></div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /panel-ajukan -->
+
+  <!-- ========== PANEL: CEK STATUS / RIWAYAT ========== -->
+  <div id="panel-riwayat">
+    <div class="kartu">
+      <div class="kartu-judul">
+        <div class="step-badge">🔍</div>
+        Cek Status Pengajuan
+      </div>
+
+      <div class="form-group">
+        <label>Masukkan NIK Anda <span>*</span></label>
+        <input type="text" id="input-nik-riwayat" placeholder="16 digit NIK"
+          maxlength="16" inputmode="numeric"
+          oninput="this.value=this.value.replace(/\D/g,'')"
+          onkeypress="if(event.key==='Enter') cekRiwayat()">
+      </div>
+
+      <div id="alert-riwayat" class="alert">
+        <span class="alert-ikon">⚠️</span>
+        <span id="alert-riwayat-pesan"></span>
+      </div>
+
+      <button class="btn-cek" id="btn-cek-riwayat" onclick="cekRiwayat()">
+        <span id="riwayat-label">🔍 Lihat Status Surat</span>
+        <div id="riwayat-spinner" class="spinner" style="display:none"></div>
+      </button>
+
+      <div id="hasil-riwayat" style="margin-top:20px; display:none">
+        <div style="font-size:13px; font-weight:600; color:var(--teks); margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border)">
+          📋 Riwayat Surat — <span id="nama-riwayat" style="color:var(--hijau)"></span>
+        </div>
+        <div id="list-riwayat"></div>
+      </div>
+    </div>
+  </div><!-- /panel-riwayat -->
+
+</main>
+
+<footer>
+  © 2024 Dukuh Majegan, Pandowoharjo, Sleman &nbsp;·&nbsp; Pelayanan Administrasi Online
+</footer>
+
+<script>
+  const API = '';
+  let nikValid = '';
+  let namaWarga = '';
+
+  // ===== TAB =====
+  function gantiTab(tab) {
+    document.getElementById('tab-ajukan').classList.toggle('aktif', tab === 'ajukan');
+    document.getElementById('tab-riwayat').classList.toggle('aktif', tab === 'riwayat');
+    document.getElementById('panel-ajukan').style.display = tab === 'ajukan' ? 'block' : 'none';
+    document.getElementById('panel-riwayat').style.display = tab === 'riwayat' ? 'block' : 'none';
+  }
+
+  // ===== HELPER ALERT =====
+  function tampilAlert(idAlert, idPesan, pesan, tipe) {
+    const el = document.getElementById(idAlert);
+    const elPesan = document.getElementById(idPesan);
+    el.className = `alert tampil alert-${tipe}`;
+    elPesan.textContent = pesan;
+    el.querySelector('.alert-ikon').textContent = tipe === 'merah' ? '⚠️' : '✅';
+  }
+  function sembunyiAlert(idAlert) {
+    document.getElementById(idAlert).classList.remove('tampil');
+  }
+
+  function setBtnLoading(btnId, labelId, spinnerId, loading) {
+    document.getElementById(btnId).disabled = loading;
+    document.getElementById(labelId).style.display = loading ? 'none' : 'inline';
+    document.getElementById(spinnerId).style.display = loading ? 'block' : 'none';
+  }
+
+  // ===== CEK NIK =====
+  async function cekNIK() {
+    const nik = document.getElementById('input-nik').value.trim();
+    sembunyiAlert('alert-nik');
+
+    if (nik.length !== 16) {
+      tampilAlert('alert-nik', 'alert-nik-pesan', 'NIK harus terdiri dari 16 digit angka.', 'merah');
+      return;
+    }
+
+    setBtnLoading('btn-cek', 'cek-label', 'cek-spinner', true);
+
+    try {
+      const res = await fetch(`${API}/api/warga/cek-nik`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nik }),
+      });
+      const data = await res.json();
+
+      if (data.valid) {
+        nikValid = data.nik;
+        namaWarga = data.nama;
+
+        // Tampilkan info warga
+        const info = document.getElementById('warga-info');
+        document.getElementById('warga-avatar').textContent = data.nama.charAt(0).toUpperCase();
+        document.getElementById('warga-nama').textContent = data.nama;
+        document.getElementById('warga-nik-display').textContent = `NIK: ${nik.slice(0,8)}****${nik.slice(-4)} ✓`;
+        info.classList.add('tampil');
+
+        // Kunci input NIK
+        document.getElementById('input-nik').disabled = true;
+        document.getElementById('btn-cek').style.display = 'none';
+
+        // Tampilkan form pengajuan dengan animasi
+        const formEl = document.getElementById('form-pengajuan');
+        formEl.classList.add('tampil');
+        formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      } else {
+        tampilAlert('alert-nik', 'alert-nik-pesan', data.pesan, 'merah');
+        document.getElementById('warga-info').classList.remove('tampil');
+      }
+    } catch {
+      tampilAlert('alert-nik', 'alert-nik-pesan', 'Gagal terhubung ke server. Periksa koneksi internet Anda.', 'merah');
+    }
+
+    setBtnLoading('btn-cek', 'cek-label', 'cek-spinner', false);
+  }
+
+  // ===== KIRIM PENGAJUAN =====
+  async function kirimPengajuan() {
+    const jenis = document.getElementById('jenis-surat').value;
+    const keperluan = document.getElementById('keperluan').value.trim();
+    sembunyiAlert('alert-form');
+
+    if (!jenis) {
+      tampilAlert('alert-form', 'alert-form-pesan', 'Silakan pilih jenis surat terlebih dahulu.', 'merah');
+      return;
+    }
+    if (keperluan.length < 10) {
+      tampilAlert('alert-form', 'alert-form-pesan', 'Keperluan harus diisi minimal 10 karakter.', 'merah');
+      return;
+    }
+
+    setBtnLoading('btn-submit', 'submit-label', 'submit-spinner', true);
+
+    try {
+      const res = await fetch(`${API}/api/surat/pengajuan`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nik: nikValid, jenis_surat: jenis, keperluan }),
+      });
+      const data = await res.json();
+
+      if (data.sukses) {
+        document.getElementById('nomor-hasil').textContent = data.data.nomor_surat;
+        document.getElementById('isi-form').style.display = 'none';
+        document.getElementById('panel-sukses').classList.add('tampil');
+        document.getElementById('panel-sukses').scrollIntoView({ behavior: 'smooth' });
+      } else {
+        tampilAlert('alert-form', 'alert-form-pesan', data.pesan, 'merah');
+      }
+    } catch {
+      tampilAlert('alert-form', 'alert-form-pesan', 'Gagal terhubung ke server. Coba lagi beberapa saat.', 'merah');
+    }
+
+    setBtnLoading('btn-submit', 'submit-label', 'submit-spinner', false);
+  }
+
+  // ===== AJUKAN LAGI =====
+  function ajukanLagi() {
+    nikValid = '';
+    namaWarga = '';
+    document.getElementById('input-nik').value = '';
+    document.getElementById('input-nik').disabled = false;
+    document.getElementById('btn-cek').style.display = 'flex';
+    document.getElementById('warga-info').classList.remove('tampil');
+    document.getElementById('form-pengajuan').classList.remove('tampil');
+    document.getElementById('panel-sukses').classList.remove('tampil');
+    document.getElementById('isi-form').style.display = 'block';
+    document.getElementById('jenis-surat').value = '';
+    document.getElementById('keperluan').value = '';
+    sembunyiAlert('alert-nik');
+    sembunyiAlert('alert-form');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ===== CEK RIWAYAT =====
+  async function cekRiwayat() {
+    const nik = document.getElementById('input-nik-riwayat').value.trim();
+    sembunyiAlert('alert-riwayat');
+    document.getElementById('hasil-riwayat').style.display = 'none';
+
+    if (nik.length !== 16) {
+      tampilAlert('alert-riwayat', 'alert-riwayat-pesan', 'NIK harus 16 digit angka.', 'merah');
+      return;
+    }
+
+    setBtnLoading('btn-cek-riwayat', 'riwayat-label', 'riwayat-spinner', true);
+
+    try {
+      const res = await fetch(`${API}/api/surat/pengajuan?nik=${nik}`);
+      const data = await res.json();
+
+      if (res.ok) {
+        document.getElementById('nama-riwayat').textContent = data.nama;
+        const list = document.getElementById('list-riwayat');
+
+        if (!data.riwayat || data.riwayat.length === 0) {
+          list.innerHTML = '<div class="kosong">📭 Belum ada pengajuan surat</div>';
+        } else {
+          list.innerHTML = data.riwayat.map(s => `
+            <div class="riwayat-item">
+              <div>
+                <div class="riwayat-jenis">${s.jenis_surat}</div>
+                <div class="riwayat-nomor">${s.nomor_surat}</div>
+                <div class="riwayat-tanggal">${formatTanggal(s.tanggal_pengajuan)}</div>
+                ${s.catatan ? `<div style="font-size:12px;color:var(--abu);margin-top:4px">Catatan: ${s.catatan}</div>` : ''}
+              </div>
+              <span class="badge badge-${s.status}">${labelStatus(s.status)}</span>
+            </div>
+          `).join('');
+        }
+
+        document.getElementById('hasil-riwayat').style.display = 'block';
+        document.getElementById('hasil-riwayat').scrollIntoView({ behavior: 'smooth' });
+      } else {
+        tampilAlert('alert-riwayat', 'alert-riwayat-pesan', data.pesan || 'NIK tidak terdaftar.', 'merah');
+      }
+    } catch {
+      tampilAlert('alert-riwayat', 'alert-riwayat-pesan', 'Gagal terhubung ke server.', 'merah');
+    }
+
+    setBtnLoading('btn-cek-riwayat', 'riwayat-label', 'riwayat-spinner', false);
+  }
+
+  function labelStatus(status) {
+    const map = { pending: '⏳ Pending', diproses: '🔄 Diproses', selesai: '✅ Selesai', ditolak: '❌ Ditolak' };
+    return map[status] || status;
+  }
+
+  function formatTanggal(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+</script>
+
+</body>
+</html>
