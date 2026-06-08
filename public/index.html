@@ -1780,9 +1780,7 @@
           <select id="warga-status_ekonomi">
             <option value="mampu">✅ Mampu</option>
             <option value="rentan_miskin">⚠️ Rentan Miskin</option>
-            <option value="tidak_mampu">🔶 Tidak Mampu</option>
             <option value="miskin">🔴 Miskin</option>
-            <option value="sangat_miskin">🆘 Sangat Miskin</option>
           </select>
         </div>
       </div>
@@ -2784,11 +2782,12 @@ function badgeStatus(status) {
 
 function badgeEkonomi(status) {
   const map = {
-    mampu: { cls: 'badge-hijau', label: '✅ Mampu' },
-    rentan_miskin: { cls: 'badge-kuning', label: '⚠️ Rentan Miskin' },
-    tidak_mampu: { cls: 'badge-oranye', label: '🔶 Tidak Mampu' },
-    miskin: { cls: 'badge-merah', label: '🔴 Miskin' },
-    sangat_miskin: { cls: 'badge-ungu', label: '🆘 Sangat Miskin' },
+    mampu:        { cls: 'badge-hijau',  label: '✅ Mampu' },
+    rentan_miskin:{ cls: 'badge-kuning', label: '⚠️ Rentan Miskin' },
+    miskin:       { cls: 'badge-merah',  label: '🔴 Miskin' },
+    // nilai lama — tampilkan apa adanya supaya data lama tidak error
+    tidak_mampu:  { cls: 'badge-oranye', label: '🔶 Tidak Mampu' },
+    sangat_miskin:{ cls: 'badge-ungu',   label: '🆘 Sangat Miskin' },
   };
   const e = map[status] || { cls: 'badge-abu', label: status || '—' };
   return `<span class="badge ${e.cls}" style="font-size:11px">${e.label}</span>`;

@@ -26,12 +26,13 @@ function normalizeEkonomi(val: string): string {
     'rentan miskin': 'rentan_miskin',
     'rentan_miskin': 'rentan_miskin',
     'hampir miskin': 'rentan_miskin',
-    'tidak mampu': 'tidak_mampu',
-    'tidak_mampu': 'tidak_mampu',
+    // nilai lama -> dipetakan ke miskin
+    'tidak mampu': 'miskin',
+    'tidak_mampu': 'miskin',
     'miskin': 'miskin',
-    'sangat miskin': 'sangat_miskin',
-    'sangat_miskin': 'sangat_miskin',
-    'fakir miskin': 'sangat_miskin',
+    'sangat miskin': 'miskin',
+    'sangat_miskin': 'miskin',
+    'fakir miskin': 'miskin',
   };
   return map[val?.toLowerCase()?.trim()] || 'mampu';
 }
