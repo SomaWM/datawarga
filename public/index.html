@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistem Administrasi Dukuh Majegan</title>
+<title>Sistem Administrasi Padukuhan Majegan</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -927,7 +927,7 @@
   <div class="login-card">
     <div class="login-logo">
       <div class="lambang">🏛️</div>
-      <h1>Sistem Administrasi<br>Dukuh Majegan</h1>
+      <h1>Sistem Administrasi<br>Padukuhan Majegan</h1>
       <p>Pandowoharjo, Sleman, D.I. Yogyakarta</p>
     </div>
     <div id="alert-login" class="alert alert-merah"></div>
@@ -960,7 +960,7 @@
         <div class="sidebar-logo">
           <div class="icon">🏛️</div>
           <div>
-            <h2>Dukuh Majegan</h2>
+            <h2>Padukuhan Majegan</h2>
             <p>Pandowoharjo, Sleman</p>
           </div>
         </div>
@@ -2603,7 +2603,7 @@ function cetakSurat(surat) {
       <strong>${surat.nomor_surat}</strong>
     </div>
     <p style="text-align:center; font-size:16px; font-weight:bold; text-transform:uppercase; margin-bottom:20px">${surat.jenis_surat}</p>
-    <p>Yang bertanda tangan di bawah ini, Kepala Dukuh Majegan, Desa Pandowoharjo, Kecamatan Sleman, Kabupaten Sleman, Daerah Istimewa Yogyakarta, dengan ini menerangkan bahwa:</p>
+    <p>Yang bertanda tangan di bawah ini, Kepala Padukuhan Majegan, Desa Pandowoharjo, Kecamatan Sleman, Kabupaten Sleman, Daerah Istimewa Yogyakarta, dengan ini menerangkan bahwa:</p>
     <br>
     <div class="isi">
       <table>
@@ -2616,7 +2616,7 @@ function cetakSurat(surat) {
     <p>Demikian surat keterangan ini dibuat untuk dapat dipergunakan sebagaimana mestinya.</p>
     <div class="ttd">
       <p>Majegan, ${tanggal}</p>
-      <p>Kepala Dukuh Majegan</p>
+      <p>Kepala Padukuhan Majegan</p>
       <p class="nama">.................................</p>
     </div>
     <script>setTimeout(() => window.print(), 500);<\/script>
@@ -3146,13 +3146,13 @@ function printDokUrl(url, nama, tipe) {
 </head>
 <body>
   <div class="header">
-    <h2>Dukuh Majegan — ${tipe.toUpperCase()}</h2>
+    <h2>Padukuhan Majegan — ${tipe.toUpperCase()}</h2>
     <p>Nama: <strong>${nama}</strong></p>
   </div>
   <div class="foto-wrap">
     <img src="${url}" onload="window.print()">
   </div>
-  <div class="footer">Dicetak dari Sistem Administrasi Dukuh Majegan</div>
+  <div class="footer">Dicetak dari Sistem Administrasi Padukuhan Majegan</div>
 </body>
 </html>`);
   w.document.close();

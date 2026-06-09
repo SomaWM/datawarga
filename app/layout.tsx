@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Sistem Administrasi Dukuh Majegan",
+  title: "Sistem Administrasi Padukuhan Majegan",
   description: "Pandowoharjo, Sleman, D.I. Yogyakarta",
 };
 
