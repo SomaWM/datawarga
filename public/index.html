@@ -978,6 +978,12 @@
         <div class="nav-item" onclick="buka('warga')">
           <span class="ikon">👥</span> Data Warga
         </div>
+        <div class="nav-item" onclick="buka('kematian')">
+          <span class="ikon">🕊️</span> Data Kematian
+        </div>
+        <div class="nav-item" onclick="buka('kelahiran')">
+          <span class="ikon">👶</span> Data Kelahiran
+        </div>
       </div>
 
       <div class="nav-section">
@@ -1110,6 +1116,60 @@
             <div style="text-align:center;padding:40px;color:var(--abu)"><div class="spinner" style="margin:0 auto 12px"></div>Memuat data...</div>
           </div>
           <div class="pagination" id="pag-warga"></div>
+        </div>
+
+        <!-- ===== DATA KEMATIAN ===== -->
+        <div id="hal-kematian" class="halaman">
+          <div class="kartu">
+            <div class="kartu-header" style="flex-wrap:wrap;gap:10px">
+              <h3>🕊️ Daftar Data Kematian</h3>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <input type="text" id="cari-kematian" placeholder="🔍 Cari nama / NIK..."
+                  style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;min-width:200px;outline:none"
+                  oninput="muatKematian()">
+                <button class="btn btn-hijau" onclick="modalKematian()">+ Tambah Data Kematian</button>
+              </div>
+            </div>
+            <div class="tabel-container">
+              <table>
+                <thead><tr>
+                  <th>Nama Jenazah</th><th>NIK</th><th>Tgl Lahir</th><th>Jenis Kelamin</th>
+                  <th>Tgl Meninggal</th><th>Usia</th><th>Tempat</th><th>Penyebab</th><th>Aksi</th>
+                </tr></thead>
+                <tbody id="tbody-kematian">
+                  <tr><td colspan="9" class="loading"><div class="spinner"></div>Memuat data...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination" id="pag-kematian" style="padding:12px 20px"></div>
+          </div>
+        </div>
+
+        <!-- ===== DATA KELAHIRAN ===== -->
+        <div id="hal-kelahiran" class="halaman">
+          <div class="kartu">
+            <div class="kartu-header" style="flex-wrap:wrap;gap:10px">
+              <h3>👶 Daftar Data Kelahiran</h3>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <input type="text" id="cari-kelahiran" placeholder="🔍 Cari nama bayi / orang tua..."
+                  style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;min-width:200px;outline:none"
+                  oninput="muatKelahiran()">
+                <button class="btn btn-hijau" onclick="modalKelahiran()">+ Tambah Data Kelahiran</button>
+              </div>
+            </div>
+            <div class="tabel-container">
+              <table>
+                <thead><tr>
+                  <th>Nama Bayi</th><th>Tgl Lahir</th><th>Jenis Kelamin</th>
+                  <th>Berat/Tinggi</th><th>Tempat Lahir</th><th>Nama Ibu</th><th>Nama Ayah</th><th>Aksi</th>
+                </tr></thead>
+                <tbody id="tbody-kelahiran">
+                  <tr><td colspan="8" class="loading"><div class="spinner"></div>Memuat data...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination" id="pag-kelahiran" style="padding:12px 20px"></div>
+          </div>
         </div>
 
         <!-- ===== SURAT ===== -->
@@ -1443,6 +1503,237 @@
     <div class="modal-footer">
       <button class="btn btn-abu" onclick="tutupModal('modal-jenis-bantuan')">Batal</button>
       <button class="btn btn-hijau" onclick="simpanJenisBantuan()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah/Edit Data Kematian -->
+<div class="modal-overlay" id="modal-kematian">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-header">
+      <h3 id="modal-km-judul">Tambah Data Kematian</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-kematian')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="km-id">
+
+      <div style="font-weight:700;font-size:13px;color:var(--hijau);margin-bottom:10px">👤 Identitas Jenazah</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+        <div class="form-group" style="grid-column:1/-1;position:relative">
+          <label>Cari Warga (Nama / NIK) *</label>
+          <input type="text" id="km-cari-warga" placeholder="Ketik nama atau NIK..." oninput="cariWargaKematian()" autocomplete="off">
+          <div id="km-warga-dropdown" style="display:none;position:absolute;background:white;border:1.5px solid var(--border);border-radius:10px;max-height:180px;overflow-y:auto;z-index:999;width:auto;min-width:300px;box-shadow:var(--bayangan)"></div>
+          <input type="hidden" id="km-nik">
+          <input type="hidden" id="km-no-kk">
+          <div id="km-warga-dipilih" style="display:none;margin-top:8px;padding:10px 14px;background:var(--abu-muda);border-radius:8px;font-size:13px"></div>
+          <div style="font-size:11px;color:var(--abu,#64748b);margin-top:5px">Pilih dari Data Warga untuk mengisi otomatis, atau isi manual di bawah jika tidak terdaftar.</div>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Nama Lengkap *</label>
+          <input type="text" id="km-nama">
+        </div>
+        <div class="form-group">
+          <label>No KK</label>
+          <input type="text" id="km-no-kk-tampil">
+        </div>
+        <div class="form-group">
+          <label>NIK</label>
+          <input type="text" id="km-nik-tampil">
+        </div>
+        <div class="form-group">
+          <label>Tempat Lahir</label>
+          <input type="text" id="km-tempat-lahir">
+        </div>
+        <div class="form-group">
+          <label>Tanggal Lahir</label>
+          <input type="date" id="km-tanggal-lahir" onchange="hitungUsiaKematian()">
+        </div>
+        <div class="form-group">
+          <label>Jenis Kelamin</label>
+          <select id="km-jenis-kelamin">
+            <option value="">-- Pilih --</option>
+            <option value="Laki-laki">Laki-laki</option>
+            <option value="Perempuan">Perempuan</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Alamat</label>
+          <textarea id="km-alamat" rows="2"></textarea>
+        </div>
+      </div>
+
+      <div style="font-weight:700;font-size:13px;color:var(--hijau);margin-bottom:10px">🕊️ Data Kematian</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-group">
+          <label>Tanggal Meninggal *</label>
+          <input type="date" id="km-tanggal-meninggal" onchange="hitungUsiaKematian()">
+        </div>
+        <div class="form-group">
+          <label>Usia Jenazah (tahun)</label>
+          <input type="number" id="km-usia" min="0" placeholder="Otomatis dari tgl lahir">
+        </div>
+        <div class="form-group">
+          <label>Jam Meninggal</label>
+          <input type="time" id="km-jam">
+        </div>
+        <div class="form-group">
+          <label>Tempat Meninggal</label>
+          <select id="km-tempat-meninggal" onchange="toggleKeteranganKematian('tempat')">
+            <option value="">-- Pilih --</option>
+            <option value="RS">🏥 RS</option>
+            <option value="Rumah">🏠 Rumah</option>
+            <option value="Lainnya">📍 Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group" id="grup-tempat-ket" style="display:none">
+          <label>Keterangan Tempat</label>
+          <input type="text" id="km-tempat-ket" placeholder="Contoh: RS Sardjito">
+        </div>
+        <div class="form-group">
+          <label>Penyebab Kematian</label>
+          <select id="km-penyebab" onchange="toggleKeteranganKematian('penyebab')">
+            <option value="">-- Pilih --</option>
+            <option value="sakit">🤒 Sakit</option>
+            <option value="tua">👴 Tua</option>
+            <option value="virus">🦠 Virus</option>
+            <option value="kecelakaan">🚧 Kecelakaan</option>
+            <option value="lainnya">❓ Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group" id="grup-penyebab-ket" style="display:none">
+          <label>Keterangan Penyebab</label>
+          <input type="text" id="km-penyebab-ket" placeholder="Contoh: Jantung, COVID-19, dll">
+        </div>
+        <div class="form-group">
+          <label>Ibu Jenazah</label>
+          <input type="text" id="km-ibu">
+        </div>
+        <div class="form-group">
+          <label>Ayah Jenazah</label>
+          <input type="text" id="km-ayah">
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Lokasi Pemakaman</label>
+          <input type="text" id="km-lokasi-makam" placeholder="Contoh: TPU Majegan">
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Catatan</label>
+          <textarea id="km-catatan" placeholder="Catatan tambahan (opsional)..." rows="2"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-kematian')">Batal</button>
+      <button class="btn btn-hijau" onclick="simpanKematian()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah/Edit Data Kelahiran -->
+<div class="modal-overlay" id="modal-kelahiran">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-header">
+      <h3 id="modal-kl-judul">Tambah Data Kelahiran</h3>
+      <button class="btn-tutup" onclick="tutupModal('modal-kelahiran')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="kl-id">
+
+      <div style="font-weight:700;font-size:13px;color:var(--hijau);margin-bottom:10px">👪 Identitas Orang Tua</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+        <div class="form-group" style="grid-column:1/-1;position:relative">
+          <label>Cari Ibu (Nama / NIK)</label>
+          <input type="text" id="kl-cari-ibu" placeholder="Ketik nama atau NIK ibu..." oninput="cariWargaKelahiran('ibu')" autocomplete="off">
+          <div id="kl-ibu-dropdown" style="display:none;position:absolute;background:white;border:1.5px solid var(--border);border-radius:10px;max-height:180px;overflow-y:auto;z-index:999;width:auto;min-width:300px;box-shadow:var(--bayangan)"></div>
+          <input type="hidden" id="kl-nik-ibu">
+          <div id="kl-ibu-dipilih" style="display:none;margin-top:8px;padding:10px 14px;background:var(--abu-muda);border-radius:8px;font-size:13px"></div>
+        </div>
+        <div class="form-group">
+          <label>Nama Ibu</label>
+          <input type="text" id="kl-nama-ibu">
+        </div>
+        <div class="form-group">
+          <label>NIK Ibu</label>
+          <input type="text" id="kl-nik-ibu-tampil">
+        </div>
+        <div class="form-group" style="grid-column:1/-1;position:relative">
+          <label>Cari Ayah (Nama / NIK)</label>
+          <input type="text" id="kl-cari-ayah" placeholder="Ketik nama atau NIK ayah..." oninput="cariWargaKelahiran('ayah')" autocomplete="off">
+          <div id="kl-ayah-dropdown" style="display:none;position:absolute;background:white;border:1.5px solid var(--border);border-radius:10px;max-height:180px;overflow-y:auto;z-index:999;width:auto;min-width:300px;box-shadow:var(--bayangan)"></div>
+          <input type="hidden" id="kl-nik-ayah">
+          <div id="kl-ayah-dipilih" style="display:none;margin-top:8px;padding:10px 14px;background:var(--abu-muda);border-radius:8px;font-size:13px"></div>
+        </div>
+        <div class="form-group">
+          <label>Nama Ayah</label>
+          <input type="text" id="kl-nama-ayah">
+        </div>
+        <div class="form-group">
+          <label>NIK Ayah</label>
+          <input type="text" id="kl-nik-ayah-tampil">
+        </div>
+        <div class="form-group">
+          <label>No KK</label>
+          <input type="text" id="kl-no-kk">
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Alamat</label>
+          <textarea id="kl-alamat" rows="2"></textarea>
+        </div>
+      </div>
+
+      <div style="font-weight:700;font-size:13px;color:var(--hijau);margin-bottom:10px">👶 Data Kelahiran</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Nama Bayi *</label>
+          <input type="text" id="kl-nama-bayi">
+        </div>
+        <div class="form-group">
+          <label>Tanggal Lahir *</label>
+          <input type="date" id="kl-tanggal-lahir">
+        </div>
+        <div class="form-group">
+          <label>Jam Lahir</label>
+          <input type="time" id="kl-jam-lahir">
+        </div>
+        <div class="form-group">
+          <label>Jenis Kelamin</label>
+          <select id="kl-jenis-kelamin">
+            <option value="">-- Pilih --</option>
+            <option value="Laki-laki">Laki-laki</option>
+            <option value="Perempuan">Perempuan</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tempat Lahir</label>
+          <select id="kl-tempat-lahir" onchange="toggleKeteranganKelahiran()">
+            <option value="">-- Pilih --</option>
+            <option value="RS">🏥 RS</option>
+            <option value="Puskesmas">🏨 Puskesmas</option>
+            <option value="Bidan">🩺 Bidan</option>
+            <option value="Lainnya">📍 Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group" id="grup-tempat-kl-ket" style="display:none;grid-column:1/-1">
+          <label>Keterangan Tempat</label>
+          <input type="text" id="kl-tempat-ket" placeholder="Contoh: RS Sardjito / Puskesmas Pandowoharjo">
+        </div>
+        <div class="form-group">
+          <label>Berat Lahir (kg)</label>
+          <input type="number" id="kl-berat" step="0.01" min="0" placeholder="Contoh: 3.2">
+        </div>
+        <div class="form-group">
+          <label>Tinggi Lahir (cm)</label>
+          <input type="number" id="kl-tinggi" step="0.1" min="0" placeholder="Contoh: 49.5">
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Catatan</label>
+          <textarea id="kl-catatan" placeholder="Catatan tambahan (opsional)..." rows="2"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-abu" onclick="tutupModal('modal-kelahiran')">Batal</button>
+      <button class="btn btn-hijau" onclick="simpanKelahiran()">💾 Simpan</button>
     </div>
   </div>
 </div>
@@ -2111,6 +2402,7 @@ function buka(hal) {
   
   const judulMap = {
     dashboard: 'Dashboard', kk: 'Kartu Keluarga', warga: 'Data Warga',
+    kematian: '🕊️ Data Kematian', kelahiran: '👶 Data Kelahiran',
     surat: 'Surat & Izin', pengumuman: 'Pengumuman', kegiatan: 'Kegiatan',
     dokumen: '📁 Dokumen KTP & KK', bantuan: '🤝 Bantuan Pemerintah'
   };
@@ -2127,6 +2419,8 @@ function buka(hal) {
   if (hal === 'dashboard') muatDashboard();
   else if (hal === 'kk') muatWarga();
   else if (hal === 'warga') muatWarga();
+  else if (hal === 'kematian') muatKematian();
+  else if (hal === 'kelahiran') muatKelahiran();
   else if (hal === 'surat') muatSurat();
   else if (hal === 'pengumuman') muatPengumuman();
   else if (hal === 'kegiatan') muatKegiatan();
@@ -3403,6 +3697,392 @@ document.addEventListener('click', e => {
   const dd = document.getElementById('bw-warga-dropdown');
   const inp = document.getElementById('bw-cari-warga');
   if (dd && inp && !dd.contains(e.target) && e.target !== inp) dd.style.display = 'none';
+});
+
+// ====== DATA KEMATIAN ======
+let halamanKematian = 1;
+let cariWargaKematianTimeout = null;
+
+async function muatKematian() {
+  const cari = document.getElementById('cari-kematian')?.value || '';
+  const page = halamanKematian;
+  const data = await apiFetch(`/api/kematian?page=${page}&limit=25&search=${encodeURIComponent(cari)}`);
+  const tbody = document.getElementById('tbody-kematian');
+  if (!data?.data?.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--abu)">Belum ada data kematian</td></tr>';
+    document.getElementById('pag-kematian').innerHTML = '';
+    return;
+  }
+  const tempatEmoji = { RS: '🏥', Rumah: '🏠', Lainnya: '📍' };
+  const penyebabLabel = { sakit: '🤒 Sakit', tua: '👴 Tua', virus: '🦠 Virus', kecelakaan: '🚧 Kecelakaan', lainnya: '❓ Lainnya' };
+  tbody.innerHTML = data.data.map(k => {
+    const tglLahir = k.tanggal_lahir ? new Date(k.tanggal_lahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+    const tglMeninggal = k.tanggal_meninggal ? new Date(k.tanggal_meninggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+    const tempat = k.tempat_meninggal ? `${tempatEmoji[k.tempat_meninggal] || ''} ${k.tempat_meninggal}${k.tempat_meninggal_keterangan ? '<br><small style="color:var(--abu)">' + k.tempat_meninggal_keterangan + '</small>' : ''}` : '-';
+    const penyebab = k.penyebab_kematian ? `${penyebabLabel[k.penyebab_kematian] || k.penyebab_kematian}${k.penyebab_kematian_keterangan ? '<br><small style="color:var(--abu)">' + k.penyebab_kematian_keterangan + '</small>' : ''}` : '-';
+    return `<tr>
+      <td><strong>${k.nama_lengkap}</strong>${k.alamat ? '<br><small style="color:var(--abu)">' + k.alamat.substring(0,40) + '</small>' : ''}</td>
+      <td style="font-family:monospace;font-size:12px">${k.nik || '-'}</td>
+      <td style="font-size:12px">${tglLahir}</td>
+      <td>${k.jenis_kelamin || '-'}</td>
+      <td style="font-size:12px">${tglMeninggal}</td>
+      <td>${k.usia_jenazah != null ? k.usia_jenazah + ' th' : '-'}</td>
+      <td style="font-size:12px">${tempat}</td>
+      <td style="font-size:12px">${penyebab}</td>
+      <td>
+        <button class="aksi-btn aksi-edit" onclick="modalKematian(${JSON.stringify(k).replace(/"/g,'&quot;')})">✏️</button>
+        <button class="aksi-btn aksi-hapus" onclick="hapusKematian('${k.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Pagination
+  const total = data.total;
+  const totalPage = Math.ceil(total / 25);
+  const pag = document.getElementById('pag-kematian');
+  if (totalPage <= 1) { pag.innerHTML = `<small style="color:var(--abu)">Total: ${total} data</small>`; return; }
+  let html = `<small style="color:var(--abu)">Total: ${total} | Hal ${page}/${totalPage}</small> `;
+  if (page > 1) html += `<button class="btn btn-abu" style="padding:6px 12px;font-size:12px" onclick="halamanKematian=${page-1};muatKematian()">← Prev</button> `;
+  if (page < totalPage) html += `<button class="btn btn-abu" style="padding:6px 12px;font-size:12px" onclick="halamanKematian=${page+1};muatKematian()">Next →</button>`;
+  pag.innerHTML = html;
+}
+
+function modalKematian(data = null) {
+  document.getElementById('modal-km-judul').textContent = data ? 'Edit Data Kematian' : 'Tambah Data Kematian';
+  document.getElementById('km-id').value = data?.id || '';
+  document.getElementById('km-nik').value = data?.nik || '';
+  document.getElementById('km-no-kk').value = data?.no_kk || '';
+  document.getElementById('km-cari-warga').value = data?.nik ? `${data.nama_lengkap} — ${data.nik}` : '';
+  document.getElementById('km-warga-dipilih').style.display = data?.nik ? '' : 'none';
+  if (data?.nik) document.getElementById('km-warga-dipilih').innerHTML = `👤 <strong>${data.nama_lengkap}</strong> &nbsp; NIK: ${data.nik}`;
+  document.getElementById('km-nama').value = data?.nama_lengkap || '';
+  document.getElementById('km-no-kk-tampil').value = data?.no_kk || '';
+  document.getElementById('km-nik-tampil').value = data?.nik || '';
+  document.getElementById('km-tempat-lahir').value = data?.tempat_lahir || '';
+  document.getElementById('km-tanggal-lahir').value = data?.tanggal_lahir?.split('T')[0] || '';
+  document.getElementById('km-jenis-kelamin').value = data?.jenis_kelamin || '';
+  document.getElementById('km-alamat').value = data?.alamat || '';
+  document.getElementById('km-tanggal-meninggal').value = data?.tanggal_meninggal?.split('T')[0] || '';
+  document.getElementById('km-usia').value = data?.usia_jenazah ?? '';
+  document.getElementById('km-jam').value = data?.jam_meninggal?.substring(0,5) || '';
+  document.getElementById('km-tempat-meninggal').value = data?.tempat_meninggal || '';
+  document.getElementById('km-tempat-ket').value = data?.tempat_meninggal_keterangan || '';
+  document.getElementById('km-penyebab').value = data?.penyebab_kematian || '';
+  document.getElementById('km-penyebab-ket').value = data?.penyebab_kematian_keterangan || '';
+  document.getElementById('km-ibu').value = data?.nama_ibu || '';
+  document.getElementById('km-ayah').value = data?.nama_ayah || '';
+  document.getElementById('km-lokasi-makam').value = data?.lokasi_pemakaman || '';
+  document.getElementById('km-catatan').value = data?.catatan || '';
+  toggleKeteranganKematian('tempat');
+  toggleKeteranganKematian('penyebab');
+  bukModal('modal-kematian');
+}
+
+function toggleKeteranganKematian(jenis) {
+  if (jenis === 'tempat') {
+    const v = document.getElementById('km-tempat-meninggal').value;
+    document.getElementById('grup-tempat-ket').style.display = v ? '' : 'none';
+  } else {
+    const v = document.getElementById('km-penyebab').value;
+    document.getElementById('grup-penyebab-ket').style.display = v ? '' : 'none';
+  }
+}
+
+function hitungUsiaKematian() {
+  const lahir = document.getElementById('km-tanggal-lahir').value;
+  const meninggal = document.getElementById('km-tanggal-meninggal').value;
+  if (!lahir || !meninggal) return;
+  const dLahir = new Date(lahir);
+  const dMeninggal = new Date(meninggal);
+  if (isNaN(dLahir) || isNaN(dMeninggal) || dMeninggal < dLahir) return;
+  let usia = dMeninggal.getFullYear() - dLahir.getFullYear();
+  const blmUlangTahun = (dMeninggal.getMonth() < dLahir.getMonth()) ||
+    (dMeninggal.getMonth() === dLahir.getMonth() && dMeninggal.getDate() < dLahir.getDate());
+  if (blmUlangTahun) usia--;
+  document.getElementById('km-usia').value = usia >= 0 ? usia : '';
+}
+
+function cariWargaKematian() {
+  clearTimeout(cariWargaKematianTimeout);
+  const q = document.getElementById('km-cari-warga').value.trim();
+  const dropdown = document.getElementById('km-warga-dropdown');
+  if (q.length < 2) { dropdown.style.display = 'none'; return; }
+  cariWargaKematianTimeout = setTimeout(async () => {
+    const data = await apiFetch(`/api/warga?search=${encodeURIComponent(q)}&limit=8`);
+    if (!data?.data?.length) { dropdown.style.display = 'none'; return; }
+    dropdown.style.display = 'block';
+    dropdown.innerHTML = data.data.map(w => `
+      <div onclick='pilihWargaKematian(${JSON.stringify(w).replace(/'/g,"&#39;")})'
+        style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)"
+        onmouseover="this.style.background='var(--abu-muda)'" onmouseout="this.style.background=''">
+        <strong>${w.nama_lengkap}</strong><br>
+        <small style="color:var(--abu)">NIK: ${w.nik} &nbsp;|&nbsp; RT ${w.rt||'-'}/${w.rw||'-'} ${w.dusun||''}</small>
+      </div>
+    `).join('');
+  }, 300);
+}
+
+function pilihWargaKematian(w) {
+  document.getElementById('km-nik').value = w.nik;
+  document.getElementById('km-no-kk').value = w.no_kk || '';
+  document.getElementById('km-cari-warga').value = `${w.nama_lengkap} — ${w.nik}`;
+  document.getElementById('km-warga-dropdown').style.display = 'none';
+  document.getElementById('km-warga-dipilih').style.display = '';
+  document.getElementById('km-warga-dipilih').innerHTML = `👤 <strong>${w.nama_lengkap}</strong> &nbsp; NIK: ${w.nik}`;
+
+  // Auto-isi field identitas dari data warga
+  document.getElementById('km-nama').value = w.nama_lengkap || '';
+  document.getElementById('km-no-kk-tampil').value = w.no_kk || '';
+  document.getElementById('km-nik-tampil').value = w.nik || '';
+  document.getElementById('km-tempat-lahir').value = w.tempat_lahir || '';
+  document.getElementById('km-tanggal-lahir').value = w.tanggal_lahir?.split('T')[0] || '';
+  document.getElementById('km-jenis-kelamin').value = w.jenis_kelamin || '';
+  const alamat = [w.alamat, w.rt && w.rw ? `RT ${w.rt}/RW ${w.rw}` : '', w.dusun].filter(Boolean).join(', ');
+  document.getElementById('km-alamat').value = alamat;
+  hitungUsiaKematian();
+}
+
+async function simpanKematian() {
+  const id = document.getElementById('km-id').value;
+  const nama = document.getElementById('km-nama').value.trim();
+  if (!nama) { alert('Nama lengkap wajib diisi!'); return; }
+  const tanggalMeninggal = document.getElementById('km-tanggal-meninggal').value;
+  if (!tanggalMeninggal) { alert('Tanggal meninggal wajib diisi!'); return; }
+  const body = {
+    nik: document.getElementById('km-nik').value || null,
+    no_kk: document.getElementById('km-no-kk').value || null,
+    nama_lengkap: nama,
+    tempat_lahir: document.getElementById('km-tempat-lahir').value || null,
+    tanggal_lahir: document.getElementById('km-tanggal-lahir').value || null,
+    jenis_kelamin: document.getElementById('km-jenis-kelamin').value || null,
+    alamat: document.getElementById('km-alamat').value || null,
+    tanggal_meninggal: tanggalMeninggal,
+    usia_jenazah: document.getElementById('km-usia').value || null,
+    jam_meninggal: document.getElementById('km-jam').value || null,
+    tempat_meninggal: document.getElementById('km-tempat-meninggal').value || null,
+    tempat_meninggal_keterangan: document.getElementById('km-tempat-ket').value || null,
+    penyebab_kematian: document.getElementById('km-penyebab').value || null,
+    penyebab_kematian_keterangan: document.getElementById('km-penyebab-ket').value || null,
+    nama_ibu: document.getElementById('km-ibu').value || null,
+    nama_ayah: document.getElementById('km-ayah').value || null,
+    lokasi_pemakaman: document.getElementById('km-lokasi-makam').value || null,
+    catatan: document.getElementById('km-catatan').value || null,
+  };
+  const res = await apiFetch(id ? `/api/kematian/${id}` : '/api/kematian', {
+    method: id ? 'PUT' : 'POST', body: JSON.stringify(body)
+  });
+  if (res && !res.error) {
+    tutupModal('modal-kematian');
+    muatKematian();
+    tampilNotif('Data kematian berhasil disimpan!', 'hijau');
+  } else if (res?.error) {
+    alert(res.error);
+  }
+}
+
+async function hapusKematian(id) {
+  if (!confirm('Hapus data kematian ini?')) return;
+  const res = await apiFetch(`/api/kematian/${id}`, { method: 'DELETE' });
+  if (res?.error) { alert(res.error); return; }
+  muatKematian();
+  tampilNotif('Data kematian berhasil dihapus');
+}
+
+// Tutup dropdown warga (kematian) saat klik di luar
+document.addEventListener('click', e => {
+  const dd = document.getElementById('km-warga-dropdown');
+  const inp = document.getElementById('km-cari-warga');
+  if (dd && inp && !dd.contains(e.target) && e.target !== inp) dd.style.display = 'none';
+});
+
+// ====== DATA KELAHIRAN ======
+let halamanKelahiran = 1;
+let cariWargaKelahiranTimeout = null;
+
+async function muatKelahiran() {
+  const cari = document.getElementById('cari-kelahiran')?.value || '';
+  const page = halamanKelahiran;
+  const data = await apiFetch(`/api/kelahiran?page=${page}&limit=25&search=${encodeURIComponent(cari)}`);
+  const tbody = document.getElementById('tbody-kelahiran');
+  if (!data?.data?.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--abu)">Belum ada data kelahiran</td></tr>';
+    document.getElementById('pag-kelahiran').innerHTML = '';
+    return;
+  }
+  const tempatEmoji = { RS: '🏥', Puskesmas: '🏨', Bidan: '🩺', Lainnya: '📍' };
+  tbody.innerHTML = data.data.map(k => {
+    const tglLahir = k.tanggal_lahir ? new Date(k.tanggal_lahir).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+    const jam = k.jam_lahir ? ' ' + k.jam_lahir.substring(0,5) : '';
+    const ukuran = [
+      k.berat_lahir != null ? Number(k.berat_lahir) + ' kg' : null,
+      k.tinggi_lahir != null ? Number(k.tinggi_lahir) + ' cm' : null,
+    ].filter(Boolean).join(' / ') || '-';
+    const tempat = k.tempat_lahir ? `${tempatEmoji[k.tempat_lahir] || ''} ${k.tempat_lahir}${k.tempat_lahir_keterangan ? '<br><small style="color:var(--abu)">' + k.tempat_lahir_keterangan + '</small>' : ''}` : '-';
+    return `<tr>
+      <td><strong>${k.nama_bayi}</strong></td>
+      <td style="font-size:12px">${tglLahir}${jam}</td>
+      <td>${k.jenis_kelamin || '-'}</td>
+      <td style="font-size:12px">${ukuran}</td>
+      <td style="font-size:12px">${tempat}</td>
+      <td>${k.nama_ibu || '-'}${k.nik_ibu ? '<br><small style="color:var(--abu);font-family:monospace">' + k.nik_ibu + '</small>' : ''}</td>
+      <td>${k.nama_ayah || '-'}${k.nik_ayah ? '<br><small style="color:var(--abu);font-family:monospace">' + k.nik_ayah + '</small>' : ''}</td>
+      <td>
+        <button class="aksi-btn aksi-edit" onclick="modalKelahiran(${JSON.stringify(k).replace(/"/g,'&quot;')})">✏️</button>
+        <button class="aksi-btn aksi-hapus" onclick="hapusKelahiran('${k.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Pagination
+  const total = data.total;
+  const totalPage = Math.ceil(total / 25);
+  const pag = document.getElementById('pag-kelahiran');
+  if (totalPage <= 1) { pag.innerHTML = `<small style="color:var(--abu)">Total: ${total} data</small>`; return; }
+  let html = `<small style="color:var(--abu)">Total: ${total} | Hal ${page}/${totalPage}</small> `;
+  if (page > 1) html += `<button class="btn btn-abu" style="padding:6px 12px;font-size:12px" onclick="halamanKelahiran=${page-1};muatKelahiran()">← Prev</button> `;
+  if (page < totalPage) html += `<button class="btn btn-abu" style="padding:6px 12px;font-size:12px" onclick="halamanKelahiran=${page+1};muatKelahiran()">Next →</button>`;
+  pag.innerHTML = html;
+}
+
+function modalKelahiran(data = null) {
+  document.getElementById('modal-kl-judul').textContent = data ? 'Edit Data Kelahiran' : 'Tambah Data Kelahiran';
+  document.getElementById('kl-id').value = data?.id || '';
+
+  document.getElementById('kl-nik-ibu').value = data?.nik_ibu || '';
+  document.getElementById('kl-cari-ibu').value = data?.nik_ibu ? `${data.nama_ibu || ''} — ${data.nik_ibu}` : '';
+  document.getElementById('kl-ibu-dipilih').style.display = data?.nik_ibu ? '' : 'none';
+  if (data?.nik_ibu) document.getElementById('kl-ibu-dipilih').innerHTML = `👤 <strong>${data.nama_ibu || ''}</strong> &nbsp; NIK: ${data.nik_ibu}`;
+  document.getElementById('kl-nama-ibu').value = data?.nama_ibu || '';
+  document.getElementById('kl-nik-ibu-tampil').value = data?.nik_ibu || '';
+
+  document.getElementById('kl-nik-ayah').value = data?.nik_ayah || '';
+  document.getElementById('kl-cari-ayah').value = data?.nik_ayah ? `${data.nama_ayah || ''} — ${data.nik_ayah}` : '';
+  document.getElementById('kl-ayah-dipilih').style.display = data?.nik_ayah ? '' : 'none';
+  if (data?.nik_ayah) document.getElementById('kl-ayah-dipilih').innerHTML = `👤 <strong>${data.nama_ayah || ''}</strong> &nbsp; NIK: ${data.nik_ayah}`;
+  document.getElementById('kl-nama-ayah').value = data?.nama_ayah || '';
+  document.getElementById('kl-nik-ayah-tampil').value = data?.nik_ayah || '';
+
+  document.getElementById('kl-no-kk').value = data?.no_kk || '';
+  document.getElementById('kl-alamat').value = data?.alamat || '';
+
+  document.getElementById('kl-nama-bayi').value = data?.nama_bayi || '';
+  document.getElementById('kl-tanggal-lahir').value = data?.tanggal_lahir?.split('T')[0] || '';
+  document.getElementById('kl-jam-lahir').value = data?.jam_lahir?.substring(0,5) || '';
+  document.getElementById('kl-jenis-kelamin').value = data?.jenis_kelamin || '';
+  document.getElementById('kl-tempat-lahir').value = data?.tempat_lahir || '';
+  document.getElementById('kl-tempat-ket').value = data?.tempat_lahir_keterangan || '';
+  document.getElementById('kl-berat').value = data?.berat_lahir ?? '';
+  document.getElementById('kl-tinggi').value = data?.tinggi_lahir ?? '';
+  document.getElementById('kl-catatan').value = data?.catatan || '';
+
+  toggleKeteranganKelahiran();
+  bukModal('modal-kelahiran');
+}
+
+function toggleKeteranganKelahiran() {
+  const v = document.getElementById('kl-tempat-lahir').value;
+  document.getElementById('grup-tempat-kl-ket').style.display = v ? '' : 'none';
+}
+
+function cariWargaKelahiran(jenis) {
+  clearTimeout(cariWargaKelahiranTimeout);
+  const inputId = jenis === 'ibu' ? 'kl-cari-ibu' : 'kl-cari-ayah';
+  const dropdownId = jenis === 'ibu' ? 'kl-ibu-dropdown' : 'kl-ayah-dropdown';
+  const q = document.getElementById(inputId).value.trim();
+  const dropdown = document.getElementById(dropdownId);
+  if (q.length < 2) { dropdown.style.display = 'none'; return; }
+  cariWargaKelahiranTimeout = setTimeout(async () => {
+    const data = await apiFetch(`/api/warga?search=${encodeURIComponent(q)}&limit=8`);
+    if (!data?.data?.length) { dropdown.style.display = 'none'; return; }
+    dropdown.style.display = 'block';
+    dropdown.innerHTML = data.data.map(w => `
+      <div onclick='pilihWargaKelahiran(${JSON.stringify(w).replace(/'/g,"&#39;")}, "${jenis}")'
+        style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)"
+        onmouseover="this.style.background='var(--abu-muda)'" onmouseout="this.style.background=''">
+        <strong>${w.nama_lengkap}</strong><br>
+        <small style="color:var(--abu)">NIK: ${w.nik} &nbsp;|&nbsp; RT ${w.rt||'-'}/${w.rw||'-'} ${w.dusun||''}</small>
+      </div>
+    `).join('');
+  }, 300);
+}
+
+function pilihWargaKelahiran(w, jenis) {
+  if (jenis === 'ibu') {
+    document.getElementById('kl-nik-ibu').value = w.nik;
+    document.getElementById('kl-cari-ibu').value = `${w.nama_lengkap} — ${w.nik}`;
+    document.getElementById('kl-ibu-dropdown').style.display = 'none';
+    document.getElementById('kl-ibu-dipilih').style.display = '';
+    document.getElementById('kl-ibu-dipilih').innerHTML = `👤 <strong>${w.nama_lengkap}</strong> &nbsp; NIK: ${w.nik}`;
+    document.getElementById('kl-nama-ibu').value = w.nama_lengkap || '';
+    document.getElementById('kl-nik-ibu-tampil').value = w.nik || '';
+  } else {
+    document.getElementById('kl-nik-ayah').value = w.nik;
+    document.getElementById('kl-cari-ayah').value = `${w.nama_lengkap} — ${w.nik}`;
+    document.getElementById('kl-ayah-dropdown').style.display = 'none';
+    document.getElementById('kl-ayah-dipilih').style.display = '';
+    document.getElementById('kl-ayah-dipilih').innerHTML = `👤 <strong>${w.nama_lengkap}</strong> &nbsp; NIK: ${w.nik}`;
+    document.getElementById('kl-nama-ayah').value = w.nama_lengkap || '';
+    document.getElementById('kl-nik-ayah-tampil').value = w.nik || '';
+  }
+  // Auto-isi No KK & Alamat dari salah satu orang tua yang dipilih, jika belum diisi
+  if (!document.getElementById('kl-no-kk').value) document.getElementById('kl-no-kk').value = w.no_kk || '';
+  if (!document.getElementById('kl-alamat').value) {
+    const alamat = [w.alamat, w.rt && w.rw ? `RT ${w.rt}/RW ${w.rw}` : '', w.dusun].filter(Boolean).join(', ');
+    document.getElementById('kl-alamat').value = alamat;
+  }
+}
+
+async function simpanKelahiran() {
+  const id = document.getElementById('kl-id').value;
+  const namaBayi = document.getElementById('kl-nama-bayi').value.trim();
+  if (!namaBayi) { alert('Nama bayi wajib diisi!'); return; }
+  const tanggalLahir = document.getElementById('kl-tanggal-lahir').value;
+  if (!tanggalLahir) { alert('Tanggal lahir wajib diisi!'); return; }
+  const body = {
+    no_kk: document.getElementById('kl-no-kk').value || null,
+    nama_ibu: document.getElementById('kl-nama-ibu').value || null,
+    nik_ibu: document.getElementById('kl-nik-ibu').value || null,
+    nama_ayah: document.getElementById('kl-nama-ayah').value || null,
+    nik_ayah: document.getElementById('kl-nik-ayah').value || null,
+    alamat: document.getElementById('kl-alamat').value || null,
+    nama_bayi: namaBayi,
+    tanggal_lahir: tanggalLahir,
+    jam_lahir: document.getElementById('kl-jam-lahir').value || null,
+    jenis_kelamin: document.getElementById('kl-jenis-kelamin').value || null,
+    berat_lahir: document.getElementById('kl-berat').value || null,
+    tinggi_lahir: document.getElementById('kl-tinggi').value || null,
+    tempat_lahir: document.getElementById('kl-tempat-lahir').value || null,
+    tempat_lahir_keterangan: document.getElementById('kl-tempat-ket').value || null,
+    catatan: document.getElementById('kl-catatan').value || null,
+  };
+  const res = await apiFetch(id ? `/api/kelahiran/${id}` : '/api/kelahiran', {
+    method: id ? 'PUT' : 'POST', body: JSON.stringify(body)
+  });
+  if (res && !res.error) {
+    tutupModal('modal-kelahiran');
+    muatKelahiran();
+    tampilNotif('Data kelahiran berhasil disimpan!', 'hijau');
+  } else if (res?.error) {
+    alert(res.error);
+  }
+}
+
+async function hapusKelahiran(id) {
+  if (!confirm('Hapus data kelahiran ini?')) return;
+  const res = await apiFetch(`/api/kelahiran/${id}`, { method: 'DELETE' });
+  if (res?.error) { alert(res.error); return; }
+  muatKelahiran();
+  tampilNotif('Data kelahiran berhasil dihapus');
+}
+
+// Tutup dropdown ibu/ayah (kelahiran) saat klik di luar
+document.addEventListener('click', e => {
+  const ddIbu = document.getElementById('kl-ibu-dropdown');
+  const inpIbu = document.getElementById('kl-cari-ibu');
+  if (ddIbu && inpIbu && !ddIbu.contains(e.target) && e.target !== inpIbu) ddIbu.style.display = 'none';
+  const ddAyah = document.getElementById('kl-ayah-dropdown');
+  const inpAyah = document.getElementById('kl-cari-ayah');
+  if (ddAyah && inpAyah && !ddAyah.contains(e.target) && e.target !== inpAyah) ddAyah.style.display = 'none';
 });
 
 
