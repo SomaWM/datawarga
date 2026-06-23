@@ -1,11 +1,14 @@
 import { NextRequest } from 'next/server';
 import pool from '@/lib/db';
-import { verifyToken, unauthorized } from '@/lib/auth';
+import { verifyToken, unauthorized, requireRole, serverError } from '@/lib/auth';
 
 // PUT update kegiatan
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const user = verifyToken(req);
   if (!user) return unauthorized();
+
+  const roleCheck = requireRole(user, 'staff');
+  if (roleCheck) return roleCheck;
 
   try {
     const { id } = await params;
@@ -17,7 +20,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     );
     return Response.json(result.rows[0]);
   } catch (err: any) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }
 
@@ -26,11 +29,14 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const user = verifyToken(req);
   if (!user) return unauthorized();
 
+  const roleCheck = requireRole(user, 'dukuh');
+  if (roleCheck) return roleCheck;
+
   try {
     const { id } = await params;
     await pool.query('DELETE FROM kegiatan WHERE id = $1', [id]);
     return Response.json({ message: 'Kegiatan berhasil dihapus' });
   } catch (err: any) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }

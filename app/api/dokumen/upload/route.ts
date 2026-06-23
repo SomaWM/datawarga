@@ -1,11 +1,14 @@
 import { NextRequest } from 'next/server';
 import pool from '@/lib/db';
 import { getSupabase, BUCKET } from '@/lib/storage';
-import { verifyToken, unauthorized } from '@/lib/auth';
+import { verifyToken, unauthorized, requireRole, serverError } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
   const user = verifyToken(req);
   if (!user) return unauthorized();
+
+  const roleCheck = requireRole(user, 'staff');
+  if (roleCheck) return roleCheck;
 
   try {
     const formData = await req.formData();
@@ -52,6 +55,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: any) {
     console.error('Upload error:', err);
-    return Response.json({ error: err.message || 'Gagal upload file' }, { status: 500 });
+    return Response.json({ error: 'Gagal mengupload file. Silakan coba lagi.' }, { status: 500 });
   }
 }

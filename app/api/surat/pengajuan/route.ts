@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import pool from '@/lib/db';
+import { suratPengajuanSchema, formatZodError } from '@/lib/validations';
 
 async function generateNomorSurat(jenis: string): Promise<string> {
   const year = new Date().getFullYear();
@@ -26,25 +27,22 @@ async function generateNomorSurat(jenis: string): Promise<string> {
 // POST - Pengajuan surat oleh warga (publik, verifikasi NIK)
 export async function POST(req: NextRequest) {
   try {
-    const { nik, jenis_surat, keperluan } = await req.json();
+    const body = await req.json();
 
-    // Validasi input
-    if (!nik || !jenis_surat || !keperluan) {
+    // Validasi input dengan Zod
+    const parsed = suratPengajuanSchema.safeParse(body);
+    if (!parsed.success) {
       return Response.json(
-        { sukses: false, pesan: 'NIK, jenis surat, dan keperluan wajib diisi' },
+        { sukses: false, pesan: formatZodError(parsed.error) },
         { status: 400 }
       );
     }
-
-    const nikBersih = nik.trim();
-    if (!/^\d{16}$/.test(nikBersih)) {
-      return Response.json({ sukses: false, pesan: 'Format NIK tidak valid' }, { status: 400 });
-    }
+    const { nik, jenis_surat, keperluan } = parsed.data;
 
     // Verifikasi NIK - harus warga tetap
     const wargaResult = await pool.query(
-      `SELECT nik, nama_lengkap FROM warga WHERE nik = $1 `,
-      [nikBersih]
+      `SELECT nik, nama_lengkap FROM warga WHERE nik = $1`,
+      [nik]
     );
 
     if (wargaResult.rows.length === 0) {
@@ -58,9 +56,9 @@ export async function POST(req: NextRequest) {
 
     // Cek apakah warga sudah punya surat pending dengan jenis yang sama
     const cekDuplikat = await pool.query(
-      `SELECT id FROM surat 
+      `SELECT id FROM surat
        WHERE pemohon_nik = $1 AND jenis_surat = $2 AND status IN ('pending', 'diproses')`,
-      [nikBersih, jenis_surat]
+      [nik, jenis_surat]
     );
 
     if (cekDuplikat.rows.length > 0) {
@@ -80,7 +78,7 @@ export async function POST(req: NextRequest) {
     const result = await pool.query(
       `INSERT INTO surat (nomor_surat, jenis_surat, perihal, pemohon_nik, pemohon_nama, keperluan)
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, nomor_surat, status, tanggal_pengajuan`,
-      [nomor_surat, jenis_surat, perihal, nikBersih, warga.nama_lengkap, keperluan.trim()]
+      [nomor_surat, jenis_surat, perihal, nik, warga.nama_lengkap, keperluan.trim()]
     );
 
     const surat = result.rows[0];

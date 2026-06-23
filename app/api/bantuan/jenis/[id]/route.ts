@@ -1,11 +1,14 @@
 import { NextRequest } from 'next/server';
 import pool from '@/lib/db';
-import { verifyToken, unauthorized } from '@/lib/auth';
+import { verifyToken, unauthorized, requireRole, serverError } from '@/lib/auth';
 
 // PUT update jenis bantuan
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const user = verifyToken(req);
   if (!user) return unauthorized();
+
+  const roleCheck = requireRole(user, 'dukuh');
+  if (roleCheck) return roleCheck;
 
   const { id } = await params;
 
@@ -23,7 +26,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return Response.json(result.rows[0]);
   } catch (err: any) {
     if (err.code === '23505') return Response.json({ error: 'Kode bantuan sudah digunakan' }, { status: 400 });
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }
 
@@ -32,10 +35,12 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const user = verifyToken(req);
   if (!user) return unauthorized();
 
+  const roleCheck = requireRole(user, 'dukuh');
+  if (roleCheck) return roleCheck;
+
   const { id } = await params;
 
   try {
-    // Cek apakah sudah ada penerima
     const cek = await pool.query('SELECT COUNT(*) FROM bantuan_warga WHERE jenis_bantuan_id = $1', [id]);
     if (parseInt(cek.rows[0].count) > 0) {
       return Response.json(
@@ -46,6 +51,6 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     await pool.query('DELETE FROM jenis_bantuan WHERE id = $1', [id]);
     return Response.json({ sukses: true });
   } catch (err: any) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }

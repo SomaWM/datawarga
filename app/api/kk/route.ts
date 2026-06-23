@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import pool from '@/lib/db';
-import { verifyToken, unauthorized } from '@/lib/auth';
+import { verifyToken, unauthorized, requireRole, serverError } from '@/lib/auth';
 
 // GET semua KK
 export async function GET(req: NextRequest) {
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     let query = `
       SELECT kk.*, COUNT(w.id) as jumlah_anggota 
       FROM kepala_keluarga kk
-      LEFT JOIN warga w ON kk.no_kk = w.no_kk AND w.status_tinggal = 'tetap'
+      LEFT JOIN warga w ON kk.no_kk = w.no_kk AND w.status_tinggal IN ('domisili_asli', 'sementara')
       WHERE 1=1
     `;
     const params: any[] = [];
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     const result = await pool.query(query, params);
     return Response.json(result.rows);
   } catch (err: any) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }
 
@@ -36,6 +36,9 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const user = verifyToken(req);
   if (!user) return unauthorized();
+
+  const roleCheck = requireRole(user, 'staff');
+  if (roleCheck) return roleCheck;
 
   try {
     const { no_kk, nama_kepala, alamat, rt, rw, telepon } = await req.json();
@@ -47,6 +50,6 @@ export async function POST(req: NextRequest) {
     return Response.json(result.rows[0], { status: 201 });
   } catch (err: any) {
     if (err.code === '23505') return Response.json({ error: 'No KK sudah terdaftar' }, { status: 400 });
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }

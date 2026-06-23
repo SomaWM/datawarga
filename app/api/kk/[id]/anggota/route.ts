@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import pool from '@/lib/db';
-import { verifyToken, unauthorized } from '@/lib/auth';
+import { verifyToken, unauthorized, serverError } from '@/lib/auth';
 
 // GET KK beserta anggota — id bisa berupa UUID (pk) atau no_kk (16 digit)
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -10,7 +10,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params;
 
-    // Coba cocokkan berdasarkan no_kk dulu, fallback ke id (UUID)
     const kk = await pool.query(
       'SELECT * FROM kepala_keluarga WHERE no_kk = $1 OR id::text = $1',
       [id]
@@ -28,6 +27,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     return Response.json({ kk: kk.rows[0], anggota: anggota.rows });
   } catch (err: any) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }

@@ -1,28 +1,61 @@
 import { NextRequest } from 'next/server';
 import pool from '@/lib/db';
-import { verifyToken, unauthorized } from '@/lib/auth';
+import { verifyToken, unauthorized, serverError } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   const user = verifyToken(req);
   if (!user) return unauthorized();
 
   try {
-    const total = await pool.query("SELECT COUNT(*) FROM warga WHERE status_tinggal = 'tetap'");
-    const laki = await pool.query("SELECT COUNT(*) FROM warga WHERE jenis_kelamin = 'Laki-laki' AND status_tinggal = 'tetap'");
-    const perempuan = await pool.query("SELECT COUNT(*) FROM warga WHERE jenis_kelamin = 'Perempuan' AND status_tinggal = 'tetap'");
-    const kk = await pool.query("SELECT COUNT(*) FROM kepala_keluarga");
-    const agama = await pool.query("SELECT agama, COUNT(*) as jumlah FROM warga WHERE status_tinggal = 'tetap' GROUP BY agama");
-    const pekerjaan = await pool.query("SELECT pekerjaan, COUNT(*) as jumlah FROM warga WHERE status_tinggal = 'tetap' AND pekerjaan IS NOT NULL GROUP BY pekerjaan ORDER BY jumlah DESC LIMIT 5");
+    // Filter status_tinggal: dukuh warga aktif
+    // Mendukung format lama ('tetap') dan baru ('domisili_asli', 'sementara')
+    const statusFilter = `status_tinggal IN ('domisili_asli', 'sementara', 'tetap')`;
 
+    // Satu query untuk semua count (total, laki, perempuan) menggunakan FILTER clause
+    const [counts, agama, pekerjaan, ekonomi, kk] = await Promise.all([
+      pool.query(`
+        SELECT
+          COUNT(*) AS total,
+          COUNT(*) FILTER (WHERE jenis_kelamin = 'Laki-laki') AS laki_laki,
+          COUNT(*) FILTER (WHERE jenis_kelamin = 'Perempuan') AS perempuan
+        FROM warga
+        WHERE ${statusFilter}
+      `),
+      pool.query(`
+        SELECT COALESCE(agama, 'Tidak diisi') AS agama, COUNT(*) AS jumlah
+        FROM warga
+        WHERE ${statusFilter}
+        GROUP BY COALESCE(agama, 'Tidak diisi')
+        ORDER BY jumlah DESC
+      `),
+      pool.query(`
+        SELECT COALESCE(NULLIF(pekerjaan, ''), 'Tidak diisi') AS pekerjaan, COUNT(*) AS jumlah
+        FROM warga
+        WHERE ${statusFilter}
+        GROUP BY COALESCE(NULLIF(pekerjaan, ''), 'Tidak diisi')
+        ORDER BY jumlah DESC LIMIT 8
+      `),
+      pool.query(`
+        SELECT COALESCE(status_ekonomi, 'mampu') AS status_ekonomi, COUNT(*) AS jumlah
+        FROM warga
+        WHERE ${statusFilter}
+        GROUP BY COALESCE(status_ekonomi, 'mampu')
+        ORDER BY jumlah DESC
+      `),
+      pool.query(`SELECT COUNT(*) FROM kepala_keluarga`),
+    ]);
+
+    const c = counts.rows[0];
     return Response.json({
-      total_warga: parseInt(total.rows[0].count),
-      laki_laki: parseInt(laki.rows[0].count),
-      perempuan: parseInt(perempuan.rows[0].count),
+      total_warga: parseInt(c.total),
+      laki_laki: parseInt(c.laki_laki),
+      perempuan: parseInt(c.perempuan),
       jumlah_kk: parseInt(kk.rows[0].count),
       agama: agama.rows,
       pekerjaan: pekerjaan.rows,
+      ekonomi: ekonomi.rows,
     });
   } catch (err: any) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }

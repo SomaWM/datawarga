@@ -1,11 +1,163 @@
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════
+   CSS Custom Properties — di LUAR @layer supaya
+   specificity-nya tinggi (tidak kalah sama Tailwind reset)
+   ═══════════════════════════════════════════ */
+:root {
+  --bg: #f0f4f8;
+  --surface: #ffffff;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  color-scheme: light;
 }
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: #ffffff;
-  color: #171717;
+.dark {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  color-scheme: dark;
+}
+
+/* ═══════════════════════════════════════════
+   Base — box model, body, scrollbar
+   ═══════════════════════════════════════════ */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   Komponen kustom
+   ═══════════════════════════════════════════ */
+@layer components {
+  /* Card */
+  .card {
+    @apply rounded-xl border bg-[var(--surface)] border-[var(--border)] shadow-kartu;
+  }
+
+  /* Input form */
+  .form-input {
+    @apply w-full rounded-lg border bg-[var(--surface)] border-[var(--border)] px-3 py-2 text-[var(--text)]
+           focus:outline-none focus:ring-2 focus:ring-hijau-muda focus:border-transparent transition;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-[var(--text-muted)] mb-1.5;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+  .badge-hijau {
+    @apply bg-hijau-muda/15 text-hijau dark:bg-hijau-muda/25;
+  }
+  .badge-kuning {
+    @apply bg-kuning/20 text-kuning;
+  }
+  .badge-merah {
+    @apply bg-merah/15 text-merah;
+  }
+  .badge-biru {
+    @apply bg-biru/15 text-biru;
+  }
+  .badge-abu {
+    @apply bg-slate-400/20 text-slate-600 dark:bg-slate-500/25 dark:text-slate-400;
+  }
+}
+
+/* Loading spinner */
+.spinner {
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #1a6b3c;
+  animation: spin 0.8s linear infinite;
+}
+
+.dark .spinner {
+  border-color: rgba(255, 255, 255, 0.1);
+  border-top-color: #4aba7a;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Skeleton loading */
+.skeleton {
+  @apply animate-pulse rounded bg-slate-200 dark:bg-slate-700;
+}
+
+/* Modal animations */
+.modal-enter {
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Print styles untuk surat */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+  .no-print {
+    display: none !important;
+  }
 }

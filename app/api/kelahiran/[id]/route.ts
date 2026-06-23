@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import pool from '@/lib/db';
-import { verifyToken, unauthorized } from '@/lib/auth';
+import { verifyToken, unauthorized, requireRole, serverError } from '@/lib/auth';
 
 // GET detail data kelahiran by ID
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -13,7 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     if (!result.rows.length) return Response.json({ error: 'Data tidak ditemukan' }, { status: 404 });
     return Response.json(result.rows[0]);
   } catch (err: any) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }
 
@@ -21,6 +21,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const user = verifyToken(req);
   if (!user) return unauthorized();
+
+  const roleCheck = requireRole(user, 'staff');
+  if (roleCheck) return roleCheck;
 
   const { id } = await params;
 
@@ -52,7 +55,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (!result.rows.length) return Response.json({ error: 'Data tidak ditemukan' }, { status: 404 });
     return Response.json(result.rows[0]);
   } catch (err: any) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }
 
@@ -61,12 +64,15 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const user = verifyToken(req);
   if (!user) return unauthorized();
 
+  const roleCheck = requireRole(user, 'dukuh');
+  if (roleCheck) return roleCheck;
+
   const { id } = await params;
 
   try {
     await pool.query('DELETE FROM data_kelahiran WHERE id = $1', [id]);
     return Response.json({ sukses: true });
   } catch (err: any) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }

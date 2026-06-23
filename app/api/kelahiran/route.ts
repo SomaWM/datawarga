@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import pool from '@/lib/db';
-import { verifyToken, unauthorized } from '@/lib/auth';
+import { verifyToken, unauthorized, requireRole, serverError } from '@/lib/auth';
 
 // GET daftar data kelahiran (dengan filter & pagination)
 export async function GET(req: NextRequest) {
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
       limit,
     });
   } catch (err: any) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }
 
@@ -48,6 +48,9 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const user = verifyToken(req);
   if (!user) return unauthorized();
+
+  const roleCheck = requireRole(user, 'staff');
+  if (roleCheck) return roleCheck;
 
   try {
     const {
@@ -76,6 +79,6 @@ export async function POST(req: NextRequest) {
     );
     return Response.json(result.rows[0], { status: 201 });
   } catch (err: any) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }

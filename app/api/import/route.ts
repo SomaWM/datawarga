@@ -1,9 +1,8 @@
 import { NextRequest } from 'next/server';
 import * as XLSX from 'xlsx';
 import pool from '@/lib/db';
-import { verifyToken, unauthorized } from '@/lib/auth';
+import { verifyToken, unauthorized, requireRole, serverError } from '@/lib/auth';
 
-// Normalisasi nilai status_tinggal (support nilai lama & baru)
 function normalizeStatus(val: string): string {
   const map: Record<string, string> = {
     'tetap': 'domisili_asli',
@@ -18,7 +17,6 @@ function normalizeStatus(val: string): string {
   return map[val?.toLowerCase()?.trim()] || 'domisili_asli';
 }
 
-// Normalisasi nilai status_ekonomi
 function normalizeEkonomi(val: string): string {
   const map: Record<string, string> = {
     'mampu': 'mampu',
@@ -26,7 +24,6 @@ function normalizeEkonomi(val: string): string {
     'rentan miskin': 'rentan_miskin',
     'rentan_miskin': 'rentan_miskin',
     'hampir miskin': 'rentan_miskin',
-    // nilai lama -> dipetakan ke miskin
     'tidak mampu': 'miskin',
     'tidak_mampu': 'miskin',
     'miskin': 'miskin',
@@ -42,18 +39,14 @@ function str(val: any): string | null {
   return String(val).trim();
 }
 
-// Format tanggal dari Excel (bisa number serial, string DD/MM/YYYY, YYYY-MM-DD, dsb)
 function parseDate(val: any): string | null {
   if (!val) return null;
-  // Jika angka serial Excel
   if (typeof val === 'number') {
     const d = XLSX.SSF.parse_date_code(val);
     if (d) return `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`;
   }
   const s = String(val).trim();
-  // YYYY-MM-DD
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-  // DD/MM/YYYY atau DD-MM-YYYY
   const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
   if (m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
   return null;
@@ -63,10 +56,14 @@ export async function POST(req: NextRequest) {
   const user = verifyToken(req);
   if (!user) return unauthorized();
 
+  // Hanya dukuh yang bisa import data
+  const roleCheck = requireRole(user, 'dukuh');
+  if (roleCheck) return roleCheck;
+
   try {
     const formData = await req.formData();
     const file = formData.get('file') as File;
-    const sheet = (formData.get('sheet') as string) || 'Data Warga'; // 'Data KK' | 'Data Warga'
+    const sheet = (formData.get('sheet') as string) || 'Data Warga';
 
     if (!file) return Response.json({ error: 'File tidak ditemukan' }, { status: 400 });
 
@@ -80,7 +77,6 @@ export async function POST(req: NextRequest) {
     }
 
     const ws = wb.Sheets[sheet];
-    // Mulai dari baris ke-3 sebagai header (index 2), data mulai baris ke-4
     const rows: any[] = XLSX.utils.sheet_to_json(ws, { defval: '', range: 2 });
 
     if (!rows.length) return Response.json({ error: 'Tidak ada data di sheet' }, { status: 400 });
@@ -95,7 +91,7 @@ export async function POST(req: NextRequest) {
         const nama_kepala = str(r['NAMA_KEPALA *'] || r['NAMA_KEPALA'] || r['nama_kepala']);
         const alamat = str(r['ALAMAT *'] || r['ALAMAT'] || r['alamat']);
 
-        if (!no_kk && !nama_kepala) { hasil.dilewati++; continue; } // baris kosong
+        if (!no_kk && !nama_kepala) { hasil.dilewati++; continue; }
         if (!no_kk || !/^\d{16}$/.test(no_kk)) {
           hasil.gagal++;
           hasil.errors.push(`Baris ${i + 4}: NO_KK "${no_kk}" tidak valid (harus 16 digit)`);
@@ -146,7 +142,7 @@ export async function POST(req: NextRequest) {
         const no_kk = str(r['NO_KK *'] || r['NO_KK'] || r['no_kk']);
         const nama = str(r['NAMA_LENGKAP *'] || r['NAMA_LENGKAP'] || r['nama_lengkap']);
 
-        if (!nik && !nama) { hasil.dilewati++; continue; } // baris kosong
+        if (!nik && !nama) { hasil.dilewati++; continue; }
         if (!nik || !/^\d{16}$/.test(nik)) {
           hasil.gagal++;
           hasil.errors.push(`Baris ${i + 4}: NIK "${nik}" tidak valid (harus 16 digit)`);
@@ -163,7 +159,6 @@ export async function POST(req: NextRequest) {
           continue;
         }
 
-        // Cek KK ada
         const kkCek = await pool.query('SELECT no_kk FROM kepala_keluarga WHERE no_kk = $1', [no_kk]);
         if (!kkCek.rows.length) {
           hasil.gagal++;
@@ -172,12 +167,8 @@ export async function POST(req: NextRequest) {
         }
 
         const tglLahir = parseDate(r['TANGGAL_LAHIR'] || r['tanggal_lahir']);
-        const statusTinggal = normalizeStatus(
-          str(r['STATUS_TINGGAL *'] || r['STATUS_TINGGAL'] || r['status_tinggal']) || ''
-        );
-        const statusEkonomi = normalizeEkonomi(
-          str(r['STATUS_EKONOMI'] || r['status_ekonomi']) || ''
-        );
+        const statusTinggal = normalizeStatus(str(r['STATUS_TINGGAL *'] || r['STATUS_TINGGAL'] || r['status_tinggal']) || '');
+        const statusEkonomi = normalizeEkonomi(str(r['STATUS_EKONOMI'] || r['status_ekonomi']) || '');
 
         try {
           await pool.query(
@@ -236,6 +227,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: any) {
     console.error('Import error:', err);
-    return Response.json({ error: 'Gagal memproses file: ' + err.message }, { status: 500 });
+    return Response.json({ error: 'Gagal memproses file. Pastikan format file benar.' }, { status: 500 });
   }
 }

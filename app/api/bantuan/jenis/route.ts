@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import pool from '@/lib/db';
-import { verifyToken, unauthorized } from '@/lib/auth';
+import { verifyToken, unauthorized, requireRole, serverError } from '@/lib/auth';
 
 // GET semua jenis bantuan
 export async function GET(req: NextRequest) {
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     const result = await pool.query(query, params);
     return Response.json(result.rows);
   } catch (err: any) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }
 
@@ -33,6 +33,10 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const user = verifyToken(req);
   if (!user) return unauthorized();
+
+  // Hanya dukuh yang bisa kelola jenis bantuan
+  const roleCheck = requireRole(user, 'dukuh');
+  if (roleCheck) return roleCheck;
 
   try {
     const { kode, nama, penyelenggara, kategori, deskripsi, aktif } = await req.json();
@@ -49,6 +53,6 @@ export async function POST(req: NextRequest) {
     return Response.json(result.rows[0], { status: 201 });
   } catch (err: any) {
     if (err.code === '23505') return Response.json({ error: 'Kode bantuan sudah digunakan' }, { status: 400 });
-    return Response.json({ error: err.message }, { status: 500 });
+    return serverError(err);
   }
 }
