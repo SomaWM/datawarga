@@ -38,6 +38,7 @@ export async function GET(req: NextRequest) {
       SELECT w.nik, w.no_kk, w.nama_lengkap, w.tempat_lahir, w.tanggal_lahir, w.jenis_kelamin,
              w.agama, w.pendidikan, w.pekerjaan, w.status_perkawinan, w.status_hubungan,
              w.golongan_darah, w.telepon, w.email, w.status_tinggal, w.status_ekonomi,
+             w.alamat_ktp, w.alamat_domisili,
              kk.alamat, kk.rt, kk.rw, kk.dusun
       FROM warga w
       LEFT JOIN kepala_keluarga kk ON w.no_kk = kk.no_kk
@@ -136,6 +137,8 @@ export async function GET(req: NextRequest) {
         { header: 'Email', key: 'email', width: 25 },
         { header: 'Status Tinggal', key: 'status_tinggal', width: 14 },
         { header: 'Status Ekonomi', key: 'status_ekonomi', width: 14 },
+        { header: 'Alamat KTP', key: 'alamat_ktp', width: 40 },
+        { header: 'Alamat Domisili', key: 'alamat_domisili', width: 40 },
         { header: 'RT', key: 'rt', width: 5 },
         { header: 'RW', key: 'rw', width: 5 },
         { header: 'Dusun', key: 'dusun', width: 10 },

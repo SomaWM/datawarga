@@ -172,11 +172,12 @@ export async function POST(req: NextRequest) {
     const result = await pool.query(
       `INSERT INTO warga (nik, no_kk, nama_lengkap, tempat_lahir, tanggal_lahir, jenis_kelamin,
         agama, pendidikan, pekerjaan, status_perkawinan, status_hubungan, golongan_darah,
-        telepon, email, status_tinggal, status_ekonomi)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING *`,
+        telepon, email, status_tinggal, status_ekonomi, alamat_ktp, alamat_domisili)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING *`,
       [d.nik, no_kk, d.nama_lengkap, d.tempat_lahir, d.tanggal_lahir, d.jenis_kelamin,
         d.agama, d.pendidikan, d.pekerjaan, d.status_perkawinan, d.status_hubungan,
-        d.golongan_darah, d.telepon, d.email, d.status_tinggal, d.status_ekonomi]
+        d.golongan_darah, d.telepon, d.email, d.status_tinggal, d.status_ekonomi,
+        d.alamat_ktp || null, d.alamat_domisili || null]
     );
 
     const created = result.rows[0];

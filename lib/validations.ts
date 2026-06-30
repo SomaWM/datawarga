@@ -61,6 +61,8 @@ export const wargaCreateSchema = z.object({
     .enum(['mampu', 'rentan_miskin', 'miskin'])
     .optional()
     .default('mampu'),
+  alamat_ktp: z.string().max(500).optional().default(''),
+  alamat_domisili: z.string().max(500).optional().default(''),
 });
 
 export const wargaUpdateSchema = wargaCreateSchema.partial().omit({ nik: true });

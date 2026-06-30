@@ -175,8 +175,8 @@ export async function POST(req: NextRequest) {
             `INSERT INTO warga (nik, no_kk, nama_lengkap, tempat_lahir, tanggal_lahir,
                jenis_kelamin, agama, pendidikan, pekerjaan, status_perkawinan,
                status_hubungan, golongan_darah, telepon, email, status_tinggal,
-               kewarganegaraan, status_ekonomi)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
+               kewarganegaraan, status_ekonomi, alamat_ktp, alamat_domisili)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
              ON CONFLICT (nik) DO UPDATE SET
                no_kk = EXCLUDED.no_kk,
                nama_lengkap = EXCLUDED.nama_lengkap,
@@ -194,6 +194,8 @@ export async function POST(req: NextRequest) {
                status_tinggal = EXCLUDED.status_tinggal,
                kewarganegaraan = EXCLUDED.kewarganegaraan,
                status_ekonomi = EXCLUDED.status_ekonomi,
+               alamat_ktp = EXCLUDED.alamat_ktp,
+               alamat_domisili = EXCLUDED.alamat_domisili,
                updated_at = NOW()`,
             [nik, no_kk, nama,
              str(r['TEMPAT_LAHIR'] || r['tempat_lahir']),
@@ -209,7 +211,9 @@ export async function POST(req: NextRequest) {
              str(r['EMAIL'] || r['email']),
              statusTinggal,
              str(r['KEWARGANEGARAAN'] || r['kewarganegaraan']) || 'WNI',
-             statusEkonomi]
+             statusEkonomi,
+             str(r['ALAMAT_KTP'] || r['alamat_ktp']),
+             str(r['ALAMAT_DOMISILI'] || r['alamat_domisili'])]
           );
           hasil.berhasil++;
         } catch (err: any) {

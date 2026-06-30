@@ -36,7 +36,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const {
       nama_lengkap, tempat_lahir, tanggal_lahir, jenis_kelamin, agama,
       pendidikan, pekerjaan, status_perkawinan, status_hubungan, golongan_darah,
-      telepon, email, status_tinggal, status_ekonomi,
+      telepon, email, status_tinggal, status_ekonomi, alamat_ktp, alamat_domisili,
     } = await req.json();
 
     // Ambil data lama untuk audit (sebelum update)
@@ -50,11 +50,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       `UPDATE warga SET nama_lengkap=$1, tempat_lahir=$2, tanggal_lahir=$3, jenis_kelamin=$4,
         agama=$5, pendidikan=$6, pekerjaan=$7, status_perkawinan=$8, status_hubungan=$9,
         golongan_darah=$10, telepon=$11, email=$12, status_tinggal=$13, status_ekonomi=$14,
-        updated_at=NOW()
-       WHERE id=$15 RETURNING *`,
+        alamat_ktp=$15, alamat_domisili=$16, updated_at=NOW()
+       WHERE id=$17 RETURNING *`,
       [nama_lengkap, tempat_lahir, tanggal_lahir, jenis_kelamin, agama, pendidikan,
         pekerjaan, status_perkawinan, status_hubungan, golongan_darah, telepon, email,
-        status_tinggal, status_ekonomi || 'mampu', id]
+        status_tinggal, status_ekonomi || 'mampu',
+        alamat_ktp || null, alamat_domisili || null, id]
     );
 
     if (result.rows.length === 0) {

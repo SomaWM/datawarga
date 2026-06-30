@@ -41,6 +41,8 @@ interface Warga {
   status_tinggal: string;
   status_ekonomi: string | null;
   pendidikan?: string;
+  alamat_ktp?: string;
+  alamat_domisili?: string;
   alamat?: string;
   rt?: string;
   rw?: string;
@@ -544,6 +546,13 @@ function WargaModal({
           onChange={(e) => setForm({ ...form, tempat_lahir: e.target.value })}
         />
         <Input
+          label="Alamat Sesuai KTP"
+          value={form.alamat_ktp || ''}
+          onChange={(e) => setForm({ ...form, alamat_ktp: e.target.value })}
+          className="sm:col-span-2"
+          placeholder="Alamat lengkap sesuai KTP"
+        />
+        <Input
           label="Tanggal Lahir"
           type="date"
           value={form.tanggal_lahir || ''}
@@ -619,6 +628,13 @@ function WargaModal({
             { value: 'non_ktp', label: 'Non KTP' },
             { value: 'non_domisili', label: 'Non Domisili' },
           ]}
+        />
+        <Input
+          label="Alamat Domisili"
+          value={form.alamat_domisili || ''}
+          onChange={(e) => setForm({ ...form, alamat_domisili: e.target.value })}
+          className="sm:col-span-2"
+          placeholder="Isi bila alamat domisili berbeda dengan KTP"
         />
         <Input
           label="Telepon"
