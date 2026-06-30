@@ -21,6 +21,10 @@ import {
   Trash2,
   UserPlus,
   Download,
+  Upload,
+  FileSpreadsheet,
+  CheckCircle,
+  AlertCircle,
 } from 'lucide-react';
 
 interface Warga {
@@ -76,6 +80,7 @@ export default function WargaPage() {
   const [deleteTarget, setDeleteTarget] = useState<Warga | KK | null>(null);
   const [deleteType, setDeleteType] = useState<'warga' | 'kk'>('warga');
   const [saving, setSaving] = useState(false);
+  const [modalImport, setModalImport] = useState(false);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -144,6 +149,12 @@ export default function WargaPage() {
           className="flex-1"
         />
         <div className="flex gap-2">
+          <Button
+            variant="biru"
+            onClick={() => setModalImport(true)}
+          >
+            <Upload size={18} /> Import Excel
+          </Button>
           <Button
             variant="abu"
             onClick={() => {
@@ -319,6 +330,15 @@ export default function WargaPage() {
           loadData();
         }}
         listKK={listKK}
+      />
+
+      <ImportModal
+        open={modalImport}
+        onClose={() => setModalImport(false)}
+        onSaved={() => {
+          setModalImport(false);
+          loadData();
+        }}
       />
 
       {/* Confirm delete */}
@@ -647,6 +667,228 @@ function WargaModal({
           value={form.email || ''}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
+      </div>
+    </Modal>
+  );
+}
+
+// ── Import Modal ──────────────────────────────────────────────────
+function ImportModal({
+  open,
+  onClose,
+  onSaved,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [sheet, setSheet] = useState<'Data Warga' | 'Data KK'>('Data Warga');
+  const [file, setFile] = useState<File | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{
+    berhasil: number;
+    gagal: number;
+    dilewati: number;
+    errors: string[];
+    pesan: string;
+  } | null>(null);
+
+  // Reset state tiap kali modal dibuka
+  const handleClose = () => {
+    setFile(null);
+    setResult(null);
+    setSheet('Data Warga');
+    onClose();
+  };
+
+  const handleFile = (f: File) => {
+    if (!f.name.match(/\.(xlsx|xls)$/i)) {
+      toast.error('File harus berformat .xlsx atau .xls');
+      return;
+    }
+    setFile(f);
+    setResult(null);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const f = e.dataTransfer.files[0];
+    if (f) handleFile(f);
+  };
+
+  const handleSubmit = async () => {
+    if (!file) { toast.error('Pilih file terlebih dahulu'); return; }
+    setLoading(true);
+    setResult(null);
+    try {
+      const token = localStorage.getItem('token_majegan');
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('sheet', sheet);
+      const res = await fetch('/api/import', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Import gagal');
+        return;
+      }
+      setResult(data);
+      if (data.berhasil > 0) {
+        toast.success(`${data.berhasil} data berhasil diimport`);
+        onSaved();
+      }
+    } catch {
+      toast.error('Gagal menghubungi server');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const downloadTemplate = () => {
+    const a = document.createElement('a');
+    a.href = '/template_import_warga.xlsx';
+    a.download = 'template_import_warga.xlsx';
+    a.click();
+  };
+
+  return (
+    <Modal
+      open={open}
+      onClose={handleClose}
+      title="Import Data dari Excel"
+      size="md"
+      footer={
+        <>
+          <Button variant="ghost" onClick={handleClose} disabled={loading}>
+            Tutup
+          </Button>
+          <Button onClick={handleSubmit} loading={loading} disabled={!file}>
+            <Upload size={16} /> Mulai Import
+          </Button>
+        </>
+      }
+    >
+      <div className="space-y-5">
+        {/* Unduh Template */}
+        <div className="flex items-center justify-between rounded-lg bg-biru/10 border border-biru/30 px-4 py-3">
+          <div>
+            <p className="text-sm font-medium text-biru">Belum punya template?</p>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">Unduh template Excel resmi yang sudah menyertakan petunjuk pengisian</p>
+          </div>
+          <Button variant="biru" size="sm" onClick={downloadTemplate}>
+            <FileSpreadsheet size={15} /> Unduh Template
+          </Button>
+        </div>
+
+        {/* Pilih Sheet */}
+        <div>
+          <label className="block text-sm font-medium text-[var(--text)] mb-2">
+            Import ke sheet
+          </label>
+          <div className="flex gap-2">
+            {(['Data Warga', 'Data KK'] as const).map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => { setSheet(s); setResult(null); }}
+                className={`flex-1 rounded-lg border py-2.5 text-sm font-medium transition ${
+                  sheet === s
+                    ? 'border-biru bg-biru/10 text-biru'
+                    : 'border-[var(--border)] text-[var(--text-muted)] hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+          {sheet === 'Data Warga' && (
+            <p className="mt-1.5 text-xs text-[var(--text-muted)]">
+              ⚠ Import Data KK terlebih dahulu sebelum import Data Warga
+            </p>
+          )}
+        </div>
+
+        {/* Drop Zone */}
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={handleDrop}
+          onClick={() => document.getElementById('file-import-input')?.click()}
+          className={`cursor-pointer rounded-xl border-2 border-dashed px-6 py-8 text-center transition ${
+            dragOver
+              ? 'border-biru bg-biru/10'
+              : file
+              ? 'border-hijau bg-hijau/5'
+              : 'border-[var(--border)] hover:border-biru/50 hover:bg-slate-50 dark:hover:bg-slate-800/30'
+          }`}
+        >
+          <input
+            id="file-import-input"
+            type="file"
+            accept=".xlsx,.xls"
+            className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+          />
+          {file ? (
+            <div className="flex flex-col items-center gap-2">
+              <FileSpreadsheet size={32} className="text-hijau" />
+              <p className="text-sm font-medium text-[var(--text)]">{file.name}</p>
+              <p className="text-xs text-[var(--text-muted)]">
+                {(file.size / 1024).toFixed(1)} KB — klik untuk ganti file
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <Upload size={32} className="text-[var(--text-muted)]" />
+              <p className="text-sm font-medium text-[var(--text)]">
+                Drag & drop file Excel di sini
+              </p>
+              <p className="text-xs text-[var(--text-muted)]">atau klik untuk pilih file (.xlsx / .xls)</p>
+            </div>
+          )}
+        </div>
+
+        {/* Hasil Import */}
+        {result && (
+          <div className="rounded-xl border border-[var(--border)] overflow-hidden">
+            <div className={`px-4 py-3 flex items-center gap-2 ${result.gagal > 0 ? 'bg-kuning/10' : 'bg-hijau/10'}`}>
+              {result.gagal > 0
+                ? <AlertCircle size={18} className="text-kuning flex-shrink-0" />
+                : <CheckCircle size={18} className="text-hijau flex-shrink-0" />
+              }
+              <p className="text-sm font-medium text-[var(--text)]">{result.pesan}</p>
+            </div>
+            <div className="grid grid-cols-3 divide-x divide-[var(--border)] border-t border-[var(--border)]">
+              <div className="px-4 py-3 text-center">
+                <p className="text-xl font-bold text-hijau">{result.berhasil}</p>
+                <p className="text-xs text-[var(--text-muted)]">Berhasil</p>
+              </div>
+              <div className="px-4 py-3 text-center">
+                <p className="text-xl font-bold text-merah">{result.gagal}</p>
+                <p className="text-xs text-[var(--text-muted)]">Gagal</p>
+              </div>
+              <div className="px-4 py-3 text-center">
+                <p className="text-xl font-bold text-[var(--text-muted)]">{result.dilewati}</p>
+                <p className="text-xs text-[var(--text-muted)]">Dilewati</p>
+              </div>
+            </div>
+            {result.errors.length > 0 && (
+              <div className="border-t border-[var(--border)] px-4 py-3 max-h-40 overflow-y-auto">
+                <p className="text-xs font-semibold text-merah mb-2">Detail error:</p>
+                <ul className="space-y-1">
+                  {result.errors.map((e, i) => (
+                    <li key={i} className="text-xs text-[var(--text-muted)] font-mono">{e}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </Modal>
   );
