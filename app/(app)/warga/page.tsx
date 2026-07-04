@@ -229,7 +229,29 @@ export default function WargaPage() {
                       </p>
                     </div>
                   </div>
-                  <Badge variant="biru">{anggotaKK.length} anggota</Badge>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Badge variant="biru">{anggotaKK.length} anggota</Badge>
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteTarget(kk);
+                        setDeleteType('kk');
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.stopPropagation();
+                          setDeleteTarget(kk);
+                          setDeleteType('kk');
+                        }
+                      }}
+                      className="rounded-lg p-1.5 text-merah hover:bg-merah/10 transition"
+                      title="Hapus KK"
+                    >
+                      <Trash2 size={16} />
+                    </span>
+                  </div>
                 </button>
 
                 {/* Members */}
@@ -349,7 +371,9 @@ export default function WargaPage() {
         message={
           deleteType === 'warga'
             ? `Yakin ingin menghapus data warga "${(deleteTarget as Warga)?.nama_lengkap}"? Tindakan ini tidak bisa dibatalkan.`
-            : `Yakin ingin menghapus KK "${(deleteTarget as KK)?.nama_kepala}"?`
+            : `Yakin ingin menghapus KK "${(deleteTarget as KK)?.nama_kepala}"? Seluruh ${
+                allWarga.filter((w) => (w as any).no_kk === (deleteTarget as KK)?.no_kk).length
+              } anggota warga dalam KK ini juga akan ikut terhapus. Tindakan ini tidak bisa dibatalkan.`
         }
         loading={saving}
         onConfirm={async () => {
