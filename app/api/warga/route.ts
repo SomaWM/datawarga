@@ -157,15 +157,19 @@ export async function POST(req: NextRequest) {
     let no_kk = d.no_kk || '';
     if (adaKkBaru && !no_kk) {
       try {
+        // kolom `alamat` di tabel kepala_keluarga bersifat NOT NULL,
+        // jadi wajib diisi — pakai alamat KTP/domisili warga sebagai alamat KK
+        const alamatKk = d.alamat_ktp || d.alamat_domisili || '-';
         await pool.query(
-          `INSERT INTO kepala_keluarga (no_kk, nama_kepala)
-           VALUES ($1, $2)
+          `INSERT INTO kepala_keluarga (no_kk, nama_kepala, alamat)
+           VALUES ($1, $2, $3)
            ON CONFLICT (no_kk) DO NOTHING`,
-          [d.no_kk_baru!.no_kk, d.no_kk_baru!.nama_kepala]
+          [d.no_kk_baru!.no_kk, d.no_kk_baru!.nama_kepala, alamatKk]
         );
         no_kk = d.no_kk_baru!.no_kk;
-      } catch {
-        return badRequest('Gagal membuat KK baru');
+      } catch (kkErr: any) {
+        console.error('❌ Gagal membuat KK baru:', kkErr);
+        return badRequest('Gagal membuat KK baru: ' + (kkErr?.message || 'error tidak diketahui'));
       }
     }
 

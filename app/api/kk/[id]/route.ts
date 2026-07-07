@@ -34,7 +34,14 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const roleCheck = requireRole(user, 'dukuh');
   if (roleCheck) return roleCheck;
 
-  const client = await pool.connect();
+  let client;
+  try {
+    client = await pool.connect();
+  } catch (err: any) {
+    // Koneksi ke database timeout/gagal sebelum transaksi dimulai
+    return serverError(err);
+  }
+
   try {
     const { id } = await params;
 
@@ -79,7 +86,11 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       jumlah_warga_terhapus: wargaResult.rows.length,
     });
   } catch (err: any) {
-    await client.query('ROLLBACK');
+    try {
+      await client.query('ROLLBACK');
+    } catch {
+      // abaikan error rollback jika koneksi sudah putus
+    }
     return serverError(err);
   } finally {
     client.release();

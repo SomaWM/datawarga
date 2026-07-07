@@ -6,6 +6,11 @@ const pool = new Pool({
   ssl: {
     rejectUnauthorized: false,
   },
+  // Jangan tunggu terlalu lama kalau koneksi ke Supabase bermasalah
+  // (network/DNS flaky) — biar error cepat kelihatan, bukan hang 20-30 detik
+  connectionTimeoutMillis: 8000,
+  idleTimeoutMillis: 30000,
+  max: 10,
 });
 
 // Logging error (opsional tapi sangat membantu)
