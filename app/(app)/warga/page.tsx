@@ -65,7 +65,7 @@ interface KK {
 }
 
 const AGAMA_OPTIONS = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'];
-const HUBUNGAN_OPTIONS = ['Kepala Keluarga', 'Istri', 'Anak', 'Famili Lain', 'Pembantu'];
+const HUBUNGAN_OPTIONS = ['Kepala Keluarga', 'Istri', 'Anak', 'Orang Tua', 'Famili Lain', 'Pembantu'];
 
 export default function WargaPage() {
   const [listKK, setListKK] = useState<KK[]>([]);

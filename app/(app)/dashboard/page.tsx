@@ -19,6 +19,7 @@ interface StatistikWarga {
   agama: { agama: string; jumlah: number }[];
   pekerjaan: { pekerjaan: string; jumlah: number }[];
   ekonomi: { status_ekonomi: string; jumlah: number }[];
+  kelompok_usia: { kelompok_usia: string; laki_laki: number; perempuan: number }[];
 }
 
 interface StatistikSurat {
@@ -107,6 +108,13 @@ export default function DashboardPage() {
     name: EKONOMI_LABELS[e.status_ekonomi] || e.status_ekonomi,
     value: e.jumlah,
     color: EKONOMI_COLORS[e.status_ekonomi] || '#64748b',
+  }));
+
+  // Kelompok usia per jenis kelamin — ditampilkan berdampingan (grouped bar)
+  const usiaData = (statWarga?.kelompok_usia || []).map((u) => ({
+    kelompok: u.kelompok_usia,
+    laki_laki: u.laki_laki,
+    perempuan: u.perempuan,
   }));
 
   return (
@@ -332,6 +340,38 @@ export default function DashboardPage() {
           </Card>
         )}
       </div>
+
+      {/* Piramida Penduduk: Kelompok Usia x Jenis Kelamin */}
+      {usiaData.length > 0 && (
+        <Card padding="md">
+          <CardHeader title="Kelompok Usia" icon={<Users size={20} />} />
+          <div className="h-[420px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={usiaData}
+                margin={{ left: 0, right: 20, bottom: 10 }}
+              >
+                <XAxis dataKey="kelompok" type="category" tick={{ fontSize: 11 }} />
+                <YAxis type="number" tick={{ fontSize: 12 }} allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'var(--surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                  }}
+                  formatter={(value: any, name: any) => [value, name]}
+                />
+                <Legend
+                  formatter={(value) => (value === 'laki_laki' ? 'Laki-laki' : 'Perempuan')}
+                />
+                <Bar dataKey="laki_laki" name="laki_laki" fill="#1d6fa4" radius={[4, 4, 0, 0]} barSize={16} />
+                <Bar dataKey="perempuan" name="perempuan" fill="#e63946" radius={[4, 4, 0, 0]} barSize={16} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }
